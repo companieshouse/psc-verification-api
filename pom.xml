@@ -139,6 +139,26 @@
     </dependencies>
 
     <build>
+        <!--
+            Workaround for Tilt infinite rebuild loop:
+            1. mvn compile: copies src/main/resources/*.properties to target/classes (standard behaviour)
+            2. those copies files have a new ctime (creation timestamp)
+            3. Tiltfile.dev watches ./target/classes/*.properties and triggers live update
+            4. Live update runs mvn compile
+
+            Solution:
+            1. Prevent copying of resources above by excluding src/main/resources/*.properties from standard build
+            2. Instead of that, run maven-antrun-plugin <copy> task with its attribute preservelastmodified=true
+        -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>*.properties</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -156,6 +176,30 @@
                     </annotationProcessorPaths>
                     <parameters>true</parameters>
                 </configuration>
+            </plugin>
+            <!-- See Workaround Note above -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <configuration>
+                            <target>
+                                <!--suppress UnresolvedMavenProperty -->
+                                <!-- predefined maven property is not recognised by IDEA -->
+                                <copy todir="${project.build.outputDirectory}" preservelastmodified="true">
+                                    <fileset dir="src/main/resources">
+                                        <include name="*.properties"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
