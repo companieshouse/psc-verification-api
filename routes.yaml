@@ -1,0 +1,5 @@
+app_name: psc-verification-api
+group: api
+weight: 900
+routes:
+  1: ^/psc-verification-api
