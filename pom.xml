@@ -35,6 +35,8 @@
         <structured-logging.version>3.0.1</structured-logging.version>
         <api-security-java.version>2.0.1</api-security-java.version>
         <api-helper-java.version>3.0.0</api-helper-java.version>
+        <api-sdk-java.version>unversioned</api-sdk-java.version>
+        <api-sdk-manager-java-library.version>3.0.1</api-sdk-manager-java-library.version>
         <!--sonar configuration-->
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml,
             ${project.basedir}/target/site/jacoco-it/jacoco.xml
@@ -85,6 +87,17 @@
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
+        </dependency>
+        <!-- CH SDKs -->
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>api-sdk-java</artifactId>
+            <version>${api-sdk-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.companieshouse</groupId>
+            <artifactId>api-sdk-manager-java-library</artifactId>
+            <version>${api-sdk-manager-java-library.version}</version>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
