@@ -1,6 +1,6 @@
 # psc-verification-api
 
-The People with Significant Control (PSC) Verification API is a Spring Boot REST API which forms part of the Identification Verification (IDV) service and is responsible for handling and processing PSC Individual and Relevant Legal Entity (RLE) officer verification requests.
+The People with Significant Control (PSC) Verification API is a Spring Boot REST API which forms part of the Identification Verification (IDV) service and is responsible for handling and processing PSC Individual and Relevant Legal Entity (RLE) Relevant Officer (RO) verification requests.
 
 API users, including <code>[psc-verification-web](https://github.com/companieshouse/psc-verification-web)</code>, interact with the `psc-verification-api` by sending HTTP requests containing JSON data to the service endpoints. The service endpoints available in the `psc-verification-api` as well as their expected request and response models are outlined in the [Swagger specification file](spec/swagger.json).
 
@@ -25,7 +25,7 @@ You will also need a REST client (e.g. Postman or cURL) if you wish to interact 
 1. Configure project environment variables where necessary (see below).
 1. Ensure dependent Companies House services are running within the Companies House developer environment
 1. Start the service in the CHS developer environment
-1. Send a GET request using your REST client to `/psc-verification-api/healthcheck`. The response should be `200 OK` with `status=UP`.
+1. Send a GET request using your REST client to `persons-with-significant-control-verification/healthcheck`. The response should be `200 OK` with `status=UP`.
 1. A MongoDB instance named _TBC_ and the following collections are required: _TBC_
 
 
@@ -54,13 +54,13 @@ Planned maintenance format: `d MMM yy HH:mm z|x` where
 
 ## Building the docker image
 
-    mvn -s settings.xml compile jib:dockerBuild -Dimage=169942020521.dkr.ecr.eu-west-1.amazonaws.com/local/psc-verification-api
+    mvn -s settings.xml compile jib:dockerBuild -Dimage=416670754337.dkr.ecr.eu-west-2.amazonaws.com/psc-verification-api:latest
 
 ## Running Locally using Docker
 
 1. Clone [Docker CHS Development](https://github.com/companieshouse/docker-chs-development) and follow the steps in the README.
 
-1. Enable the `psc-verification` module - _TBC_
+1. Enable the `psc-verification-api` services
 
 1. Run `tilt up` and wait for all services to start
 
