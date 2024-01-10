@@ -25,6 +25,7 @@
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
+        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <!-- Docker -->
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
         <mockito-core.version>5.7.0</mockito-core.version>
@@ -204,8 +205,9 @@
             </plugin>
             <!-- See Workaround Note above -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
+                <version>${maven-antrun-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>compile</phase>
