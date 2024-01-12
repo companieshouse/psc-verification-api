@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
@@ -47,7 +47,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         final var responseBody = new PscVerificationApi();
         final var links = new PscVerificationLinks();
 
-        final var location = ServletUriComponentsBuilder.fromCurrentRequest()
+        final var location = UriComponentsBuilder.fromUriString(request.getRequestURI())
             .path("/{id}")
             .buildAndExpand(placeholderId)
             .toUri();
