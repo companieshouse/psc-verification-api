@@ -25,6 +25,7 @@
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
+        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <!-- Docker -->
         <jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
         <mockito-core.version>5.7.0</mockito-core.version>
@@ -35,7 +36,7 @@
         <structured-logging.version>3.0.1</structured-logging.version>
         <api-security-java.version>2.0.1</api-security-java.version>
         <api-helper-java.version>3.0.0</api-helper-java.version>
-        <api-sdk-java.version>6.0.2</api-sdk-java.version>
+        <api-sdk-java.version>6.0.6</api-sdk-java.version>
         <api-sdk-manager-java-library.version>3.0.1</api-sdk-manager-java-library.version>
         <!--sonar configuration-->
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml,
@@ -204,8 +205,9 @@
             </plugin>
             <!-- See Workaround Note above -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
+                <version>${maven-antrun-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>compile</phase>
