@@ -8,7 +8,7 @@ locals {
   docker_repo                 = "psc-verification-api"
   kms_alias                   = "alias/${var.aws_profile}/environment-services-kms"
   lb_listener_rule_priority   = 160
-  lb_listener_paths           = ["/persons-with-significant-control-verification*"]
+  lb_listener_paths           = ["/persons-with-significant-control-verification*", "/transactions/*/persons-with-significant-control-verification", "/private/transactions/*/persons-with-significant-control-verification"]
   healthcheck_path            = "/persons-with-significant-control-verification/healthcheck"
   healthcheck_matcher         = "200" # no explicit healthcheck in this service yet, change this when added!
   vpc_name                    = data.aws_ssm_parameter.secret[format("/%s/%s", local.name_prefix, "vpc-name")].value
