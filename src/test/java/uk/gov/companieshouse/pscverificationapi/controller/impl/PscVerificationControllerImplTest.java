@@ -1,8 +1,8 @@
-package uk.gov.companieshouse.pscverificationapi.pscverification;
+package uk.gov.companieshouse.pscverificationapi.controller.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +22,7 @@ import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
 
 @ExtendWith(MockitoExtension.class)
 class PscVerificationControllerImplTest {
@@ -44,7 +45,7 @@ class PscVerificationControllerImplTest {
 
     @BeforeEach
     void setUp() {
-        testController = new PscVerificationControllerImpl(logger);
+//        testController = new PscVerificationControllerImpl(logger);
     }
 
     @Test
@@ -57,22 +58,18 @@ class PscVerificationControllerImplTest {
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
 
         final var location = response.getHeaders().getLocation();
-
         final var resourceIdUri = REQUEST_URI.relativize(location);
 
         assertDoesNotThrow(() -> UUID.fromString(resourceIdUri.toString()));
 
-        final var expected = new PscVerificationApi();
-        final var links = new PscVerificationLinks();
-
-        links.setSelf(location.toString());
-        links.setValidationStatus(UriComponentsBuilder.fromUri(location)
+        final var expected = PscVerificationApi.newBuilder().links(PscVerificationLinks.newBuilder()
+            .self(location.toString())
+            .validationStatus(UriComponentsBuilder.fromUri(location)
             .pathSegment("validation_status")
-            .build()
-            .toString());
-        expected.setLinks(links);
+            .build().toString())
+            .build()).build();
 
-        assertThat(response.getBody().getLinks(), is(samePropertyValuesAs(links)));
+        assertThat(response.getBody(), is(equalTo(expected)));
 
     }
 }

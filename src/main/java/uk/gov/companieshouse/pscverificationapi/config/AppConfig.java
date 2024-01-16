@@ -3,7 +3,11 @@ package uk.gov.companieshouse.pscverificationapi.config;
 import java.time.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import uk.gov.companieshouse.api.sdk.ApiClientService;
+import uk.gov.companieshouse.api.sdk.impl.ApiClientServiceImpl;
 
 @Configuration
 @EnableTransactionManagement
@@ -17,6 +21,16 @@ public class AppConfig {
     @Bean
     public Clock clock() {
         return Clock.systemUTC();
+    }
+
+    @Bean
+    MongoTransactionManager transactionManager(final MongoDatabaseFactory dbFactory) {
+        return new MongoTransactionManager(dbFactory);
+    }
+
+    @Bean
+    public ApiClientService apiClientService() {
+        return new ApiClientServiceImpl();
     }
 
 }
