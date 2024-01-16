@@ -43,6 +43,17 @@ variable "required_memory" {
   default = 512 # defaulted low for node service in dev environments, override for production
 }
 
+variable "eric_cpus" {
+  type = number
+  description = "The required cpu resource for eric. 1024 here is 1 vCPU"
+  default = 256
+}
+variable "eric_memory" {
+  type = number
+  description = "The required memory for eric"
+  default = 512
+}
+
 variable "max_task_count" {
   type        = number
   description = "The maximum number of tasks for this service."
@@ -118,6 +129,12 @@ variable "psc_verification_api_version" {
   type        = string
   description = "The version of the psc-verification-api container to run."
 }
+
+variable "eric_version" {
+  type        = string
+  description = "The version of the eric container to run."
+}
+
 variable "include_api_filing_public_specs" {
   type = string
   default = "1"
