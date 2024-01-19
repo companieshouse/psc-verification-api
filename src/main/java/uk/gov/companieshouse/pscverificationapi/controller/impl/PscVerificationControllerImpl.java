@@ -68,20 +68,22 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         @RequestAttribute(required = false, name = "transaction") final Transaction transaction,
         @RequestBody @Valid @NotNull final PscVerificationData data, final BindingResult result,
         final HttpServletRequest request) {
-
         final var logMap = LogMapHelper.createLogMap(transId);
 
         logger.debugRequest(request, "POST", logMap);
 
-        checkBindingErrors(result);
+        Optional.ofNullable(result).ifPresent(PscVerificationControllerImpl::checkBindingErrors);
 
-//        final var pscTransaction = getTransaction(transId, transaction, logMap,
-//            getPassthroughHeader(request));
+        final var requestTransaction = getTransaction(transId, transaction, logMap,
+            getPassthroughHeader(request));
 
         final var entity = filingMapper.toEntity(data);
         final var savedEntity = saveFilingWithLinks(entity, transId, request, logMap);
 
-//        updateTransactionResources(transaction, savedEntity.getLinks());
+        if (transaction != null) {
+            updateTransactionResources(requestTransaction, savedEntity.getLinks());
+        }
+
         final var response = filingMapper.toApi(savedEntity);
 
         return ResponseEntity.created(

@@ -26,7 +26,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
      */
     @Override
     public void addInterceptors(@NonNull final InterceptorRegistry registry) {
-//        addTransactionInterceptor(registry);
+        addTransactionInterceptor(registry);
     }
 
     private void addTransactionInterceptor(final InterceptorRegistry registry) {

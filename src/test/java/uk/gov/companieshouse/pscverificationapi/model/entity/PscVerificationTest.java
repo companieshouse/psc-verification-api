@@ -58,7 +58,7 @@ class PscVerificationTest {
             .companyNumber("company-number")
             .pscAppointmentId("psc-appointment-id")
             .verificationDetails(verif)
-            .personalDetails(personal)
+            .relevantOfficerDetails(personal)
             .build();
         testVerification = PscVerification.newBuilder()
             .id("id")
@@ -94,7 +94,7 @@ class PscVerificationTest {
                 + "links=PscVerificationLinks[validationStatus='valid', self='self'], "
                 + "data=PscVerificationData[companyNumber=company-number, "
                 + "pscAppointmentId=psc-appointment-id, "
-                + "personalDetails=PersonalDetails[appointmentId='appointment-id', "
+                + "relevantOfficerDetails=PersonalDetails["
                 + "nameElements=NameElementsApi[title='Sir', forename='Forename', "
                 + "otherForenames='Other Forenames', middleName='Middlename', "
                 + "surname='Surname']], verificationDetails=VerificationDetails[uvid=uvid, "
