@@ -10,9 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Set;
+import java.util.EnumSet;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,7 +84,7 @@ class PscVerificationControllerImplTest {
             pscVerificationService, filingMapper, clock, logger);
         verification = VerificationDetails.newBuilder()
             .uvid(UVID)
-            .statements(Set.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED))
+            .statements(EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED))
             .build();
         filing = PscVerificationData.newBuilder()
             .verificationDetails(verification)

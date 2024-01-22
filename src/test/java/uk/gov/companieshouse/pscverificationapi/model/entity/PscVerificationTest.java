@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.EnumSet;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +23,9 @@ import uk.gov.companieshouse.api.model.pscverification.VerificationStatementCons
 @ExtendWith(MockitoExtension.class)
 class PscVerificationTest {
     private static final Instant INSTANT = Instant.parse("2024-01-01T10:08:42Z");
-    private static final Set<VerificationStatementConstants> STATEMENTS_INDIVIDUAL = Set.of(
+    private static final EnumSet<VerificationStatementConstants> STATEMENTS_INDIVIDUAL = EnumSet.of(
         VerificationStatementConstants.INDIVIDUAL_VERIFIED);
-    private static final Set<VerificationStatementConstants> STATEMENTS_RO = Set.of(
+    private static final EnumSet<VerificationStatementConstants> STATEMENTS_RO = EnumSet.of(
         VerificationStatementConstants.RO_DECLARATION);
     private PscVerification testVerification;
     private PscVerificationLinks links;
