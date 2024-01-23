@@ -1,4 +1,4 @@
-package uk.gov.companieshouse.pscverificationapi.pscverification;
+package uk.gov.companieshouse.pscverificationapi.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
