@@ -4,8 +4,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -19,9 +22,13 @@ import static uk.gov.companieshouse.api.model.pscverification.VerificationStatem
 import java.net.URI;
 import java.time.Clock;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
+
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -151,4 +158,37 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
         verify(filingMapper).toApi(argThat((PscVerification v) -> FILING_ID.equals(v.getId())));
     }
 
+    @MethodSource("provideCreateVerificationData")
+    void getPscVerificationThenResponse200(final PscVerificationData data,
+                                           final boolean isRLE) throws Exception {
+
+        final var filing = PscVerification.newBuilder()
+                .createdAt(FIRST_INSTANT)
+                .updatedAt(FIRST_INSTANT)
+                .links(links)
+                .data(data)
+                .build();
+
+//        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filing));
+//        when(pscVerificationService.requestMatchesResourceSelf(any(HttpServletRequest.class),
+//                eq(filing))).thenReturn(true);
+//
+//        mockMvc.perform(get(URL_PSC_INDIVIDUAL_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.reference_etag", is(ETAG)))
+//                .andExpect(jsonPath("$.reference_psc_id", is(PSC_ID)))
+//                .andExpect(jsonPath("$.ceased_on", is(CEASED_ON_DATE.toString())));
+    }
+
+//    @Test
+//    void getFilingForReviewNotFoundThenResponse404() throws Exception {
+//
+//        when(pscIndividualFilingService.get(FILING_ID)).thenReturn(Optional.empty());
+//
+//        mockMvc.perform(get(URL_PSC_INDIVIDUAL_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
+//                .andDo(print())
+//                .andExpect(status().isNotFound());
+//        verifyNoInteractions(filingMapper);
+//    }
 }

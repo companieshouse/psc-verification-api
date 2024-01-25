@@ -13,7 +13,6 @@ import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.exception.NotImplementedException;
-import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 
 public interface PscVerificationController {
     default ResponseEntity<PscVerificationApi> createPscVerification(
@@ -32,7 +31,7 @@ public interface PscVerificationController {
      * @throws NotImplementedException implementing classes must perform work
      */
     @GetMapping
-    default ResponseEntity<PscVerification> getPscVerification(
+    default ResponseEntity<PscVerificationApi> getPscVerification(
             @PathVariable("transactionId") final String transId,
             @PathVariable("filingResourceId") final String filingResourceId,
             final HttpServletRequest request) {

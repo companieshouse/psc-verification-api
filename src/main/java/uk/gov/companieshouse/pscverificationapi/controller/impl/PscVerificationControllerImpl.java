@@ -99,18 +99,17 @@ public class PscVerificationControllerImpl implements PscVerificationController 
      * @param filingResourceId  the PSC Filing ID
      */
     @Override
-    @GetMapping(value = "/{filingResourceId}", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PscVerification> getPscVerification(
+    @GetMapping(value = "/{filingResourceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PscVerificationApi> getPscVerification(
             @PathVariable("transactionId") final String transId,
             @PathVariable("filingResourceId") final String filingResourceId,
             final HttpServletRequest request) {
 
-        final var maybePscVerification = pscVerificationService.get(filingResourceId)
+        final var pscVerification = pscVerificationService.get(filingResourceId)
                 .filter(f -> pscVerificationService.requestMatchesResourceSelf(request,
                         f));
 
-        return maybePscVerification.map(ResponseEntity::ok)
+        return pscVerification.map(filingMapper::toApi).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound()
                         .build());
     }
