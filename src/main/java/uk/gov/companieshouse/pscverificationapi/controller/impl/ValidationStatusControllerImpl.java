@@ -18,6 +18,7 @@ import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.controller.ValidationStatusController;
 import uk.gov.companieshouse.pscverificationapi.error.ErrorType;
+import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
 import uk.gov.companieshouse.pscverificationapi.mapper.ErrorMapper;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
@@ -62,12 +63,10 @@ public class ValidationStatusControllerImpl implements ValidationStatusControlle
         logger.debugRequest(request, "GET validation request", logMap);
 
         final var passthroughHeader = request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
-//        final var pscVerification = pscVerificationService.get(filingResource);
-        var pscVerification = PscVerification.newBuilder().build();
-        return isValid(pscVerification, passthroughHeader, transaction);
+        final var pscVerification = pscVerificationService.get(filingResource);
 
-//        return pscVerification.map(f -> isValid(f, passthroughHeader, transaction))
-//                .orElseThrow(() -> new FilingResourceNotFoundException(filingResource));
+        return pscVerification.map(f -> isValid(f, passthroughHeader, transaction))
+                .orElseThrow(() -> new FilingResourceNotFoundException(filingResource));
     }
 
     private ValidationStatusResponse isValid(final PscVerification pscVerification, final String passthroughHeader,
