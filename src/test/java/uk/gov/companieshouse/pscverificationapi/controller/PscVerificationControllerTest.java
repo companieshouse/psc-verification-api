@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
 import uk.gov.companieshouse.pscverificationapi.exception.NotImplementedException;
 
 @ExtendWith(MockitoExtension.class)
