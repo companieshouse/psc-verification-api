@@ -32,4 +32,11 @@ class PscVerificationControllerTest {
             () -> testController.createPscVerification("trans-id", transaction, data, bindingResult,
                 request));
     }
+
+    @Test
+    void getPscVerification() {
+        assertThrows(NotImplementedException.class,
+                () -> testController.getPscVerification("trans-id", "filing-resource-id", request));
+    }
+
 }

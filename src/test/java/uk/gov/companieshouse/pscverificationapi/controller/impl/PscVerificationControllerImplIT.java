@@ -158,37 +158,63 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
         verify(filingMapper).toApi(argThat((PscVerification v) -> FILING_ID.equals(v.getId())));
     }
 
+    @ParameterizedTest(name = "[{index}] isRLE={1}")
     @MethodSource("provideCreateVerificationData")
     void getPscVerificationThenResponse200(final PscVerificationData data,
                                            final boolean isRLE) throws Exception {
 
+        final var expectedStatementNames = isRLE ? List.of(RO_IDENTIFIED.toString(),
+                RO_DECLARATION.toString(), RO_VERIFIED.toString()).toArray() : List.of(
+                INDIVIDUAL_VERIFIED.toString()).toArray();
+
         final var filing = PscVerification.newBuilder()
                 .createdAt(FIRST_INSTANT)
-                .updatedAt(FIRST_INSTANT)
+                .updatedAt(SECOND_INSTANT)
                 .links(links)
                 .data(data)
                 .build();
 
-//        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filing));
-//        when(pscVerificationService.requestMatchesResourceSelf(any(HttpServletRequest.class),
-//                eq(filing))).thenReturn(true);
-//
-//        mockMvc.perform(get(URL_PSC_INDIVIDUAL_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.reference_etag", is(ETAG)))
-//                .andExpect(jsonPath("$.reference_psc_id", is(PSC_ID)))
-//                .andExpect(jsonPath("$.ceased_on", is(CEASED_ON_DATE.toString())));
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filing));
+        when(pscVerificationService.requestMatchesResourceSelf(any(HttpServletRequest.class),
+                eq(filing))).thenReturn(true);
+
+
+        final var resultActions = mockMvc.perform(get(URL_PSC_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.created_at", is(FIRST_INSTANT.toString())))
+                .andExpect(jsonPath("$.updated_at", is(SECOND_INSTANT.toString())))
+                .andExpect(jsonPath("$.links.self", is(SELF_URI.toString())))
+                .andExpect(jsonPath("$.links.validation_status", is(VALIDATION_URI.toString())))
+                .andExpect(jsonPath("$.data.company_number", is(COMPANY_NUMBER)))
+                .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
+                .andExpect(jsonPath("$.data.verification_details.uvid", is(UVID)))
+                .andExpect(jsonPath("$.data.verification_details.verification_statements",
+                        containsInAnyOrder(expectedStatementNames)));
+
+        if (isRLE) {
+            resultActions
+                    .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.title",
+                            is(NAME_ELEMENTS.getTitle())))
+                    .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.forename",
+                            is(NAME_ELEMENTS.getForename())))
+                    .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.other_forenames",
+                            is(NAME_ELEMENTS.getOtherForenames())))
+                    .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.surname",
+                            is(NAME_ELEMENTS.getSurname())))
+            ;
+        }
+
     }
 
-//    @Test
-//    void getFilingForReviewNotFoundThenResponse404() throws Exception {
-//
-//        when(pscIndividualFilingService.get(FILING_ID)).thenReturn(Optional.empty());
-//
-//        mockMvc.perform(get(URL_PSC_INDIVIDUAL_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
-//                .andDo(print())
-//                .andExpect(status().isNotFound());
-//        verifyNoInteractions(filingMapper);
-//    }
+    @Test
+    void getPscVerificationNotFoundThenResponse404() throws Exception {
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get(URL_PSC_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+        verifyNoInteractions(filingMapper);
+    }
 }
