@@ -30,7 +30,7 @@ public class BaseControllerIT {
     protected static final String URL_PSC = "/transactions/{transactionId}/persons-with" +
         "-significant-control" + "-verification";
     protected static final String URL_PSC_RESOURCE = URL_PSC + "/{filingResourceId}";
-    protected static final String URL_PSC_VALIDATION_STATUS = URL_PSC + "/validation_status";
+    protected static final String URL_PSC_VALIDATION_STATUS = URL_PSC_RESOURCE + "/validation_status";
     protected static final String COMMON_FRAGMENT = new StringBuilder().append(
             "\"company_number\": \"")
         .append(COMPANY_NUMBER)
