@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.BindingResult;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
 import uk.gov.companieshouse.pscverificationapi.exception.NotImplementedException;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,4 +31,11 @@ class PscVerificationControllerTest {
             () -> testController.createPscVerification("trans-id", transaction, data, bindingResult,
                 request));
     }
+
+    @Test
+    void getPscVerification() {
+        assertThrows(NotImplementedException.class,
+                () -> testController.getPscVerification("trans-id", "filing-resource-id", request));
+    }
+
 }

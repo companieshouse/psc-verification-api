@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,21 @@ public interface PscVerificationController {
         @RequestAttribute(required = false, name = "transaction") final Transaction transaction,
         @RequestBody @Valid @NotNull final PscVerificationData data, final BindingResult result,
         final HttpServletRequest request) {
+        throw new NotImplementedException();
+    }
+
+    /**
+     * Retrieve PSC verification submission.
+     *
+     * @param transId        the Transaction ID
+     * @param filingResourceId the PSC Filing ID
+     * @throws NotImplementedException implementing classes must perform work
+     */
+    @GetMapping
+    default ResponseEntity<PscVerificationApi> getPscVerification(
+            @PathVariable("transactionId") final String transId,
+            @PathVariable("filingResourceId") final String filingResourceId,
+            final HttpServletRequest request) {
         throw new NotImplementedException();
     }
 }

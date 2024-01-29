@@ -24,7 +24,7 @@ public final class PscVerification {
     private PscVerificationLinks links;
     private PscVerificationData data;
 
-    protected PscVerification() {
+    public PscVerification() {
         // required by Spring Data
     }
 

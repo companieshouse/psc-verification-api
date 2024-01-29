@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -89,6 +90,28 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         return ResponseEntity.created(
                 UriComponentsBuilder.fromUriString(savedEntity.getLinks().getSelf()).build().toUri())
             .body(response);
+    }
+
+    /**
+     * Retrieve PSC Verification submission.
+     *
+     * @param transId           the Transaction ID
+     * @param filingResourceId  the PSC Filing ID
+     */
+    @Override
+    @GetMapping(value = "/{filingResourceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PscVerificationApi> getPscVerification(
+            @PathVariable("transactionId") final String transId,
+            @PathVariable("filingResourceId") final String filingResourceId,
+            final HttpServletRequest request) {
+
+        final var pscVerification = pscVerificationService.get(filingResourceId)
+                .filter(f -> pscVerificationService.requestMatchesResourceSelf(request,
+                        f));
+
+        return pscVerification.map(filingMapper::toApi).map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound()
+                        .build());
     }
 
     /**

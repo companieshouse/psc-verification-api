@@ -12,8 +12,10 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -52,6 +54,10 @@ class PscVerificationControllerImplTest {
     private static final URI REQUEST_URI = URI.create(
         "/transactions/" + TRANS_ID + "/persons-with-significant-control-verification");
 
+    private static final URI SELF_URI = URI.create(REQUEST_URI + FILING_ID);
+    private static final URI VALIDATION_URI = URI.create(
+            SELF_URI + "/validation_status");
+
     private PscVerificationController testController;
 
     @Mock
@@ -71,8 +77,10 @@ class PscVerificationControllerImplTest {
     @Mock
     private Transaction transaction;
     private VerificationDetails verification;
+    private PscVerificationApi pscVerificationApi;
     private PscVerificationData filing;
     private PscVerification entity;
+    private PscVerification entityWithLinks;
 
     public static Stream<Arguments> provideCreateParams() {
         return Stream.of(Arguments.of(false, false, false), Arguments.of(true, true, true));
@@ -96,6 +104,14 @@ class PscVerificationControllerImplTest {
             .updatedAt(FIRST_INSTANT)
             .data(filing)
             .build();
+        pscVerificationApi = PscVerificationApi.newBuilder()
+                .createdAt(FIRST_INSTANT)
+                .updatedAt(FIRST_INSTANT)
+                .data(filing)
+                .links(expectEntitySavedWithLinks())
+                .build();
+        entityWithLinks = PscVerification.newBuilder(entity)
+                .links(expectEntitySavedWithLinks()).build();
     }
 
     @ParameterizedTest(
@@ -125,6 +141,29 @@ class PscVerificationControllerImplTest {
             .build();
 
         assertThat(response.getBody(), is(equalTo(expectedApi)));
+    }
+
+    @Test
+    void getPscVerificationWhenFound() {
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks));
+        when(pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(true);
+
+        final var response =
+                testController.getPscVerification(TRANS_ID, FILING_ID, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(equalTo(pscVerificationApi)));
+    }
+
+    @Test
+    void getFilingForReviewWhenNotFound() {
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.empty());
+
+        final var response =
+                testController.getPscVerification(TRANS_ID, FILING_ID, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
     }
 
     private PscVerificationLinks expectEntitySavedWithLinks() {
