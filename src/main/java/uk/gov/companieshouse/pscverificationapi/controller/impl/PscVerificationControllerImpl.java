@@ -1,22 +1,28 @@
 package uk.gov.companieshouse.pscverificationapi.controller.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Clock;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -30,8 +36,12 @@ import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.patch.model.PatchResult;
 import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
+import uk.gov.companieshouse.pscverificationapi.error.RetrievalFailureReason;
+import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.InvalidFilingException;
+import uk.gov.companieshouse.pscverificationapi.exception.InvalidPatchException;
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
@@ -43,6 +53,10 @@ import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 @RequestMapping("/transactions/{transactionId}/persons-with-significant-control-verification")
 public class PscVerificationControllerImpl implements PscVerificationController {
     public static final String VALIDATION_STATUS = "validation_status";
+    private static final String PATCH_RESULT_MSG = "PATCH result";
+    private static final String STATUS_MSG = "status";
+    private static final String PATCH_FAILED = "patch failed";
+    private static final String ERROR_MSG = "error";
 
     private final TransactionService transactionService;
     private final PscVerificationService pscVerificationService;
@@ -90,6 +104,55 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         return ResponseEntity.created(
                 UriComponentsBuilder.fromUriString(savedEntity.getLinks().getSelf()).build().toUri())
             .body(response);
+    }
+
+    @Override
+    @Transactional
+    @PatchMapping(value = "/{filingResourceId}", produces = {"application/json"},
+            consumes = "application/merge-patch+json")
+    public ResponseEntity<PscVerificationApi> updateFiling(
+            @PathVariable("transactionId") final String transId,
+            @PathVariable("filingResourceId") final String filingResource,
+            @RequestBody final @NotNull Map<String, Object> mergePatch,
+            final HttpServletRequest request) {
+
+        final var logMap = LogMapHelper.createLogMap(transId);
+        final var patchResult = pscVerificationService.get(filingResource).filter(
+                f1 -> pscVerificationService.requestMatchesResourceSelf(request, f1)).map(
+                f -> pscVerificationService.patch(filingResource, mergePatch)).orElse(
+                new PatchResult(RetrievalFailureReason.FILING_NOT_FOUND));
+
+        if (patchResult.failedRetrieval()) {
+            final var reason = (RetrievalFailureReason) patchResult.getRetrievalFailureReason();
+
+            logMap.put(STATUS_MSG, PATCH_FAILED);
+            logMap.put(ERROR_MSG, "retrieval failure: " + reason);
+            logger.debugContext(transId, PATCH_RESULT_MSG, logMap);
+
+            throw new FilingResourceNotFoundException(filingResource);
+        }
+        else if (patchResult.failedValidation()) {
+
+            final var errors = (List<FieldError>) patchResult.getValidationErrors();
+
+            logMap.put(STATUS_MSG, PATCH_FAILED);
+            logMap.put(ERROR_MSG, "validation failure: " + errors);
+            logger.debugContext(transId, PATCH_RESULT_MSG, logMap);
+
+            throw new InvalidPatchException(errors);
+        }
+        else {
+            logMap.put(STATUS_MSG, "patch successful");
+            logger.debugContext(transId, PATCH_RESULT_MSG, logMap);
+
+            Optional<PscVerification> optionalFiling = pscVerificationService.get(filingResource);
+
+            return optionalFiling
+                    .map(filingMapper::toApi)
+                    .map(PscVerificationControllerImpl::createOKResponse)
+                    .orElse(ResponseEntity.notFound()
+                            .build());
+        }
     }
 
     /**
@@ -208,6 +271,19 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         resourceMap.put(links.getSelf(), resource);
 
         return resourceMap;
+    }
+
+    private static ResponseEntity<PscVerificationApi> createOKResponse(PscVerificationApi filing) {
+        final var responseHeaders = new HttpHeaders();
+        URI uri = null;
+        try {
+            uri = new URI(filing.getLinks().getSelf());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        responseHeaders.setLocation(uri);
+
+        return ResponseEntity.ok().headers(responseHeaders).body(filing);
     }
 
 }
