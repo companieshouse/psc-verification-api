@@ -52,7 +52,7 @@ public class BaseControllerIT {
         .append("]}")
         .toString();
     protected static final String RO_FRAGMENT = new StringBuilder().append(
-            ",\"relevant_officer_details\":{")
+            ",\"relevant_officer\":{")
         .append("\"name_elements\":{")
         .append("\"title\": \"Sir\",")
         .append("\"forename\": \"Forename\",")

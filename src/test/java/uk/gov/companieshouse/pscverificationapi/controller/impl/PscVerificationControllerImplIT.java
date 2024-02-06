@@ -40,7 +40,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.companieshouse.api.model.pscverification.PersonalDetails;
+import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
 import uk.gov.companieshouse.logging.Logger;
@@ -86,8 +86,8 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
             .verificationDetails(INDIVIDUAL_DETAILS)
             .build(), false), Arguments.of(PscVerificationData.newBuilder(commonDto)
             .verificationDetails(RO_DETAILS)
-            .relevantOfficerDetails(
-                PersonalDetails.newBuilder().nameElements(NAME_ELEMENTS).build())
+            .relevantOfficer(
+                RelevantOfficer.newBuilder().nameElements(NAME_ELEMENTS).build())
             .build(), true));
     }
 
@@ -144,13 +144,13 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
                 containsInAnyOrder(expectedStatementNames)));
         if (isRLE) {
             resultActions
-                .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.title",
+                .andExpect(jsonPath("$.data.relevant_officer.name_elements.title",
                 is(NAME_ELEMENTS.getTitle())))
-                .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.forename",
+                .andExpect(jsonPath("$.data.relevant_officer.name_elements.forename",
                 is(NAME_ELEMENTS.getForename())))
-                .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.other_forenames",
+                .andExpect(jsonPath("$.data.relevant_officer.name_elements.other_forenames",
                 is(NAME_ELEMENTS.getOtherForenames())))
-                .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.surname",
+                .andExpect(jsonPath("$.data.relevant_officer.name_elements.surname",
                 is(NAME_ELEMENTS.getSurname())))
                 ;
         }
@@ -194,13 +194,13 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
 
         if (isRLE) {
             resultActions
-                    .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.title",
+                    .andExpect(jsonPath("$.data.relevant_officer.name_elements.title",
                             is(NAME_ELEMENTS.getTitle())))
-                    .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.forename",
+                    .andExpect(jsonPath("$.data.relevant_officer.name_elements.forename",
                             is(NAME_ELEMENTS.getForename())))
-                    .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.other_forenames",
+                    .andExpect(jsonPath("$.data.relevant_officer.name_elements.other_forenames",
                             is(NAME_ELEMENTS.getOtherForenames())))
-                    .andExpect(jsonPath("$.data.relevant_officer_details.name_elements.surname",
+                    .andExpect(jsonPath("$.data.relevant_officer.name_elements.surname",
                             is(NAME_ELEMENTS.getSurname())))
             ;
         }

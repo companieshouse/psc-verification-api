@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.EnumSet;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 import uk.gov.companieshouse.api.model.pscverification.NameMismatchReasonConstants;
-import uk.gov.companieshouse.api.model.pscverification.PersonalDetails;
+import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
@@ -23,6 +24,7 @@ import uk.gov.companieshouse.api.model.pscverification.VerificationStatementCons
 @ExtendWith(MockitoExtension.class)
 class PscVerificationTest {
     private static final Instant INSTANT = Instant.parse("2024-01-01T10:08:42Z");
+    private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1990, 12, 31);
     private static final EnumSet<VerificationStatementConstants> STATEMENTS_INDIVIDUAL = EnumSet.of(
         VerificationStatementConstants.INDIVIDUAL_VERIFIED);
     private static final EnumSet<VerificationStatementConstants> STATEMENTS_RO = EnumSet.of(
@@ -31,7 +33,7 @@ class PscVerificationTest {
     private PscVerificationLinks links;
     private PscVerificationData data;
     private VerificationDetails verif;
-    private PersonalDetails personal;
+    private RelevantOfficer relevantOfficer;
     private NameElementsApi nameElements;
 
     @BeforeEach
@@ -51,14 +53,17 @@ class PscVerificationTest {
         nameElements.setOtherForenames("Other Forenames");
         nameElements.setMiddleName("Middlename");
         nameElements.setSurname("Surname");
-        personal = PersonalDetails.newBuilder()
+        relevantOfficer = RelevantOfficer.newBuilder()
             .nameElements(nameElements)
+            .dateOfBirth(DATE_OF_BIRTH)
+            .isEmployee(true)
+            .isDirector(true)
             .build();
         data = PscVerificationData.newBuilder()
             .companyNumber("company-number")
             .pscAppointmentId("psc-appointment-id")
             .verificationDetails(verif)
-            .relevantOfficerDetails(personal)
+            .relevantOfficer(relevantOfficer)
             .build();
         testVerification = PscVerification.newBuilder()
             .id("id")
@@ -94,10 +99,12 @@ class PscVerificationTest {
                 + "links=PscVerificationLinks[validationStatus='valid', self='self'], "
                 + "data=PscVerificationData[companyNumber=company-number, "
                 + "pscAppointmentId=psc-appointment-id, "
-                + "relevantOfficerDetails=PersonalDetails["
+                + "relevantOfficer=RelevantOfficer["
                 + "nameElements=NameElementsApi[title='Sir', forename='Forename', "
                 + "otherForenames='Other Forenames', middleName='Middlename', "
-                + "surname='Surname']], verificationDetails=VerificationDetails[uvid=uvid, "
+                + "surname='Surname'], "
+                + "dateOfBirth=1990-12-31, isEmployee=true, isDirector=true], "
+                + "verificationDetails=VerificationDetails[uvid='uvid', "
                 + "nameMismatchReason=PREFERRED_NAME, statements=[INDIVIDUAL_VERIFIED]]]]"));
     }
 }
