@@ -67,9 +67,13 @@ coverage:
 	cp ./target/$(artifact_name)-$(version).jar ./$(artifact_name).jar
 
 .PHONY: sonar
-sonar:
+sonar: security-check
 	mvn sonar:sonar
 
 .PHONY: sonar-pr-analysis
 sonar-pr-analysis:
 	mvn sonar:sonar -P sonar-pr-analysis
+
+.PHONY: security-check
+security-check:
+	mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=11 -DassemblyAnalyzerEnabled=false
