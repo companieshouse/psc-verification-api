@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 
+import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.EnumSet;
@@ -13,11 +14,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 import uk.gov.companieshouse.api.model.pscverification.NameMismatchReasonConstants;
-import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
-import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
+import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants;
 
@@ -29,8 +30,9 @@ class PscVerificationTest {
         VerificationStatementConstants.INDIVIDUAL_VERIFIED);
     private static final EnumSet<VerificationStatementConstants> STATEMENTS_RO = EnumSet.of(
         VerificationStatementConstants.RO_DECLARATION);
+
     private PscVerification testVerification;
-    private PscVerificationLinks links;
+    private ResourceLinks links;
     private PscVerificationData data;
     private VerificationDetails verif;
     private RelevantOfficer relevantOfficer;
@@ -38,9 +40,9 @@ class PscVerificationTest {
 
     @BeforeEach
     void setUp() {
-        links = PscVerificationLinks.newBuilder()
-            .self("self")
-            .validationStatus("valid")
+        links = ResourceLinks.newBuilder()
+            .self(URI.create("self"))
+            .validationStatus(URI.create("valid"))
             .build();
         verif = VerificationDetails.newBuilder()
             .uvid("uvid")
@@ -96,7 +98,7 @@ class PscVerificationTest {
         assertThat(testVerification.toString(),
             is("PscVerification[id='id', createdAt=2024-01-01T10:08:42Z, "
                 + "updatedAt=2024-01-01T10:08:42Z, "
-                + "links=PscVerificationLinks[validationStatus='valid', self='self'], "
+                + "links=ResourceLinks[self=self, validationStatus=valid], "
                 + "data=PscVerificationData[companyNumber=company-number, "
                 + "pscAppointmentId=psc-appointment-id, "
                 + "relevantOfficer=RelevantOfficer["

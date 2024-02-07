@@ -19,13 +19,13 @@ import static uk.gov.companieshouse.api.model.pscverification.VerificationStatem
 import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.RO_IDENTIFIED;
 import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.RO_VERIFIED;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -40,9 +40,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
+import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
-import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
+import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapperImpl;
@@ -52,10 +52,10 @@ import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
 @Tag("web")
 @WebMvcTest(controllers = PscVerificationControllerImpl.class)
 class PscVerificationControllerImplIT extends BaseControllerIT {
-    private static final URI SELF_URI = URI.create(
+    private static final URI SELF = URI.create(
         "/transactions/" + TRANS_ID + "/persons-with-significant-control-verification/" + FILING_ID);
-    private static final URI VALIDATION_URI = URI.create(
-        SELF_URI.toString() + "/validation_status");
+    private static final URI VALID = URI.create(SELF.toString() + "/validation_status");
+    private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1970, 1, 1);
 
     @MockBean
     private TransactionService transactionService;
@@ -75,7 +75,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     @Autowired
     private ApplicationContext context;
 
-    private PscVerificationLinks links;
+    private ResourceLinks links;
 
     public static Stream<Arguments> provideCreateVerificationData() {
         final var commonDto = PscVerificationData.newBuilder()
@@ -86,17 +86,19 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
             .verificationDetails(INDIVIDUAL_DETAILS)
             .build(), false), Arguments.of(PscVerificationData.newBuilder(commonDto)
             .verificationDetails(RO_DETAILS)
-            .relevantOfficer(
-                RelevantOfficer.newBuilder().nameElements(NAME_ELEMENTS).build())
+            .relevantOfficer(RelevantOfficer.newBuilder()
+                .nameElements(NAME_ELEMENTS)
+                .dateOfBirth(DATE_OF_BIRTH)
+                .isDirector(true)
+                .isEmployee(true)
+                .build())
             .build(), true));
     }
 
     @BeforeEach
     void setUp() throws Exception {
         baseSetUp();
-        links = PscVerificationLinks.newBuilder()
-            .self(SELF_URI.toString())
-            .validationStatus(VALIDATION_URI.toString())
+        links = ResourceLinks.newBuilder().self(SELF).validationStatus(VALID)
             .build();
     }
 
@@ -132,19 +134,18 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
                 .headers(httpHeaders))
             .andDo(print())
             .andExpect(status().isCreated())
-            .andExpect(header().string("Location", SELF_URI.toString()))
+            .andExpect(header().string("Location", SELF.toString()))
             .andExpect(jsonPath("$.created_at", is(FIRST_INSTANT.toString())))
             .andExpect(jsonPath("$.updated_at", is(FIRST_INSTANT.toString())))
-            .andExpect(jsonPath("$.links.self", is(SELF_URI.toString())))
-            .andExpect(jsonPath("$.links.validation_status", is(VALIDATION_URI.toString())))
+            .andExpect(jsonPath("$.links.self", is(SELF.toString())))
+            .andExpect(jsonPath("$.links.validation_status", is(VALID.toString())))
             .andExpect(jsonPath("$.data.company_number", is(COMPANY_NUMBER)))
             .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
             .andExpect(jsonPath("$.data.verification_details.uvid", is(UVID)))
             .andExpect(jsonPath("$.data.verification_details.verification_statements",
                 containsInAnyOrder(expectedStatementNames)));
         if (isRLE) {
-            resultActions
-                .andExpect(jsonPath("$.data.relevant_officer.name_elements.title",
+            resultActions.andExpect(jsonPath("$.data.relevant_officer.name_elements.title",
                 is(NAME_ELEMENTS.getTitle())))
                 .andExpect(jsonPath("$.data.relevant_officer.name_elements.forename",
                 is(NAME_ELEMENTS.getForename())))
@@ -152,6 +153,12 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
                 is(NAME_ELEMENTS.getOtherForenames())))
                 .andExpect(jsonPath("$.data.relevant_officer.name_elements.surname",
                 is(NAME_ELEMENTS.getSurname())))
+                .andExpect(jsonPath("$.data.relevant_officer.date_of_birth",
+                is(DATE_OF_BIRTH.toString())))
+                .andExpect(jsonPath("$.data.relevant_officer.is_employee",
+                is(true)))
+                .andExpect(jsonPath("$.data.relevant_officer.is_director",
+                is(true)))
                 ;
         }
         verify(filingMapper).toEntity(dto);
@@ -179,29 +186,35 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
                 eq(filing))).thenReturn(true);
 
 
-        final var resultActions = mockMvc.perform(get(URL_PSC_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.created_at", is(FIRST_INSTANT.toString())))
-                .andExpect(jsonPath("$.updated_at", is(SECOND_INSTANT.toString())))
-                .andExpect(jsonPath("$.links.self", is(SELF_URI.toString())))
-                .andExpect(jsonPath("$.links.validation_status", is(VALIDATION_URI.toString())))
-                .andExpect(jsonPath("$.data.company_number", is(COMPANY_NUMBER)))
-                .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
-                .andExpect(jsonPath("$.data.verification_details.uvid", is(UVID)))
-                .andExpect(jsonPath("$.data.verification_details.verification_statements",
-                        containsInAnyOrder(expectedStatementNames)));
+        final var resultActions = mockMvc.perform(
+                get(URL_PSC_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.created_at", is(FIRST_INSTANT.toString())))
+            .andExpect(jsonPath("$.updated_at", is(SECOND_INSTANT.toString())))
+            .andExpect(jsonPath("$.links.self", is(SELF.toString())))
+            .andExpect(jsonPath("$.links.validation_status", is(VALID.toString())))
+            .andExpect(jsonPath("$.data.company_number", is(COMPANY_NUMBER)))
+            .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
+            .andExpect(jsonPath("$.data.verification_details.uvid", is(UVID)))
+            .andExpect(jsonPath("$.data.verification_details.verification_statements",
+                containsInAnyOrder(expectedStatementNames)));
 
         if (isRLE) {
-            resultActions
-                    .andExpect(jsonPath("$.data.relevant_officer.name_elements.title",
+            resultActions.andExpect(jsonPath("$.data.relevant_officer.name_elements.title",
                             is(NAME_ELEMENTS.getTitle())))
-                    .andExpect(jsonPath("$.data.relevant_officer.name_elements.forename",
+                .andExpect(jsonPath("$.data.relevant_officer.name_elements.forename",
                             is(NAME_ELEMENTS.getForename())))
-                    .andExpect(jsonPath("$.data.relevant_officer.name_elements.other_forenames",
+                .andExpect(jsonPath("$.data.relevant_officer.name_elements.other_forenames",
                             is(NAME_ELEMENTS.getOtherForenames())))
-                    .andExpect(jsonPath("$.data.relevant_officer.name_elements.surname",
+                .andExpect(jsonPath("$.data.relevant_officer.name_elements.surname",
                             is(NAME_ELEMENTS.getSurname())))
+                .andExpect(jsonPath("$.data.relevant_officer.date_of_birth",
+                            is(DATE_OF_BIRTH.toString())))
+                .andExpect(jsonPath("$.data.relevant_officer.is_employee",
+                            is(true)))
+                .andExpect(jsonPath("$.data.relevant_officer.is_director",
+                            is(true)))
             ;
         }
 

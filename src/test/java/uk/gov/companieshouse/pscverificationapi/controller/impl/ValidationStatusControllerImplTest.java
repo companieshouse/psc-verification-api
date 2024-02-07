@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
+import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.logging.Logger;
@@ -83,8 +83,8 @@ class ValidationStatusControllerImplTest {
     @Test
     void validateWhenFilingValid() {
         final var self = UriComponentsBuilder.fromUriString(SELF_FRAGMENT).pathSegment(FILING_ID).build().toUri();
-        final PscVerificationLinks links = PscVerificationLinks.newBuilder().build();
-        final PscVerification filing = PscVerification.newBuilder().links(links).build();
+        final var links = ResourceLinks.newBuilder().build();
+        final var filing = PscVerification.newBuilder().links(links).build();
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filing));
         when(errorMapper.map(anyList())).thenReturn(new ValidationStatusError[0]);
