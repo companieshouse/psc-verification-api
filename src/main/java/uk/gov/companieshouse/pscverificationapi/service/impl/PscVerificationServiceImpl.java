@@ -42,7 +42,7 @@ public class PscVerificationServiceImpl implements PscVerificationService {
     @Override
     public boolean requestMatchesResourceSelf(final HttpServletRequest request,
         final PscVerification filing) {
-        final var selfLinkUri = filing.getLinks().getSelf();
+        final var selfLinkUri = filing.getLinks().self();
         final URI requestUri;
 
         try {
@@ -51,7 +51,7 @@ public class PscVerificationServiceImpl implements PscVerificationService {
             return false;
         }
 
-        return selfLinkUri.equals(requestUri.normalize().toString());
+        return selfLinkUri.equals(requestUri.normalize());
     }
 
 }

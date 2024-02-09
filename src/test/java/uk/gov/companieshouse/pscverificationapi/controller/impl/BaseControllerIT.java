@@ -52,12 +52,15 @@ public class BaseControllerIT {
         .append("]}")
         .toString();
     protected static final String RO_FRAGMENT = new StringBuilder().append(
-            ",\"relevant_officer_details\":{")
+            ",\"relevant_officer\":{")
         .append("\"name_elements\":{")
         .append("\"title\": \"Sir\",")
         .append("\"forename\": \"Forename\",")
         .append("\"other_forenames\": \"Other Forenames\",")
-        .append("\"surname\": \"Surname\"}}")
+        .append("\"surname\": \"Surname\"},")
+        .append("\"date_of_birth\": \"1970-01-01\",")
+        .append("\"is_employee\": true,")
+        .append("\"is_director\": true}")
         .toString();
     protected static final String EMPTY_QUOTED_JSON = "\"\"";
     protected static final String MALFORMED_JSON = "{";

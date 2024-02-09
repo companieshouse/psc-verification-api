@@ -17,7 +17,7 @@ public interface PscVerificationMapper {
 
     @Mapping(target="companyNumber", source = "data.companyNumber")
     @Mapping(target="pscAppointmentId", source = "data.pscAppointmentId")
-    @Mapping(target="relevantOfficerDetails", source = "data.relevantOfficerDetails")
+    @Mapping(target="relevantOfficer", source = "data.relevantOfficer")
     @Mapping(target="verificationDetails", source = "data.verificationDetails")
     PscVerificationData toDto(final PscVerification verification);
 
