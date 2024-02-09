@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.pscverificationapi.service.impl;
 
+import static uk.gov.companieshouse.pscverificationapi.model.FilingKind.PSC_VERIFICATION_INDIVIDUAL;
+import static uk.gov.companieshouse.pscverificationapi.model.FilingKind.PSC_VERIFICATION_RLE_RO;
+
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
@@ -8,7 +11,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.config.FilingDataConfig;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
-import uk.gov.companieshouse.pscverificationapi.model.FilingKind;
+import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.service.FilingDataService;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.utils.MapHelper;
@@ -31,17 +34,7 @@ public class FilingDataServiceImpl implements FilingDataService {
     }
 
     @Override
-    public FilingApi generatePscVerification(final String filingId, final Transaction transaction) {
-        final var filingApi = new FilingApi();
-        filingApi.setKind(
-                FilingKind.PSC_VERIFICATION_INDIVIDUAL.getValue()); // TODO: handling other kinds to come later
-        final var populatedFiling = populateFilingData(filingApi, filingId, transaction);
-        populatedFiling.setDescription(filingDataConfig.getPscVerificationDescription());
-
-        return filingApi;
-    }
-
-    private FilingApi populateFilingData(final FilingApi filing, final String filingId, final Transaction transaction) {
+    public FilingApi generateFilingApi(final String filingId, final Transaction transaction) {
 
         final var transactionId = transaction.getId();
         final var logMap = LogMapHelper.createLogMap(transactionId, filingId);
@@ -51,13 +44,24 @@ public class FilingDataServiceImpl implements FilingDataService {
         final var pscVerification = pscVerificationOpt.orElseThrow(() -> new FilingResourceNotFoundException(
                 String.format("PSC verification not found when generating filing for %s", filingId)));
 
+        final var filingApi = new FilingApi();
+        filingApi.setKind(determineFilingKind(pscVerification));
+        filingApi.setDescription(filingDataConfig.getPscVerificationDescription());
+
         final var dataMap = MapHelper.convertObject(pscVerification.getData(), PropertyNamingStrategies.SNAKE_CASE);
-
-        logMap.put("Data to submit", dataMap);
+        logMap.put("Filing data to submit", dataMap);
         logger.debugContext(transactionId, filingId, logMap);
+        filingApi.setData(dataMap);
 
-        filing.setData(dataMap);
+        return filingApi;
+    }
 
-        return filing;
+    private String determineFilingKind(PscVerification pscVerification) {
+        if (pscVerification.getData().relevantOfficer() == null) {
+            return PSC_VERIFICATION_INDIVIDUAL.getValue();
+        }
+        else {
+            return PSC_VERIFICATION_RLE_RO.getValue();
+        }
     }
 }

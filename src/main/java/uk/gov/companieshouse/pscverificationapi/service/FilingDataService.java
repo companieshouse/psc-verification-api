@@ -13,5 +13,5 @@ public interface FilingDataService {
      * @param transaction the transaction for the filing
      * @return the filing data details
      */
-    FilingApi generatePscVerification(String filingId, Transaction transaction);
+    FilingApi generateFilingApi(String filingId, Transaction transaction);
 }

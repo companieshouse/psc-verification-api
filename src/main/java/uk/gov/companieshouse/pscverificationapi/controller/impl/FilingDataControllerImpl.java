@@ -49,7 +49,7 @@ public class FilingDataControllerImpl implements FilingDataController {
                 "GET /private/transactions/{transactionId}/persons-with-significant-control-verification" +
                         "/{filingId}/filings", logMap);
 
-        final var filingApi = filingDataService.generatePscVerification(filingResource, transaction);
+        final var filingApi = filingDataService.generateFilingApi(filingResource, transaction);
 
         logMap.put("psc verification:", filingApi);
         logger.infoContext(transId, "psc verification data", logMap);
