@@ -26,9 +26,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
-import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -166,7 +167,7 @@ class PscVerificationControllerImplTest {
         assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
     }
 
-    private PscVerificationLinks expectEntitySavedWithLinks() {
+    private ResourceLinks expectEntitySavedWithLinks() {
         when(request.getRequestURI()).thenReturn(REQUEST_URI.toString());
         when(clock.instant()).thenReturn(Clock.fixed(FIRST_INSTANT, ZoneId.of("UTC")).instant());
 
@@ -175,13 +176,14 @@ class PscVerificationControllerImplTest {
             .updatedAt(FIRST_INSTANT)
             .build();
         final var savedEntity = PscVerification.newBuilder(timestampedEntity).id(FILING_ID).build();
-        final var self = REQUEST_URI.toString() + "/" + FILING_ID;
+        final var self = URI.create(REQUEST_URI.toString() + "/" + FILING_ID);
 
         when(pscVerificationService.save(timestampedEntity)).thenReturn(savedEntity);
 
-        final var links = PscVerificationLinks.newBuilder()
+        final var links = ResourceLinks.newBuilder()
             .self(self)
-            .validationStatus(self + "/validation_status")
+            .validationStatus(
+                UriComponentsBuilder.fromUri(self).pathSegment("validation_status").build().toUri())
             .build();
         final var resavedEntity = PscVerification.newBuilder(savedEntity).links(links).build();
 
