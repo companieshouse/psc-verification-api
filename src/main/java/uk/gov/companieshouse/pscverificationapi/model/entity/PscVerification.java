@@ -8,12 +8,12 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
-import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
 
 @Document(collection = "psc_verification")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public final class PscVerification implements Touchable{
+public final class PscVerification implements Touchable {
     @Id
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String id;
@@ -21,16 +21,18 @@ public final class PscVerification implements Touchable{
     private Instant createdAt;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Instant updatedAt;
-    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
-    private PscVerificationLinks links;
     @JsonMerge
+    @JsonProperty(access= JsonProperty.Access.READ_ONLY)
+    private ResourceLinks links;
+    @JsonMerge
+    @JsonProperty("data")
     private PscVerificationData data;
 
     public PscVerification() {
         // required by Spring Data
     }
 
-    private PscVerification(Builder builder) {
+    private PscVerification(final Builder builder) {
         setId(builder.id);
         setCreatedAt(builder.createdAt);
         setUpdatedAt(builder.updatedAt);
@@ -42,7 +44,7 @@ public final class PscVerification implements Touchable{
         return new Builder();
     }
 
-    public static Builder newBuilder(PscVerification copy) {
+    public static Builder newBuilder(final PscVerification copy) {
         final Builder builder = new Builder();
         builder.id = copy.getId();
         builder.createdAt = copy.getCreatedAt();
@@ -64,7 +66,7 @@ public final class PscVerification implements Touchable{
         return updatedAt;
     }
 
-    public PscVerificationLinks getLinks() {
+    public ResourceLinks getLinks() {
         return links;
     }
 
@@ -110,7 +112,7 @@ public final class PscVerification implements Touchable{
         this.updatedAt = updatedAt;
     }
 
-    public void setLinks(final PscVerificationLinks links) {
+    public void setLinks(final ResourceLinks links) {
         this.links = links;
     }
 
@@ -130,7 +132,7 @@ public final class PscVerification implements Touchable{
         private String id;
         private Instant createdAt;
         private Instant updatedAt;
-        private PscVerificationLinks links;
+        private ResourceLinks links;
         private PscVerificationData data;
 
         private Builder() {
@@ -143,7 +145,7 @@ public final class PscVerification implements Touchable{
          * @param id the {@code id} to set
          * @return a reference to this Builder
          */
-        public Builder id(String id) {
+        public Builder id(final String id) {
             this.id = id;
             return this;
         }
@@ -155,7 +157,7 @@ public final class PscVerification implements Touchable{
          * @param createdAt the {@code createdAt} to set
          * @return a reference to this Builder
          */
-        public Builder createdAt(Instant createdAt) {
+        public Builder createdAt(final Instant createdAt) {
             this.createdAt = createdAt;
             return this;
         }
@@ -167,7 +169,7 @@ public final class PscVerification implements Touchable{
          * @param updatedAt the {@code updatedAt} to set
          * @return a reference to this Builder
          */
-        public Builder updatedAt(Instant updatedAt) {
+        public Builder updatedAt(final Instant updatedAt) {
             this.updatedAt = updatedAt;
             return this;
         }
@@ -179,7 +181,7 @@ public final class PscVerification implements Touchable{
          * @param links the {@code links} to set
          * @return a reference to this Builder
          */
-        public Builder links(PscVerificationLinks links) {
+        public Builder links(final ResourceLinks links) {
             this.links = links;
             return this;
         }
@@ -191,7 +193,7 @@ public final class PscVerification implements Touchable{
          * @param data the {@code data} to set
          * @return a reference to this Builder
          */
-        public Builder data(PscVerificationData data) {
+        public Builder data(final PscVerificationData data) {
             this.data = data;
             return this;
         }

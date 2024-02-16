@@ -60,7 +60,7 @@ public interface PscVerificationController {
      * @see <a href="https://www.rfc-editor.org/rfc/rfc7396">RFC7396</a>
      */
     @PatchMapping
-    default ResponseEntity<PscVerificationApi> updateFiling(
+    default ResponseEntity<PscVerificationApi> updatePscVerification(
             @PathVariable("transactionId") final String transId,
             @PathVariable("filingResource") String filingResource,
             @RequestBody final @NotNull Map<String, Object> mergePatch, final HttpServletRequest request) {

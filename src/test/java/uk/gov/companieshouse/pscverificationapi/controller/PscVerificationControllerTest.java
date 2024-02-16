@@ -3,6 +3,8 @@ package uk.gov.companieshouse.pscverificationapi.controller;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -33,9 +35,20 @@ class PscVerificationControllerTest {
     }
 
     @Test
+    void updatePscVerification() {
+        final Map<String, Object> mergePatch = Collections.emptyMap();
+
+        assertThrows(NotImplementedException.class,
+            () -> testController.updatePscVerification("trans-id", "filing-resource-id", mergePatch,
+                request));
+    }
+
+
+    @Test
     void getPscVerification() {
         assertThrows(NotImplementedException.class,
                 () -> testController.getPscVerification("trans-id", "filing-resource-id", request));
     }
+
 
 }

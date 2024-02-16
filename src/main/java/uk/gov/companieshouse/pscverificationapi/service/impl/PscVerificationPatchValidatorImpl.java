@@ -21,13 +21,13 @@ public class PscVerificationPatchValidatorImpl implements PscVerificationPatchVa
     private final PscVerificationMapper mapper;
 
     @Autowired
-    public PscVerificationPatchValidatorImpl(SmartValidator validator, PscVerificationMapper mapper) {
+    public PscVerificationPatchValidatorImpl(final SmartValidator validator, final PscVerificationMapper mapper) {
         this.validator = validator;
         this.mapper = mapper;
     }
 
     @Override
-    public ValidationResult validate(PscVerification patchedFiling) {
+    public ValidationResult validate(final PscVerification patchedFiling) {
         return Optional.ofNullable(patchedFiling)
                 .map(mapper::toApi)
                 .map(d -> {

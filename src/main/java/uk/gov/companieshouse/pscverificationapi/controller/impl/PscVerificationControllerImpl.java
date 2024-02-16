@@ -1,8 +1,6 @@
 package uk.gov.companieshouse.pscverificationapi.controller.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Clock;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -30,9 +28,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
-import uk.gov.companieshouse.api.model.pscverification.PscVerificationLinks;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
@@ -101,16 +99,14 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
         final var response = filingMapper.toApi(savedEntity);
 
-        return ResponseEntity.created(
-                UriComponentsBuilder.fromUriString(savedEntity.getLinks().getSelf()).build().toUri())
-            .body(response);
+        return ResponseEntity.created(savedEntity.getLinks().self()).body(response);
     }
 
     @Override
     @Transactional
-    @PatchMapping(value = "/{filingResourceId}", produces = {"application/json"},
-            consumes = "application/merge-patch+json")
-    public ResponseEntity<PscVerificationApi> updateFiling(
+    @PatchMapping(value = "/{filingResourceId}", produces = MediaType.APPLICATION_JSON_VALUE,
+        consumes = "application/merge-patch+json")
+    public ResponseEntity<PscVerificationApi> updatePscVerification(
             @PathVariable("transactionId") final String transId,
             @PathVariable("filingResourceId") final String filingResource,
             @RequestBody final @NotNull Map<String, Object> mergePatch,
@@ -133,6 +129,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         }
         else if (patchResult.failedValidation()) {
 
+            @SuppressWarnings("unchecked")
             final var errors = (List<FieldError>) patchResult.getValidationErrors();
 
             logMap.put(STATUS_MSG, PATCH_FAILED);
@@ -145,7 +142,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             logMap.put(STATUS_MSG, "patch successful");
             logger.debugContext(transId, PATCH_RESULT_MSG, logMap);
 
-            Optional<PscVerification> optionalFiling = pscVerificationService.get(filingResource);
+            final var optionalFiling = pscVerificationService.get(filingResource);
 
             return optionalFiling
                     .map(filingMapper::toApi)
@@ -231,57 +228,51 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         return resaved;
     }
 
-    private PscVerificationLinks buildLinks(final HttpServletRequest request,
+    private ResourceLinks buildLinks(final HttpServletRequest request,
         final PscVerification savedFiling) {
         final var objectId = new ObjectId(Objects.requireNonNull(savedFiling.getId()));
         final var selfUri = UriComponentsBuilder.fromUriString(request.getRequestURI())
             .pathSegment(objectId.toHexString())
             .build()
             .toUri();
-
         final var validateUri = UriComponentsBuilder.fromUriString(request.getRequestURI())
             .pathSegment(objectId.toHexString())
             .pathSegment(VALIDATION_STATUS)
             .build()
             .toUri();
 
-        return PscVerificationLinks.newBuilder()
-            .self(selfUri.toString())
-            .validationStatus(validateUri.toString())
+        return ResourceLinks.newBuilder().self(selfUri).validationStatus(validateUri)
             .build();
     }
 
     private void updateTransactionResources(final Transaction transaction,
-        final PscVerificationLinks links) {
+        final ResourceLinks links) {
         final var resourceMap = buildResourceMap(links);
 
         transaction.setResources(resourceMap);
         transactionService.updateTransaction(transaction);
     }
 
-    private Map<String, Resource> buildResourceMap(final PscVerificationLinks links) {
+    private Map<String, Resource> buildResourceMap(final ResourceLinks links) {
         final Map<String, Resource> resourceMap = new HashMap<>();
         final var resource = new Resource();
         final var linksMap = new HashMap<>(
-            Map.of("resource", links.getSelf(), VALIDATION_STATUS, links.getValidationStatus()));
+            Map.of("resource", links.self().toString(), VALIDATION_STATUS,
+                links.validationStatus().toString()));
 
         resource.setKind("psc-verification");
         resource.setLinks(linksMap);
         resource.setUpdatedAt(clock.instant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-        resourceMap.put(links.getSelf(), resource);
+        resourceMap.put(links.self().toString(), resource);
 
         return resourceMap;
     }
 
-    private static ResponseEntity<PscVerificationApi> createOKResponse(PscVerificationApi filing) {
+    private static ResponseEntity<PscVerificationApi> createOKResponse(
+        final PscVerificationApi filing) {
         final var responseHeaders = new HttpHeaders();
-        URI uri = null;
-        try {
-            uri = new URI(filing.getLinks().getSelf());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        responseHeaders.setLocation(uri);
+
+        responseHeaders.setLocation(filing.getLinks().self());
 
         return ResponseEntity.ok().headers(responseHeaders).body(filing);
     }
