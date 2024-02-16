@@ -104,7 +104,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
 
     @ParameterizedTest(name = "[{index}] isRLE={1}")
     @MethodSource("provideCreateVerificationData")
-    void createIndividualVerificationWhenPayloadOk(final PscVerificationData dto,
+    void createVerificationWhenPayloadOk(final PscVerificationData dto,
         final boolean isRLE) throws Exception {
         final var body = "{" + COMMON_FRAGMENT + (isRLE ? RLE_FRAGMENT + RO_FRAGMENT :
             INDIVIDUAL_FRAGMENT) + "}";
