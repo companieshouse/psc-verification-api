@@ -3,3 +3,5 @@ group: api
 weight: 900
 routes:
   1: ^/persons-with-significant-control-verification
+  2: ^/transactions/.*/persons-with-significant-control-verification
+  3: ^/private/transactions/.*/persons-with-significant-control-verification
