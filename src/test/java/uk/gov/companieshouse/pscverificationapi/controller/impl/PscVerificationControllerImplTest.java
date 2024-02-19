@@ -1,17 +1,28 @@
 package uk.gov.companieshouse.pscverificationapi.controller.impl;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.companieshouse.pscverificationapi.controller.impl.BaseControllerIT.SECOND_INSTANT;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
@@ -34,7 +46,11 @@ import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.patch.model.PatchResult;
 import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
+import uk.gov.companieshouse.pscverificationapi.error.RetrievalFailureReason;
+import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
+import uk.gov.companieshouse.pscverificationapi.exception.InvalidPatchException;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapperImpl;
@@ -58,6 +74,7 @@ class PscVerificationControllerImplTest {
     private static final URI SELF_URI = URI.create(REQUEST_URI + FILING_ID);
     private static final URI VALIDATION_URI = URI.create(
             SELF_URI + "/validation_status");
+    private static final LocalDate TEST_DATE = LocalDate.of(2024, 5, 5);
 
     private PscVerificationController testController;
 
@@ -105,14 +122,13 @@ class PscVerificationControllerImplTest {
             .updatedAt(FIRST_INSTANT)
             .data(filing)
             .build();
+        final var links = expectEntitySavedWithLinks();
         pscVerificationApi = PscVerificationApi.newBuilder()
                 .createdAt(FIRST_INSTANT)
                 .updatedAt(FIRST_INSTANT)
-                .data(filing)
-                .links(expectEntitySavedWithLinks())
+                .data(filing).links(links)
                 .build();
-        entityWithLinks = PscVerification.newBuilder(entity)
-                .links(expectEntitySavedWithLinks()).build();
+        entityWithLinks = PscVerification.newBuilder(entity).links(links).build();
     }
 
     @ParameterizedTest(
@@ -128,7 +144,7 @@ class PscVerificationControllerImplTest {
             request);
 
         final var location = response.getHeaders().getLocation();
-        final var resourceIdUri = REQUEST_URI.relativize(location);
+        final var resourceIdUri = REQUEST_URI.relativize(Objects.requireNonNull(location));
 
         assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
         assertThat(location, is(notNullValue()));
@@ -158,6 +174,87 @@ class PscVerificationControllerImplTest {
     }
 
     @Test
+    void updatePscVerification() {
+        final var success = new PatchResult();
+        final var updatedEntity = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
+            .thenReturn(Optional.of(updatedEntity));
+        when(
+            pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(
+            true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
+
+        final var response = testController.updatePscVerification(TRANS_ID, FILING_ID,
+            Collections.emptyMap(), request);
+        final var expectedBody = filingMapper.toApi(updatedEntity);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(notNullValue()));
+        assertThat(response.getBody(), is(expectedBody));
+        assertThat(response.getBody().getUpdatedAt(),
+            is(not(equalTo(response.getBody().getCreatedAt()))));
+        assertThat(response.getHeaders().getLocation(), is(entityWithLinks.getLinks().self()));
+
+    }
+
+    @Test
+    void updatePscVerificationWhenPatchProviderRetrievalFails() {
+        final var failure = new PatchResult(RetrievalFailureReason.FILING_NOT_FOUND);
+        final Map<String, Object> patchMap = Collections.emptyMap();
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks));
+        when(
+            pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(
+            true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(failure);
+
+        final var exception = assertThrows(FilingResourceNotFoundException.class,
+            () -> testController.updatePscVerification(TRANS_ID, FILING_ID, patchMap, request));
+
+        assertThat(exception.getMessage(), is(FILING_ID));
+    }
+
+    @Test
+    void updatePscVerificationWhenValidationFails() {
+        final var error = new FieldError("patched", "dateOfBirth", TEST_DATE, false,
+            new String[]{"future.date.patched.dateOfBirth", "future.date.dateOfBirth",
+                "future" + ".date.java.time.LocalDate", "future.date"},
+            new Object[]{TEST_DATE}, "bad date");
+        final var failure = new PatchResult(List.of(error));
+        final Map<String, Object> patchMap = Collections.emptyMap();
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks));
+        when(
+            pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(
+            true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(failure);
+
+        final var exception = assertThrows(InvalidPatchException.class,
+            () -> testController.updatePscVerification(TRANS_ID, FILING_ID, patchMap, request));
+
+        assertThat(exception.getFieldErrors(), contains(error));
+    }
+
+    @Test
+    void updatePscVerificationWhenSelfLinkMatchFails() {
+        final Map<String, Object> patchMap = Collections.emptyMap();
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks));
+        when(
+            pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(
+            false);
+
+        final var exception = assertThrows(FilingResourceNotFoundException.class,
+            () -> testController.updatePscVerification(TRANS_ID, FILING_ID, patchMap, request));
+
+        assertThat(exception.getMessage(), is(FILING_ID));
+
+    }
+
+    @Test
     void getFilingForReviewWhenNotFound() {
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.empty());
 
@@ -169,7 +266,9 @@ class PscVerificationControllerImplTest {
 
     private ResourceLinks expectEntitySavedWithLinks() {
         when(request.getRequestURI()).thenReturn(REQUEST_URI.toString());
-        when(clock.instant()).thenReturn(Clock.fixed(FIRST_INSTANT, ZoneId.of("UTC")).instant());
+        final var clock1 = Clock.fixed(FIRST_INSTANT, ZoneId.of("UTC"));
+        final var clock2 = Clock.fixed(SECOND_INSTANT, ZoneId.of("UTC"));
+        when(clock.instant()).thenReturn(clock1.instant(), clock2.instant());
 
         final var timestampedEntity = PscVerification.newBuilder(entity)
             .createdAt(FIRST_INSTANT)

@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.pscverificationapi.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.util.Objects;
@@ -12,7 +13,7 @@ import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 
 @Document(collection = "psc_verification")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public final class PscVerification {
+public final class PscVerification implements Touchable {
     @Id
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String id;
@@ -20,8 +21,11 @@ public final class PscVerification {
     private Instant createdAt;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Instant updatedAt;
+    @JsonMerge
     @JsonProperty(access= JsonProperty.Access.READ_ONLY)
     private ResourceLinks links;
+    @JsonMerge
+    @JsonProperty("data")
     private PscVerificationData data;
 
     public PscVerification() {
@@ -116,6 +120,10 @@ public final class PscVerification {
         this.data = data;
     }
 
+    @Override
+    public void touch(Instant instant) {
+        this.updatedAt = instant;
+    }
 
     /**
      * {@code PscVerification} builder static inner class.

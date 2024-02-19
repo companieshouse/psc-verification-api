@@ -11,11 +11,6 @@ import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapp
 public class IntegrationTestConfig {
 
     @Bean
-    public PscVerificationMapper pscVerificationMapper() {
-        return new PscVerificationMapperImpl();
-    }
-
-    @Bean
     public ErrorMapper errorMapper() {
         return new ErrorMapperImpl();
     }

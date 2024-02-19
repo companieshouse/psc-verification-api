@@ -31,6 +31,7 @@ public class BaseControllerIT {
         "-significant-control" + "-verification";
     protected static final String URL_PSC_RESOURCE = URL_PSC + "/{filingResourceId}";
     protected static final String URL_PSC_VALIDATION_STATUS = URL_PSC_RESOURCE + "/validation_status";
+    protected static final String APPLICATION_JSON_MERGE_PATCH = "application/merge-patch+json";
     protected static final String COMMON_FRAGMENT = new StringBuilder().append(
             "\"company_number\": \"")
         .append(COMPANY_NUMBER)
@@ -74,7 +75,8 @@ public class BaseControllerIT {
         .uvid(UVID)
         .statements(EnumSet.of(RO_IDENTIFIED, RO_DECLARATION, RO_VERIFIED))
         .build();
-    protected static final NameElementsApi NAME_ELEMENTS = createNameElements();
+    protected static final NameElementsApi NAME_ELEMENTS = createNameElements("Sir", "Forename",
+        "Other Forenames", "Surname");
 
     protected HttpHeaders httpHeaders;
     protected Transaction transaction;
@@ -106,13 +108,14 @@ public class BaseControllerIT {
         return transaction;
     }
 
-    private static NameElementsApi createNameElements() {
+    protected static NameElementsApi createNameElements(final String title, final String forename,
+        final String otherForenames, final String surname) {
         final var nameElements = new NameElementsApi();
 
-        nameElements.setTitle("Sir");
-        nameElements.setForename("Forename");
-        nameElements.setOtherForenames("Other Forenames");
-        nameElements.setSurname("Surname");
+        nameElements.setTitle(title);
+        nameElements.setForename(forename);
+        nameElements.setOtherForenames(otherForenames);
+        nameElements.setSurname(surname);
 
         return nameElements;
     }
