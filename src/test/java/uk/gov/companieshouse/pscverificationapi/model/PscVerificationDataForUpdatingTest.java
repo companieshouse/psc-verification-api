@@ -66,8 +66,9 @@ class PscVerificationDataForUpdatingTest extends BaseControllerIT {
         assertThat(testData.toString(),
             is("PscVerificationDataForUpdating[companyNumber=companyNumber, "
                 + "pscAppointmentId=pscAppointmentId, "
-                + "relevantOfficer=RelevantOfficerForUpdating[nameElements=uk.gov.companieshouse"
-                + ".api.model.psc.NameElementsApi@40bffbca, dateOfBirth=1990-01-04, "
+                + "relevantOfficer=RelevantOfficerForUpdating[nameElements=NameElementsApi[title"
+                + "='Sir', forename='Forename', otherForenames='Other Forenames', "
+                + "middleName='null', surname='Surname'], dateOfBirth=1990-01-04, "
                 + "isEmployee=true, isDirector=true], "
                 + "verificationDetails=VerificationDetailsForUpdating[uvid=uvid, "
                 + "nameMismatchReason=PREFERRED_NAME, statements=[RO_IDENTIFIED, "
