@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterceptor;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -18,8 +19,6 @@ class InterceptorConfigTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private InterceptorRegistry interceptorRegistry;
-    @Mock
-    private RequestLoggingInterceptor requestLoggingInterceptor;
 
     @BeforeEach
     void setUp() {
@@ -28,9 +27,8 @@ class InterceptorConfigTest {
 
     @Test
     void addInterceptors() {
-        testConfig.setRequestLoggingInterceptor(requestLoggingInterceptor);
         testConfig.addInterceptors(interceptorRegistry);
 
-        verify(interceptorRegistry.addInterceptor(requestLoggingInterceptor)).order(2);
+        verify(interceptorRegistry.addInterceptor(any(RequestLoggingInterceptor.class))).order(2);
     }
 }

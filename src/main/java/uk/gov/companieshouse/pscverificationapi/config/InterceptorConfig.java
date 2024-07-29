@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.pscverificationapi.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -21,13 +20,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public static final String COMMON_INTERCEPTOR_RESOURCE_PATH =
             COMMON_INTERCEPTOR_PATH + "/{filing_resource_id}";
 
-    private RequestLoggingInterceptor requestLoggingInterceptor;
-
-    @Autowired
-    public void setRequestLoggingInterceptor(final RequestLoggingInterceptor requestLoggingInterceptor) {
-        this.requestLoggingInterceptor = requestLoggingInterceptor;
-    }
-
     /**
      * Set up the interceptors to run against endpoints when the endpoints are called
      * Interceptors are executed in order of configuration
@@ -46,12 +38,17 @@ public class InterceptorConfig implements WebMvcConfigurer {
     }
 
     private void addLoggingInterceptor(final InterceptorRegistry registry) {
-        registry.addInterceptor(requestLoggingInterceptor)
+        registry.addInterceptor(requestLoggingInterceptor())
             .order(2);
     }
 
     @Bean("chsTransactionInterceptor")
     public TransactionInterceptor transactionInterceptor() {
         return new TransactionInterceptor("psc-verification-api");
+    }
+
+    @Bean("chsLoggingInterceptor")
+    public RequestLoggingInterceptor requestLoggingInterceptor() {
+        return new RequestLoggingInterceptor();
     }
 }
