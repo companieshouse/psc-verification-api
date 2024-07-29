@@ -16,6 +16,10 @@ import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterc
 @Configuration
 @ComponentScan("uk.gov.companieshouse.api")
 public class InterceptorConfig implements WebMvcConfigurer {
+    public static final String COMMON_INTERCEPTOR_PATH =
+            "/transactions/{transaction_id}/persons-with-significant-control-verification";
+    public static final String COMMON_INTERCEPTOR_RESOURCE_PATH =
+            COMMON_INTERCEPTOR_PATH + "/{filing_resource_id}";
 
     private RequestLoggingInterceptor requestLoggingInterceptor;
 
