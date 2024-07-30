@@ -7,6 +7,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterceptor;
 
 /**
  * Configuration class for interceptor logging.
@@ -18,6 +19,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
             "/transactions/{transaction_id}/persons-with-significant-control-verification";
     public static final String COMMON_INTERCEPTOR_RESOURCE_PATH =
             COMMON_INTERCEPTOR_PATH + "/{filing_resource_id}";
+
     /**
      * Set up the interceptors to run against endpoints when the endpoints are called
      * Interceptors are executed in order of configuration
@@ -27,16 +29,26 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(@NonNull final InterceptorRegistry registry) {
         addTransactionInterceptor(registry);
+        addLoggingInterceptor(registry);
     }
 
     private void addTransactionInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(transactionInterceptor())
-                .order(1);
+            .order(1);
     }
 
+    private void addLoggingInterceptor(final InterceptorRegistry registry) {
+        registry.addInterceptor(requestLoggingInterceptor())
+            .order(2);
+    }
 
     @Bean("chsTransactionInterceptor")
     public TransactionInterceptor transactionInterceptor() {
         return new TransactionInterceptor("psc-verification-api");
+    }
+
+    @Bean("chsLoggingInterceptor")
+    public RequestLoggingInterceptor requestLoggingInterceptor() {
+        return new RequestLoggingInterceptor();
     }
 }
