@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import uk.gov.companieshouse.api.interceptor.InternalUserInterceptor;
 import uk.gov.companieshouse.api.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterceptor;
 
@@ -16,9 +17,11 @@ import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterc
 @ComponentScan("uk.gov.companieshouse.api")
 public class InterceptorConfig implements WebMvcConfigurer {
     public static final String COMMON_INTERCEPTOR_PATH =
-            "/transactions/{transaction_id}/persons-with-significant-control-verification";
-    public static final String COMMON_INTERCEPTOR_RESOURCE_PATH =
-            COMMON_INTERCEPTOR_PATH + "/{filing_resource_id}";
+            "/transactions/{transaction_id}/persons-with-significant-control-verification/{filing_resource_id}";
+    public static final String PRIVATE_PATH = "/private";
+    public static final String FILINGS_PATH = "/filings";
+    public static final String FILINGS_RESOURCE_PATH =
+        PRIVATE_PATH + COMMON_INTERCEPTOR_PATH + FILINGS_PATH;
 
     /**
      * Set up the interceptors to run against endpoints when the endpoints are called
@@ -30,6 +33,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(@NonNull final InterceptorRegistry registry) {
         addTransactionInterceptor(registry);
         addLoggingInterceptor(registry);
+        addInternalUserInterceptor(registry);
     }
 
     private void addTransactionInterceptor(final InterceptorRegistry registry) {
@@ -40,6 +44,11 @@ public class InterceptorConfig implements WebMvcConfigurer {
     private void addLoggingInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(requestLoggingInterceptor())
             .order(2);
+    }
+
+    void addInternalUserInterceptor(final InterceptorRegistry registry) {
+        registry.addInterceptor(new InternalUserInterceptor())
+            .addPathPatterns(FILINGS_RESOURCE_PATH).order(6);
     }
 
     @Bean("chsTransactionInterceptor")
