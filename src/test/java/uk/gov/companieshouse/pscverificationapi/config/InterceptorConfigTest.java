@@ -8,9 +8,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import uk.gov.companieshouse.api.interceptor.InternalUserInterceptor;
+import uk.gov.companieshouse.api.interceptor.ClosedTransactionInterceptor;
+import uk.gov.companieshouse.api.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterceptor;
 
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,9 +46,37 @@ class InterceptorConfigTest {
     void addInterceptorsOrder() {
 
         verify(interceptorRegistry.addInterceptor(any(TransactionInterceptor.class))).order(1);
-        verify(interceptorRegistry.addInterceptor(any(RequestLoggingInterceptor.class))).order(2);
+        verify(interceptorRegistry.addInterceptor(any(OpenTransactionInterceptor.class))
+            .addPathPatterns(
+                "/transactions/{transaction_id}/persons-with-significant-control-verification",
+                "/transactions/{transaction_id}/persons-with-significant-control-verification"
+                    + "/{filing_resource_id}")).order(2);
+        verify(interceptorRegistry.addInterceptor(any(ClosedTransactionInterceptor.class))
+            .addPathPatterns("/private"
+                + "/transactions/{transaction_id}/persons-with-significant-control-verification"
+                + "/{filing_resource_id}/filings")).order(3);
+        verify(interceptorRegistry.addInterceptor(any(RequestLoggingInterceptor.class))).order(4);
         verify(interceptorRegistry.addInterceptor(any(InternalUserInterceptor.class))
             .addPathPatterns("/private/transactions/{transaction_id}/persons-with-significant-control-verification/{filing_resource_id}/filings")).order(6);
+    }
 
+    @Test
+    void testTransactionInterceptor() {
+        assertThat(testConfig.transactionInterceptor(), isA(TransactionInterceptor.class));
+    }
+
+    @Test
+    void openTransactionInterceptor() {
+        assertThat(testConfig.openTransactionInterceptor(), isA(OpenTransactionInterceptor.class));
+    }
+
+    @Test
+    void closedTransactionInterceptor() {
+        assertThat(testConfig.transactionClosedInterceptor(), isA(ClosedTransactionInterceptor.class));
+    }
+
+    @Test
+    void requestLoggingInterceptor() {
+        assertThat(testConfig.requestLoggingInterceptor(), isA(RequestLoggingInterceptor.class));
     }
 }
