@@ -35,17 +35,18 @@ class InterceptorConfigTest {
     }
 
     @Test
-    public void addInterceptors() {
+    public void addInterceptorsInvocations() {
 
         verify(interceptorRegistry, times(1)).addInterceptor(any(TransactionInterceptor.class));
+        verify(interceptorRegistry, times(1)).addInterceptor(any(OpenTransactionInterceptor.class));
+        verify(interceptorRegistry, times(1)).addInterceptor(any(ClosedTransactionInterceptor.class));
         verify(interceptorRegistry, times(1)).addInterceptor(any(RequestLoggingInterceptor.class));
         verify(interceptorRegistry, times(1)).addInterceptor(any(InternalUserInterceptor.class));
     }
 
     @Test
-    void addInterceptorsOrder() {
+    void addInterceptors() {
 
-        verify(interceptorRegistry.addInterceptor(any(TransactionInterceptor.class))).order(1);
         verify(interceptorRegistry.addInterceptor(any(OpenTransactionInterceptor.class))
             .addPathPatterns(
                 "/transactions/{transaction_id}/persons-with-significant-control-verification",
@@ -79,4 +80,5 @@ class InterceptorConfigTest {
     void requestLoggingInterceptor() {
         assertThat(testConfig.requestLoggingInterceptor(), isA(RequestLoggingInterceptor.class));
     }
+
 }

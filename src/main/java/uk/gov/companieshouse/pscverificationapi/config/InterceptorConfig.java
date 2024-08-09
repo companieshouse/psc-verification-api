@@ -19,13 +19,11 @@ import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterc
 @ComponentScan("uk.gov.companieshouse.api")
 public class InterceptorConfig implements WebMvcConfigurer {
     public static final String COMMON_INTERCEPTOR_PATH =
-            "/transactions/{transaction_id}/persons-with-significant-control-verification/{filing_resource_id}";
+            "/transactions/{transaction_id}/persons-with-significant-control-verification";
     public static final String COMMON_INTERCEPTOR_RESOURCE_PATH =
         COMMON_INTERCEPTOR_PATH + "/{filing_resource_id}";
-    public static final String PRIVATE_PATH = "/private";
-    public static final String FILINGS_PATH = "/filings";
     public static final String FILINGS_RESOURCE_PATH =
-        PRIVATE_PATH + COMMON_INTERCEPTOR_PATH + FILINGS_PATH;
+        "/private" + COMMON_INTERCEPTOR_RESOURCE_PATH + "/filings";
     private static final String PSC_VERIFICATION_API = "psc-verification-api";
 
     /**
@@ -73,14 +71,14 @@ public class InterceptorConfig implements WebMvcConfigurer {
         return new TransactionInterceptor(PSC_VERIFICATION_API);
     }
 
-    @Bean
+    @Bean ("chsOpenTransactionInterceptor")
     public OpenTransactionInterceptor openTransactionInterceptor() {
         return new OpenTransactionInterceptor(PSC_VERIFICATION_API);
     }
 
-    @Bean
+    @Bean ("chsClosedTransactionInterceptor")
     public ClosedTransactionInterceptor transactionClosedInterceptor() {
-        return new ClosedTransactionInterceptor(FILINGS_PATH);
+        return new ClosedTransactionInterceptor(FILINGS_RESOURCE_PATH);
     }
 
     @Bean("chsLoggingInterceptor")
