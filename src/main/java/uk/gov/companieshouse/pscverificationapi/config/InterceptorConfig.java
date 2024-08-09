@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import uk.gov.companieshouse.api.interceptor.InternalUserInterceptor;
 import uk.gov.companieshouse.api.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.interceptor.TransactionInterceptor;
@@ -20,8 +21,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public static final String COMMON_INTERCEPTOR_PATH =
             "/transactions/{transaction_id}/persons-with-significant-control-verification";
     public static final String COMMON_INTERCEPTOR_RESOURCE_PATH =
-            COMMON_INTERCEPTOR_PATH + "/{filing_resource_id}";
-    public static final String FILINGS_PATH =
+        COMMON_INTERCEPTOR_PATH + "/{filing_resource_id}";
+    public static final String FILINGS_RESOURCE_PATH =
         "/private" + COMMON_INTERCEPTOR_RESOURCE_PATH + "/filings";
     private static final String PSC_VERIFICATION_API = "psc-verification-api";
 
@@ -37,6 +38,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
         addOpenTransactionInterceptor(registry);
         addTransactionClosedInterceptor(registry);
         addLoggingInterceptor(registry);
+        addInternalUserInterceptor(registry);
     }
 
     private void addTransactionInterceptor(final InterceptorRegistry registry) {
@@ -51,7 +53,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     private void addTransactionClosedInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(transactionClosedInterceptor())
-            .addPathPatterns(FILINGS_PATH).order(3);
+            .addPathPatterns(FILINGS_RESOURCE_PATH).order(3);
     }
 
     private void addLoggingInterceptor(final InterceptorRegistry registry) {
@@ -59,19 +61,24 @@ public class InterceptorConfig implements WebMvcConfigurer {
             .order(4);
     }
 
+    void addInternalUserInterceptor(final InterceptorRegistry registry) {
+        registry.addInterceptor(new InternalUserInterceptor())
+            .addPathPatterns(FILINGS_RESOURCE_PATH).order(6);
+    }
+
     @Bean("chsTransactionInterceptor")
     public TransactionInterceptor transactionInterceptor() {
         return new TransactionInterceptor(PSC_VERIFICATION_API);
     }
 
-    @Bean
+    @Bean ("chsOpenTransactionInterceptor")
     public OpenTransactionInterceptor openTransactionInterceptor() {
         return new OpenTransactionInterceptor(PSC_VERIFICATION_API);
     }
 
-    @Bean
+    @Bean ("chsClosedTransactionInterceptor")
     public ClosedTransactionInterceptor transactionClosedInterceptor() {
-        return new ClosedTransactionInterceptor(FILINGS_PATH);
+        return new ClosedTransactionInterceptor(FILINGS_RESOURCE_PATH);
     }
 
     @Bean("chsLoggingInterceptor")
