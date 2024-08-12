@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.pscverificationapi.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +13,13 @@ import uk.gov.companieshouse.api.interceptor.InternalUserInterceptor;
 import uk.gov.companieshouse.api.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.pscverificationapi.interceptor.CompanyInterceptor;
 import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterceptor;
+import uk.gov.companieshouse.pscverificationapi.service.CompanyProfileService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Configuration class for interceptor logging.
@@ -25,6 +34,14 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public static final String FILINGS_RESOURCE_PATH =
         "/private" + COMMON_INTERCEPTOR_RESOURCE_PATH + "/filings";
     private static final String PSC_VERIFICATION_API = "psc-verification-api";
+    private static final Logger log = LoggerFactory.getLogger(InterceptorConfig.class);
+
+    private CompanyInterceptor companyInterceptor;
+
+    @Autowired
+    public void setCompanyInterceptor(final CompanyInterceptor companyInterceptor) {
+        this.companyInterceptor = companyInterceptor;
+    }
 
     /**
      * Set up the interceptors to run against endpoints when the endpoints are called
@@ -37,8 +54,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
         addTransactionInterceptor(registry);
         addOpenTransactionInterceptor(registry);
         addTransactionClosedInterceptor(registry);
+        //addCompanyInterceptor(registry);
         addLoggingInterceptor(registry);
-        addInternalUserInterceptor(registry);
+        //addInternalUserInterceptor(registry);
     }
 
     private void addTransactionInterceptor(final InterceptorRegistry registry) {
@@ -56,9 +74,14 @@ public class InterceptorConfig implements WebMvcConfigurer {
             .addPathPatterns(FILINGS_RESOURCE_PATH).order(3);
     }
 
+    private void addCompanyInterceptor(final InterceptorRegistry registry) {
+        registry.addInterceptor(companyInterceptor).order(4);
+        log.info("Reload worked company component");
+    }
+
     private void addLoggingInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(requestLoggingInterceptor())
-            .order(4);
+            .order(5);
     }
 
     void addInternalUserInterceptor(final InterceptorRegistry registry) {
