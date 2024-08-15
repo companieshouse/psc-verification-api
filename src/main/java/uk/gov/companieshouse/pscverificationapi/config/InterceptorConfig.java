@@ -54,9 +54,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
         addTransactionInterceptor(registry);
         addOpenTransactionInterceptor(registry);
         addTransactionClosedInterceptor(registry);
-        //addCompanyInterceptor(registry);
+        addCompanyInterceptor(registry);
         addLoggingInterceptor(registry);
-        //addInternalUserInterceptor(registry);
+        addInternalUserInterceptor(registry);
     }
 
     private void addTransactionInterceptor(final InterceptorRegistry registry) {
@@ -76,7 +76,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     private void addCompanyInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(companyInterceptor).order(4);
-        log.info("Reload worked company component");
+        log.info("Reload worked company component 6:50");
     }
 
     private void addLoggingInterceptor(final InterceptorRegistry registry) {

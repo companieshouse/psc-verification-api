@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.pscverificationapi.service;
 
 import uk.gov.companieshouse.api.model.company.CompanyProfileApi;
+import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.exception.CompanyProfileServiceException;
 
@@ -18,7 +19,7 @@ public interface CompanyProfileService {
      * @return the company profile if found
      * @throws CompanyProfileServiceException if not found or an error occurred
      */
-    CompanyProfileApi getCompanyProfile(final Transaction transaction, final String ericPassThroughHeader)
+    CompanyProfileApi getCompanyProfile(final Transaction transaction, final PscVerificationData pscVerificationData, final String ericPassThroughHeader)
             throws CompanyProfileServiceException;
 
 }
