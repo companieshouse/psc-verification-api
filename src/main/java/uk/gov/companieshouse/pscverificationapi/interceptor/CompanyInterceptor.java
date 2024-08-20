@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,8 +47,6 @@ public class CompanyInterceptor implements HandlerInterceptor {
 
         final var logMap = LogMapHelper.createLogMap(transaction.getId());
         logger.info("Company Interceptor", logMap);
-        ObjectMapper objectMapper = new ObjectMapper();
-        //PscVerificationData pscVerificationData = objectMapper.readValue(request.getInputStream(), PscVerificationData.class);
         PscVerificationData pscVerificationData = new PscVerificationData("00006400", null, null, null);
 
         CompanyProfileApi companyProfile = companyProfileService.getCompanyProfile(transaction, pscVerificationData, passthroughHeader);
