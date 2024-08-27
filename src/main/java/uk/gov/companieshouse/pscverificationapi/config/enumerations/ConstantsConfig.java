@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.pscverificationapi.config.enumerations;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -10,19 +9,18 @@ import org.springframework.context.annotation.PropertySource;
 import uk.gov.companieshouse.pscverificationapi.enumerations.YamlPropertySourceFactory;
 
 @Configuration
-@PropertySource(value = "classpath:api-enumerations/psc_verification.yml", factory = YamlPropertySourceFactory.class)
-public class PscVerificationConfig {
+@PropertySource(value = "classpath:api-enumerations/constants.yml", factory = YamlPropertySourceFactory.class)
+public class ConstantsConfig {
 
-    @Bean("validation")
-    @ConfigurationProperties(prefix = "validation")
-    public Map<String, String> validation() {
+    @Bean("companyStatus")
+    @ConfigurationProperties(prefix = "company-status")
+    public Map<String, String> companyStatus() {
         return new HashMap<>();
     }
 
-    @Bean("company")
-    @ConfigurationProperties(prefix = "company")
-    public  Map<String, List<String>> company() {
+    @Bean("companyType")
+    @ConfigurationProperties(prefix = "company-type")
+    public Map<String, String> companyType() {
         return new HashMap<>();
     }
-
 }
