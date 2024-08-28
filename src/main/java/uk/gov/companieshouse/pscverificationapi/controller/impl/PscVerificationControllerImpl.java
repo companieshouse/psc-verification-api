@@ -68,12 +68,12 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
     public PscVerificationControllerImpl(final TransactionService transactionService,
         final PscVerificationService pscVerificationService, final VerificationValidationService validatorService, PscVerificationMapper filingMapper, final Clock clock, final Logger logger) {
-        this.transactionService = transactionService;
-        this.pscVerificationService = pscVerificationService;
-        this.validatorService = validatorService;
-        this.filingMapper = filingMapper;
-        this.clock = clock;
-        this.logger = logger;
+            this.transactionService = transactionService;
+            this.pscVerificationService = pscVerificationService;
+            this.validatorService = validatorService;
+            this.filingMapper = filingMapper;
+            this.clock = clock;
+            this.logger = logger;
     }
 
     @Override
@@ -86,11 +86,13 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         final HttpServletRequest request) {
 
         final var logMap = LogMapHelper.createLogMap(transId);
+        logMap.put("path", request.getRequestURI());
+        logMap.put("method", request.getMethod());
+        logger.debugRequest(request, "POST", logMap);
+
         final var validationErrors = Optional.ofNullable(result)
             .map(Errors::getFieldErrors).map(ArrayList::new)
             .orElseGet(ArrayList::new);
-
-        logger.debugRequest(request, "POST", logMap);
 
         Optional.ofNullable(result).ifPresent(PscVerificationControllerImpl::checkBindingErrors);
 

@@ -17,10 +17,10 @@ import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceExcept
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
 
-//TODO This service is currently mocked out to return the following mock values:
-// i) A valid PSC with ID 1kdaTltWeaP1EB70SSD9SLmiK5Y
-// ii) A PSC that has ceased with ID 1kdaTltWeaP1EB70SSD9SLmiK5Z
-// ii) An invalid PSC for all other PSCs
+//TODO This service is currently stubbed out to return the following responses:
+// i) A valid PSC with all IDs except for:
+// ii) PSC with ID '1kdaTltWeaP1EB70SSD9SLmiK5Z' - this is mocked as ceased
+// ii) PSC with ID 'doesNotExist' - this is mocked as a PSC that does not exist
 
 @Service
 public class PscLookupServiceImpl implements PscLookupService {
@@ -34,27 +34,26 @@ public class PscLookupServiceImpl implements PscLookupService {
         this.logger = logger;
     }
 
-
     //FIXME: Remove temporary stubbing of this service
     @Override
     public PscApi getPsc(final Transaction transaction, final String pscId,
         final PscType pscType, final String ericPassThroughHeader)
         throws PscLookupServiceException {
 
-        if (pscId.matches("1kdaTltWeaP1EB70SSD9SLmiK5Y")) {
-            return new PscApi();
+        final var logMap = LogHelper.createLogMap(transaction.getId());
+        PscApi psc;
 
-        } else if (pscId.matches("1kdaTltWeaP1EB70SSD9SLmiK5Z")) {
-            PscApi ceasedPsc = new PscApi();
-            ceasedPsc.setCeasedOn(LocalDate.of(2024,1,21));
-            return ceasedPsc;
-
-        } else {
+        if (pscId.matches("1kdaTltWeaP1EB70SSD9SLmiK5Z")) {
+            psc = new PscApi();
+            psc.setCeasedOn(LocalDate.of(2024, 1, 21));
+            return psc;
+        } else if (pscId.matches("doesNotExist")) {
             throw new FilingResourceNotFoundException(
                 MessageFormat.format("PSC Details not found for {0}: {1} {2}", pscId,
                     HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase()));
-
+        } else {
+            psc = new PscApi();
+            return psc;
         }
-
     }
 }

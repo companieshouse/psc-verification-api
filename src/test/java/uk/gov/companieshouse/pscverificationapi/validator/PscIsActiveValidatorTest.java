@@ -72,7 +72,7 @@ class PscIsActiveValidatorTest {
     void validateWhenPscIsCeased() {
 
         var fieldError = new FieldError("object", "psc_appointment_id", CEASED_ON, false,
-            new String[]{null, "date.ceased_on"}, null, "is ceased default message");
+            new String[]{null, "psc_appointment_id"}, null, "is ceased default message");
 
         when(pscApi.getCeasedOn()).thenReturn(CEASED_ON);
         when(validation.get("psc-is-ceased")).thenReturn("is ceased default message");

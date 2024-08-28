@@ -40,6 +40,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.pscverificationapi.exception.ConflictingFilingException;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.InvalidFilingException;
 import uk.gov.companieshouse.pscverificationapi.exception.MergePatchException;
@@ -123,23 +124,21 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             validation.get("patch-merge-error-prefix"));
     }
 
-    //TODO
+    @ExceptionHandler(ConflictingFilingException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ApiErrors handleConflictingFilingException(final ConflictingFilingException ex,
+        final WebRequest request) {
+        final var fieldErrors = ex.getFieldErrors();
 
-//    @ExceptionHandler(ConflictingFilingException.class)
-//    @ResponseStatus(HttpStatus.CONFLICT)
-//    @ResponseBody
-//    public ApiErrors handleConflictingFilingException(final ConflictingFilingException ex,
-//        final WebRequest request) {
-//        final var fieldErrors = ex.getFieldErrors();
-//
-//        final var errorList = fieldErrors.stream()
-//            .map(e -> buildRequestBodyError(e.getDefaultMessage(), getJsonPath(e),
-//                e.getRejectedValue()))
-//            .toList();
-//
-//        logError(chLogger, request, "Conflicting filing data", ex, errorList);
-//        return new ApiErrors(errorList);
-//    }
+        final var errorList = fieldErrors.stream()
+            .map(e -> buildRequestBodyError(e.getDefaultMessage(), getJsonPath(e),
+                e.getRejectedValue()))
+            .toList();
+
+        logError(chLogger, request, "Conflicting filing data", ex, errorList);
+        return new ApiErrors(errorList);
+    }
 
     @ExceptionHandler(FilingResourceNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)

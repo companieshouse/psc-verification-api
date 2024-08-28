@@ -33,7 +33,7 @@ public class PscIsActiveValidator extends BaseVerificationValidator implements
         if (Optional.ofNullable(psc.getCeasedOn()).isPresent()) {
             validationContext.errors()
                 .add(new FieldError("object", "psc_appointment_id", psc.getCeasedOn(),
-                    false, new String[]{null, "date.ceased_on"}, null,
+                    false, new String[]{null, "psc_appointment_id"}, null,
                     validation.get("psc-is-ceased")));
         }
 
