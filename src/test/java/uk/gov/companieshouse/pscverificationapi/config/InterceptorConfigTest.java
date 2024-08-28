@@ -8,9 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import uk.gov.companieshouse.api.interceptor.InternalUserInterceptor;
-import uk.gov.companieshouse.api.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.api.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.pscverificationapi.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterceptor;
 
 import static org.hamcrest.CoreMatchers.isA;
@@ -35,7 +35,7 @@ class InterceptorConfigTest {
     }
 
     @Test
-    public void addInterceptorsInvocations() {
+    void addInterceptorsInvocations() {
 
         verify(interceptorRegistry, times(1)).addInterceptor(any(TransactionInterceptor.class));
         verify(interceptorRegistry, times(1)).addInterceptor(any(OpenTransactionInterceptor.class));
