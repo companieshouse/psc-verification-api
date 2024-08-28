@@ -55,10 +55,10 @@ class InterceptorConfigTest {
         verify(interceptorRegistry.addInterceptor(any(ClosedTransactionInterceptor.class))
             .addPathPatterns("/private"
                 + "/transactions/{transaction_id}/persons-with-significant-control-verification"
-                + "/{filing_resource_id}/filings")).order(3);
-        verify(interceptorRegistry.addInterceptor(any(RequestLoggingInterceptor.class))).order(4);
+                + "/{filing_resource_id}/filings")).order(5);
+        verify(interceptorRegistry.addInterceptor(any(RequestLoggingInterceptor.class))).order(6);
         verify(interceptorRegistry.addInterceptor(any(InternalUserInterceptor.class))
-            .addPathPatterns("/private/transactions/{transaction_id}/persons-with-significant-control-verification/{filing_resource_id}/filings")).order(6);
+            .addPathPatterns("/private/transactions/{transaction_id}/persons-with-significant-control-verification/{filing_resource_id}/filings")).order(7);
     }
 
     @Test
