@@ -41,6 +41,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.exception.ConflictingFilingException;
+import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceInvalidException;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.InvalidFilingException;
 import uk.gov.companieshouse.pscverificationapi.exception.MergePatchException;
@@ -54,6 +55,7 @@ import uk.gov.companieshouse.pscverificationapi.exception.TransactionServiceExce
  *     <li>JSON payload not readable/malformed</li>
  *     <li>{@link InvalidFilingException}</li>
  *     <li>{@link FilingResourceNotFoundException}</li>
+ *     <li>{@link FilingResourceInvalidException}</li>
  *     <li>{@link MergePatchException}</li>
  *     <li>{@link TransactionServiceException}</li>
  *     <li>{@link PscLookupServiceException}</li>
@@ -146,6 +148,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ApiErrors handleResourceNotFoundException(final FilingResourceNotFoundException ex,
         final WebRequest request) {
         final var error = new ApiError(validation.get("filing-resource-not-found"),
+            getRequestURI(request),
+            LocationType.RESOURCE.getValue(), ErrorType.VALIDATION.getType());
+
+        Optional.ofNullable(ex.getMessage())
+            .ifPresent(m -> error.addErrorValue("{filing-resource-id}", m));
+
+        final var errorList = List.of(error);
+        logError(chLogger, request, ex.getMessage(), ex, errorList);
+        return new ApiErrors(errorList);
+    }
+
+    @ExceptionHandler(FilingResourceInvalidException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ApiErrors handleResourceInvalidException(final FilingResourceInvalidException ex,
+        final WebRequest request) {
+        final var error = new ApiError(validation.get("psc-is-ceased"),
             getRequestURI(request),
             LocationType.RESOURCE.getValue(), ErrorType.VALIDATION.getType());
 
@@ -309,7 +328,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static ApiError buildRequestBodyError(final String message, final String jsonPath,
         final Object rejectedValue) {
-        final var error = new ApiError(message, jsonPath, LocationType.JSON_PATH.getValue(),
+         final var error = new ApiError(message, jsonPath, LocationType.JSON_PATH.getValue(),
             ErrorType.VALIDATION.getType());
 
         Optional.ofNullable(rejectedValue)

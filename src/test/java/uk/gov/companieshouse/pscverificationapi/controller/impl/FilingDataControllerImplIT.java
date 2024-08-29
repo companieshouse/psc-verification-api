@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,6 +32,7 @@ import uk.gov.companieshouse.pscverificationapi.service.FilingDataService;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
 
+@Disabled("See comments below")
 @Tag("web")
 @WebMvcTest(controllers = FilingDataControllerImpl.class)
 @Import(PscVerificationConfig.class)

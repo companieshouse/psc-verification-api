@@ -2,6 +2,7 @@ package uk.gov.companieshouse.pscverificationapi.validator;
 
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  *  * Abstract base class for the verification service validators.
@@ -12,7 +13,7 @@ public abstract class BaseVerificationValidator implements VerificationValidator
     protected Map<String, String> validation;
     private VerificationValidator nextValidator;
 
-    public BaseVerificationValidator(final Map<String, String> validation) {
+    public BaseVerificationValidator(@Qualifier(value = "validation") final Map<String, String> validation) {
         this.validation = validation;
     }
 

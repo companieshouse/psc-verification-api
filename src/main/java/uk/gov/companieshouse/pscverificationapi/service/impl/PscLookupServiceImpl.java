@@ -1,24 +1,21 @@
 package uk.gov.companieshouse.pscverificationapi.service.impl;
 
-import java.io.IOException;
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import uk.gov.companieshouse.api.error.ApiErrorResponseException;
-import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.sdk.ApiClientService;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
+import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceInvalidException;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
 
 //TODO This service is currently stubbed out to return the following responses:
-// i) A valid PSC with all IDs except for:
+// i) A valid PSC for all IDs except for:
 // ii) PSC with ID '1kdaTltWeaP1EB70SSD9SLmiK5Z' - this is mocked as ceased
 // ii) PSC with ID 'doesNotExist' - this is mocked as a PSC that does not exist
 
@@ -43,14 +40,16 @@ public class PscLookupServiceImpl implements PscLookupService {
         final var logMap = LogHelper.createLogMap(transaction.getId());
         PscApi psc;
 
+        //if psc already ceased
         if (pscId.matches("1kdaTltWeaP1EB70SSD9SLmiK5Z")) {
-            psc = new PscApi();
-            psc.setCeasedOn(LocalDate.of(2024, 1, 21));
-            return psc;
+            throw new FilingResourceInvalidException(
+                MessageFormat.format("PSC is already ceased for {0}: {1} {2}", pscId,
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase()));
+
         } else if (pscId.matches("doesNotExist")) {
             throw new FilingResourceNotFoundException(
                 MessageFormat.format("PSC Details not found for {0}: {1} {2}", pscId,
-                    HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase()));
+                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase()));
         } else {
             psc = new PscApi();
             return psc;
