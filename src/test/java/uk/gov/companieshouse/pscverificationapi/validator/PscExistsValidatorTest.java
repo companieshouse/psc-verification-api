@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -73,7 +74,7 @@ class PscExistsValidatorTest {
     @Test
     void validateWhenPscDoesNotExist() {
         var fieldError = new FieldError("object", "psc_appointment_id", PSC_ID, false,
-            new String[]{null, "notFound.psc_appointment_id"}, null,
+            new String[]{null, PSC_ID}, null,
             "not-exists default message");
         when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
         when(pscLookupService.getPsc(transaction, PSC_ID, pscType,
