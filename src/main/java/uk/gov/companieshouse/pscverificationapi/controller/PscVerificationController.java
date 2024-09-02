@@ -22,7 +22,7 @@ public interface PscVerificationController {
      * Create an PSC Verification Statement.
      * @param transId       the transaction ID
      * @param transaction   the Transaction
-     * @param data          the request body payload
+     * @param data          the request body payload DTO
      * @param result        the MVC binding result (with any validation errors)
      * @param request       the servlet request
      * @throws NotImplementedException implementing classes must perform work
