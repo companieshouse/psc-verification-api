@@ -83,7 +83,7 @@ public class BaseControllerIT {
     @MockBean
     protected TransactionInterceptor transactionInterceptor;
 
-    void baseSetUp() throws Exception {
+    void baseSetUp() {
         httpHeaders = new HttpHeaders();
         httpHeaders.add("ERIC-Access-Token", PASSTHROUGH_HEADER);
         setupEricTokenPermissions();
@@ -93,8 +93,10 @@ public class BaseControllerIT {
 
     protected void setupEricTokenPermissions() {
         httpHeaders.add(EricConstants.ERIC_AUTHORISED_TOKEN_PERMISSIONS,
-            new StringBuilder().append(Permission.Key.COMPANY_PSCS)
+            new StringBuilder().append(Permission.Key.USER_PSC_VERIFICATION)
                 .append("=")
+                .append(Permission.Value.CREATE)
+                .append(",")
                 .append(Permission.Value.DELETE)
                 .append(",")
                 .append(Permission.Value.READ)

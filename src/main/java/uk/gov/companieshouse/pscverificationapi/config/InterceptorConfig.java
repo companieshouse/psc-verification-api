@@ -7,8 +7,12 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.gov.companieshouse.api.interceptor.InternalUserInterceptor;
+import uk.gov.companieshouse.api.interceptor.MappablePermissionsInterceptor;
 import uk.gov.companieshouse.api.interceptor.OpenTransactionInterceptor;
+import uk.gov.companieshouse.api.interceptor.PermissionsMapping;
+import uk.gov.companieshouse.api.interceptor.TokenPermissionsInterceptor;
 import uk.gov.companieshouse.api.interceptor.TransactionInterceptor;
+import uk.gov.companieshouse.api.util.security.Permission;
 import uk.gov.companieshouse.pscverificationapi.interceptor.ClosedTransactionInterceptor;
 import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterceptor;
 
@@ -36,6 +40,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(@NonNull final InterceptorRegistry registry) {
         addTransactionInterceptor(registry);
         addOpenTransactionInterceptor(registry);
+        addTokenPermissionsInterceptor(registry);
+        addRequestPermissionsInterceptor(registry);
         addTransactionClosedInterceptor(registry);
         addLoggingInterceptor(registry);
         addInternalUserInterceptor(registry);
@@ -51,19 +57,28 @@ public class InterceptorConfig implements WebMvcConfigurer {
             .addPathPatterns(COMMON_INTERCEPTOR_PATH, COMMON_INTERCEPTOR_RESOURCE_PATH).order(2);
     }
 
+    private void addTokenPermissionsInterceptor(final InterceptorRegistry registry) {
+        registry.addInterceptor(tokenPermissionsInterceptor())
+            .order(3);
+    }
+    private void addRequestPermissionsInterceptor(final InterceptorRegistry registry) {
+        registry.addInterceptor(requestPermissionsInterceptor(pscPermissionsMapping()))
+            .order(4);
+    }
+
     private void addTransactionClosedInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(transactionClosedInterceptor())
-            .addPathPatterns(FILINGS_RESOURCE_PATH).order(3);
+            .addPathPatterns(FILINGS_RESOURCE_PATH).order(5);
     }
 
     private void addLoggingInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(requestLoggingInterceptor())
-            .order(4);
+            .order(6);
     }
 
     void addInternalUserInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(new InternalUserInterceptor())
-            .addPathPatterns(FILINGS_RESOURCE_PATH).order(6);
+            .addPathPatterns(FILINGS_RESOURCE_PATH).order(7);
     }
 
     @Bean("chsTransactionInterceptor")
@@ -74,6 +89,25 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Bean ("chsOpenTransactionInterceptor")
     public OpenTransactionInterceptor openTransactionInterceptor() {
         return new OpenTransactionInterceptor(PSC_VERIFICATION_API);
+    }
+
+    @Bean("chsTokenPermissionInterceptor")
+    public TokenPermissionsInterceptor tokenPermissionsInterceptor() {
+        return new TokenPermissionsInterceptor();
+    }
+
+    @Bean("chsRequestPermissionInterceptor")
+    public MappablePermissionsInterceptor requestPermissionsInterceptor(
+        final PermissionsMapping permissionMapping) {
+        return new MappablePermissionsInterceptor(Permission.Key.USER_PSC_VERIFICATION, true,
+            permissionMapping);
+    }
+
+    @Bean("chsPermissionsMapping")
+    public PermissionsMapping pscPermissionsMapping() {
+        return PermissionsMapping.builder()
+            .defaultRequireAnyOf(Permission.Value.CREATE)
+            .build();
     }
 
     @Bean ("chsClosedTransactionInterceptor")
