@@ -65,7 +65,6 @@ class FilingDataControllerImplIT extends BaseControllerIT {
         baseSetUp();
     }
 
-    //FIXME
     @Test
     void getFilingsWhenFound() throws Exception {
         final Map<String, Object> dataMap = Map.of("company_number", COMPANY_NUMBER,
@@ -82,7 +81,10 @@ class FilingDataControllerImplIT extends BaseControllerIT {
         when(filingDataService.generateFilingApi(FILING_ID, transaction)).thenReturn(filingApi);
 
         mockMvc.perform(get(URL_PSC_VERIFICATION + FILINGS_SUFFIX, TRANS_ID, FILING_ID).headers(httpHeaders)
-                        .requestAttr(AttributeName.TRANSACTION.getValue(), transaction))
+                .requestAttr(AttributeName.TRANSACTION.getValue(), transaction)
+                .header("ERIC-Identity", "abcdefg")
+                .header("ERIC-Identity-Type", "key")
+                .header("ERIC-Authorised-Key-Roles", "*"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -102,14 +104,14 @@ class FilingDataControllerImplIT extends BaseControllerIT {
     void getFilingsWhenNotFound() throws Exception {
         transaction.setStatus(TransactionStatus.CLOSED);
 
-        String authorisedUser = "abcdefg";
-        when(AuthorisationUtil.getAuthorisedIdentity(request)).thenReturn(authorisedUser);
-
         when(filingDataService.generateFilingApi(FILING_ID, transaction)).thenThrow(
                 new FilingResourceNotFoundException("for Not Found scenario", null));
 
         mockMvc.perform(get(URL_PSC_VERIFICATION + FILINGS_SUFFIX, TRANS_ID, FILING_ID).headers(httpHeaders)
-                        .requestAttr(AttributeName.TRANSACTION.getValue(), transaction))
+                        .requestAttr(AttributeName.TRANSACTION.getValue(), transaction)
+                .header("ERIC-Identity", "abcdefg")
+                .header("ERIC-Identity-Type", "key")
+                .header("ERIC-Authorised-Key-Roles", "*"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.errors", hasSize(1)))
