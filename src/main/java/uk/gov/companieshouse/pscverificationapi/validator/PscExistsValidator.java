@@ -24,7 +24,7 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
     public void validate(final VerificationValidationContext validationContext) {
 
         try {
-            pscLookupService.getPsc(validationContext.transaction(), validationContext.dto().pscAppointmentId(), validationContext.pscType(),
+            pscLookupService.getPsc(validationContext.transaction(), validationContext.dto(), validationContext.pscType(),
                 validationContext.passthroughHeader());
             //TODO - handle - Validation should not continue if the PSC does not exist
         }

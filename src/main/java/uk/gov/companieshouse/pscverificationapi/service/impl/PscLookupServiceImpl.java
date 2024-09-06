@@ -1,9 +1,14 @@
 package uk.gov.companieshouse.pscverificationapi.service.impl;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import uk.gov.companieshouse.api.error.ApiErrorResponseException;
+import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.psc.PscApi;
+import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
+import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.sdk.ApiClientService;
 import uk.gov.companieshouse.logging.Logger;
@@ -31,28 +36,29 @@ public class PscLookupServiceImpl implements PscLookupService {
         this.logger = logger;
     }
 
-    //FIXME: Remove temporary stubbing of this service
     @Override
-    public PscApi getPsc(final Transaction transaction, final String pscId,
-        final PscType pscType, final String ericPassThroughHeader)
+    public PscApi getPsc(final Transaction transaction, final PscVerificationData data,
+                                         final PscType pscType, final String ericPassThroughHeader)
         throws PscLookupServiceException {
 
-        final var logMap = LogHelper.createLogMap(transaction.getId());
-        PscApi psc;
+        String pscAppointmentId = data.pscAppointmentId();
 
-        //if psc already ceased
-        if (pscId.matches("1kdaTltWeaP1EB70SSD9SLmiK5Z")) {
-            throw new FilingResourceInvalidException(
-                MessageFormat.format("PSC is already ceased for {0}: {1} {2}", pscId,
-                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase()));
+        try {
+            final var uri = "/company/"
+                + data.companyNumber()
+                + "/persons-with-significant-control/"
+                + pscType.getValue()
+                + "/"
+                + pscAppointmentId;
 
-        } else if (pscId.matches("doesNotExist")) {
-            throw new FilingResourceNotFoundException(
-                MessageFormat.format("PSC Details not found for {0}: {1} {2}", pscId,
-                    HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase()));
-        } else {
-            psc = new PscApi();
-            return psc;
+            return apiClientService.getApiClient(ericPassThroughHeader)
+                .pscs()
+                .getIndividual(uri)
+                .execute()
+                .getData();
+
+        } catch (URIValidationException | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
