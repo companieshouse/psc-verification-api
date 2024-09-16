@@ -21,7 +21,11 @@ public class ValidatorConfig {
     }
 
     private static void createValidationChain(final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator) {
-        pscExistsValidator.setNext(pscIsActiveValidator);
+
+        //Suspend further validation when a PSC does not exist
+        if(pscExistsValidator.isValid()) {
+            pscExistsValidator.setNext(pscIsActiveValidator);
+        }
 
     }
 

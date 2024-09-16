@@ -2,8 +2,11 @@ package uk.gov.companieshouse.pscverificationapi.config;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,9 +33,24 @@ class ValidatorConfigTest {
 
     @Test
     void verificationValidationEnable() {
+        when(pscExistsValidator.isValid()).thenReturn(true);
+
         final var valid = testConfig.verificationValidationEnable( pscExistsValidator, pscIsActiveValidator);
 
         assertThat(valid.pscType(), is(PscType.INDIVIDUAL));
         assertThat(valid.first(), is(pscExistsValidator));
+        verify(pscExistsValidator, times(1)).setNext(pscIsActiveValidator);
     }
+
+    @Test
+    void verificationValidationEnableWhenPscDoesNotExist() {
+        when(pscExistsValidator.isValid()).thenReturn(false);
+
+        final var valid = testConfig.verificationValidationEnable( pscExistsValidator, pscIsActiveValidator);
+
+        assertThat(valid.pscType(), is(PscType.INDIVIDUAL));
+        assertThat(valid.first(), is(pscExistsValidator));
+        verify(pscExistsValidator, never()).setNext(pscIsActiveValidator);
+    }
+
 }

@@ -19,14 +19,18 @@ public class PscIsActiveValidator extends BaseVerificationValidator implements
 
     /**
      * Validates if the PSC is in an active state.
+     *
      * @param validationContext the validation context
+     * @return boolean if validation passes
      */
     @Override
-    public void validate(final VerificationValidationContext validationContext) {
+    public boolean validate(final VerificationValidationContext validationContext) {
+        setValid(false);
 
         try {
             pscLookupService.getPsc(validationContext.transaction(), validationContext.dto().pscAppointmentId(), validationContext.pscType(),
                 validationContext.passthroughHeader());
+            setValid(true);
 
         } catch (FilingResourceInvalidException e) {
             validationContext.errors().add(
@@ -35,6 +39,7 @@ public class PscIsActiveValidator extends BaseVerificationValidator implements
         }
 
         super.validate(validationContext);
+        return isValid();
     }
 
 }

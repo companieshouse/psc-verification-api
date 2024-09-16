@@ -12,18 +12,28 @@ public abstract class BaseVerificationValidator implements VerificationValidator
 
     protected Map<String, String> validation;
     private VerificationValidator nextValidator;
+    private boolean isValid;
 
     public BaseVerificationValidator(@Qualifier(value = "validation") final Map<String, String> validation) {
         this.validation = validation;
     }
 
     @Override
-    public void validate(final VerificationValidationContext validationContext) {
+    public boolean validate(final VerificationValidationContext validationContext) {
         Optional.ofNullable(nextValidator).ifPresent(v -> v.validate(validationContext));
+        return isValid();
     }
 
     @Override
     public void setNext(final VerificationValidator verificationValidator) {
         this.nextValidator = verificationValidator;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void setValid(final boolean valid) {
+        isValid = valid;
     }
 }
