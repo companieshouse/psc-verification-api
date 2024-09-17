@@ -7,22 +7,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.psc.PscApi;
-import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.sdk.ApiClientService;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
-import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceInvalidException;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
-import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
-
-//TODO This service is currently stubbed out to return the following responses:
-// i) A valid PSC for all IDs except for:
-// ii) PSC with ID '1kdaTltWeaP1EB70SSD9SLmiK5Z' - this is mocked as ceased
-// ii) PSC with ID 'doesNotExist' - this is mocked as a PSC that does not exist
 
 @Service
 public class PscLookupServiceImpl implements PscLookupService {
@@ -57,8 +49,20 @@ public class PscLookupServiceImpl implements PscLookupService {
                 .execute()
                 .getData();
 
+        } catch (final ApiErrorResponseException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                throw new FilingResourceNotFoundException(
+                    MessageFormat.format("PSC Details not found for {0}: {1} {2}", pscAppointmentId,
+                        e.getStatusCode(), e.getStatusMessage()), e);
+            }
+            throw new PscLookupServiceException(
+                MessageFormat.format("Error Retrieving PSC details for {0}: {1} {2}", pscAppointmentId,
+                    e.getStatusCode(), e.getStatusMessage()), e);
+
         } catch (URIValidationException | IOException e) {
-            throw new RuntimeException(e);
+            throw new PscLookupServiceException(
+                MessageFormat.format("Error Retrieving PSC details for {0}: {1}", pscAppointmentId,
+                    e.getMessage()), e);
         }
     }
 }

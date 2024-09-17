@@ -2,6 +2,8 @@ package uk.gov.companieshouse.pscverificationapi.validator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +21,7 @@ import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
+import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,7 +61,6 @@ class PscExistsValidatorTest {
 
     @Test
     void validateWhenPscExists() {
-        when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
 
         testValidator.validate(
             new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));
@@ -67,23 +69,22 @@ class PscExistsValidatorTest {
 
     }
 
-//    @Disabled
-//    @Test
-//    void validateWhenPscDoesNotExist() {
-//        var fieldError = new FieldError("object", "psc_appointment_id", PSC_ID, false,
-//            new String[]{null, PSC_ID}, null,
-//            "not-exists default message");
-//        when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
-//        when(pscLookupService.getPsc(transaction, PSC_ID, pscType,
-//            passthroughHeader)).thenThrow(new FilingResourceNotFoundException(
-//            "PSC Details not found for " + PSC_ID + ": 404 Not Found", errorResponseException));
-//        when(validation.get("psc_appointment_id-not-found")).thenReturn("not-exists default message");
-//
-//        testValidator.validate(
-//            new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));
-//
-//        assertThat(errors.stream().findFirst().orElseThrow(), equalTo(fieldError));
-//        assertThat(errors, contains(fieldError));
-//    }
+    @Test
+    void validateWhenPscDoesNotExist() {
+        var fieldError = new FieldError("object", "psc_appointment_id", PSC_ID, false,
+            new String[]{null, PSC_ID}, null,
+            "not-exists default message");
+        when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
+        when(pscLookupService.getPsc(transaction, pscVerificationData, pscType,
+            passthroughHeader)).thenThrow(new FilingResourceNotFoundException(
+            "PSC Details not found for " + PSC_ID + ": 404 Not Found", errorResponseException));
+        when(validation.get("psc_appointment_id-not-found")).thenReturn("not-exists default message");
+
+        testValidator.validate(
+            new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));
+
+        assertThat(errors.stream().findFirst().orElseThrow(), equalTo(fieldError));
+        assertThat(errors, contains(fieldError));
+    }
 
 }
