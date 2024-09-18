@@ -1,10 +1,10 @@
 package uk.gov.companieshouse.pscverificationapi.validator;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -61,7 +61,6 @@ class PscExistsValidatorTest {
 
     @Test
     void validateWhenPscExists() {
-        when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
 
         testValidator.validate(
             new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));
@@ -76,7 +75,7 @@ class PscExistsValidatorTest {
             new String[]{null, PSC_ID}, null,
             "not-exists default message");
         when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
-        when(pscLookupService.getPsc(transaction, PSC_ID, pscType,
+        when(pscLookupService.getPsc(transaction, pscVerificationData, pscType,
             passthroughHeader)).thenThrow(new FilingResourceNotFoundException(
             "PSC Details not found for " + PSC_ID + ": 404 Not Found", errorResponseException));
         when(validation.get("psc_appointment_id-not-found")).thenReturn("not-exists default message");

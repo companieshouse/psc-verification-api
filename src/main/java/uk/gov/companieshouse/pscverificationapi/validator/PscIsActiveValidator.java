@@ -25,7 +25,7 @@ public class PscIsActiveValidator extends BaseVerificationValidator implements
     public void validate(final VerificationValidationContext validationContext) {
 
         try {
-            pscLookupService.getPsc(validationContext.transaction(), validationContext.dto().pscAppointmentId(), validationContext.pscType(),
+            pscLookupService.getPsc(validationContext.transaction(), validationContext.dto(), validationContext.pscType(),
                 validationContext.passthroughHeader());
 
         } catch (FilingResourceInvalidException e) {
