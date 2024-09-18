@@ -27,7 +27,7 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
         setValid(false);
 
         try {
-            pscLookupService.getPsc(validationContext.transaction(), validationContext.dto().pscAppointmentId(), validationContext.pscType(),
+            pscLookupService.getPsc(validationContext.transaction(), validationContext.dto(), validationContext.pscType(),
                 validationContext.passthroughHeader());
             setValid(true);
         }
