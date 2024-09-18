@@ -82,7 +82,6 @@ class ValidationStatusControllerImplTest {
 
     @Test
     void validateWhenFilingValid() {
-        final var self = UriComponentsBuilder.fromUriString(SELF_FRAGMENT).pathSegment(FILING_ID).build().toUri();
         final var links = ResourceLinks.newBuilder().build();
         final var filing = PscVerification.newBuilder().links(links).build();
 
@@ -93,7 +92,5 @@ class ValidationStatusControllerImplTest {
 
         assertThat(response.isValid(), is(true));
         assertThat(response.getValidationStatusError(), is(emptyArray()));
-
     }
-
 }
