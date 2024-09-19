@@ -4,13 +4,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +41,6 @@ class ValidationStatusControllerImplFlagTrueIT extends BaseControllerIT {
         baseSetUp();
     }
 
-    //TODO enable this test when validation added
-    @Disabled("Not part of happy, so not needed yet")
     @Test
     void validateWhenFilingNotFound() throws Exception {
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.empty());
