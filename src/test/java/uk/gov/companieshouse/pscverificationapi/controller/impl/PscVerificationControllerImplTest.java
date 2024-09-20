@@ -56,7 +56,6 @@ import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapp
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapperImpl;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
-import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationService;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @ExtendWith(SpringExtension.class) // JUnit 5
@@ -83,8 +82,6 @@ class PscVerificationControllerImplTest {
     private TransactionService transactionService;
     @Mock
     private PscVerificationService pscVerificationService;
-    @Mock
-    private VerificationValidationService validationService;
     @Autowired
     private PscVerificationMapper filingMapper;
     @Mock
@@ -110,7 +107,7 @@ class PscVerificationControllerImplTest {
     @BeforeEach
     void setUp() {
         testController = new PscVerificationControllerImpl(transactionService,
-            pscVerificationService, validationService, filingMapper, clock, logger);
+            pscVerificationService, filingMapper, clock, logger);
         verification = VerificationDetails.newBuilder()
             .uvid(UVID)
             .statements(EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED))

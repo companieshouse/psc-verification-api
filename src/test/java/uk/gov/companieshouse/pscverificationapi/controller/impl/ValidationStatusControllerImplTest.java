@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
@@ -26,6 +25,7 @@ import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFound
 import uk.gov.companieshouse.pscverificationapi.mapper.ErrorMapper;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
+import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationService;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +40,8 @@ class ValidationStatusControllerImplTest {
     @Mock
     private PscVerificationService pscVerificationService;
     @Mock
+    private VerificationValidationService validatorService;
+    @Mock
     private HttpServletRequest request;
     @Mock
     private Logger logger;
@@ -53,13 +55,13 @@ class ValidationStatusControllerImplTest {
 
     @BeforeEach
     void setUp() {
-        testController = new ValidationStatusControllerImpl(pscVerificationService, errorMapper, true, logger);
+        testController = new ValidationStatusControllerImpl(pscVerificationService, validatorService, errorMapper, true, logger);
         when(request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader())).thenReturn(PASSTHROUGH_HEADER);
     }
 
     @Test
     void validateWhenClosableFlagFalse() {
-        testController = new ValidationStatusControllerImpl(pscVerificationService, errorMapper, false, logger);
+        testController = new ValidationStatusControllerImpl(pscVerificationService, validatorService, errorMapper, false, logger);
         final var filing = PscVerification.newBuilder().build();
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filing));
 
