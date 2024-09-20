@@ -19,6 +19,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.config.IntegrationTestConfig;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
+import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationService;
 
 //Using Spring Web MVC
 @Tag("app")
@@ -31,6 +32,8 @@ class ValidationStatusControllerImplFlagTrueIT extends BaseControllerIT {
     private TransactionService transactionService;
     @MockBean
     private PscVerificationService pscVerificationService;
+    @MockBean
+    private VerificationValidationService validationService;
     @MockBean
     private Logger logger;
     @Autowired

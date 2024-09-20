@@ -25,6 +25,7 @@ import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
+import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationService;
 
 //Using Spring Web MVC
 @Tag("web")
@@ -36,6 +37,8 @@ class ValidationStatusControllerImplFlagFalseIT extends BaseControllerIT {
     private TransactionService transactionService;
     @MockBean
     private PscVerificationService pscVerificationService;
+    @MockBean
+    private VerificationValidationService validationService;
     @MockBean
     private PscVerificationMapper filingMapper;
     @MockBean

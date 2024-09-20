@@ -73,7 +73,7 @@ class PscExistsValidatorTest {
     @Test
     void validateWhenPscDoesNotExist() {
         var fieldError = new FieldError("object", "psc_appointment_id", PSC_ID, false,
-            new String[]{null, PSC_ID}, null,
+            new String[]{null, "notFound.psc_appointment_id"}, null,
             "not-exists default message");
         when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
         when(pscLookupService.getPsc(transaction, pscVerificationData, pscType,

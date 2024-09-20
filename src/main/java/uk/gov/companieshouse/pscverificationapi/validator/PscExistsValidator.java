@@ -30,15 +30,15 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
             pscLookupService.getPsc(validationContext.transaction(), validationContext.dto(), validationContext.pscType(),
                 validationContext.passthroughHeader());
             setValid(true);
+            super.validate(validationContext);
         }
         catch (FilingResourceNotFoundException e) {
             validationContext.errors().add(
                 new FieldError("object", "psc_appointment_id", validationContext.dto().pscAppointmentId(), false,
-                    new String[]{null, validationContext.dto().pscAppointmentId()}, null, validation.get("psc-appointment-id-not-found")));
-
+                    new String[]{null, "notFound.psc_appointment_id"}, null, validation.get("psc-appointment-id-not-found")));
         }
 
-        super.validate(validationContext);
+
         return isValid();
     }
 
