@@ -36,7 +36,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.patch.model.PatchResult;
 import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
-import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.error.RetrievalFailureReason;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.InvalidFilingException;
@@ -46,8 +45,6 @@ import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
-import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationService;
-import uk.gov.companieshouse.pscverificationapi.validator.VerificationValidationContext;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @RestController
@@ -61,16 +58,14 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
     private final TransactionService transactionService;
     private final PscVerificationService pscVerificationService;
-    private final VerificationValidationService validatorService;
     private final PscVerificationMapper filingMapper;
     private final Clock clock;
     private final Logger logger;
 
     public PscVerificationControllerImpl(final TransactionService transactionService,
-        final PscVerificationService pscVerificationService, final VerificationValidationService validatorService, PscVerificationMapper filingMapper, final Clock clock, final Logger logger) {
+        final PscVerificationService pscVerificationService, PscVerificationMapper filingMapper, final Clock clock, final Logger logger) {
             this.transactionService = transactionService;
             this.pscVerificationService = pscVerificationService;
-            this.validatorService = validatorService;
             this.filingMapper = filingMapper;
             this.clock = clock;
             this.logger = logger;
@@ -90,22 +85,10 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         logMap.put("method", request.getMethod());
         logger.debugRequest(request, "POST", logMap);
 
-        final var validationErrors = Optional.ofNullable(result)
-            .map(Errors::getFieldErrors).map(ArrayList::new)
-            .orElseGet(ArrayList::new);
-
         Optional.ofNullable(result).ifPresent(PscVerificationControllerImpl::checkBindingErrors);
 
         final var requestTransaction = getTransaction(transId, transaction, logMap,
             getPassthroughHeader(request));
-
-        validatorService.validate(
-            new VerificationValidationContext(data, validationErrors, transaction, PscType.INDIVIDUAL,
-                getPassthroughHeader(request)));
-
-        if (!validationErrors.isEmpty()) {
-            throw new InvalidFilingException(validationErrors);
-        }
 
         final var entity = filingMapper.toEntity(data);
         final var savedEntity = saveFilingWithLinks(entity, transId, request, logMap);

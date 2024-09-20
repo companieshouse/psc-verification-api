@@ -1,9 +1,11 @@
 package uk.gov.companieshouse.pscverificationapi.validator;
 
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
-import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceInvalidException;
+import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
 @Component
@@ -24,11 +26,10 @@ public class PscIsActiveValidator extends BaseVerificationValidator implements
     @Override
     public void validate(final VerificationValidationContext validationContext) {
 
-        try {
-            pscLookupService.getPsc(validationContext.transaction(), validationContext.dto(), validationContext.pscType(),
-                validationContext.passthroughHeader());
+        PscApi pscApi = pscLookupService.getPsc(validationContext.transaction(), validationContext.dto(), validationContext.pscType(),
+            validationContext.passthroughHeader());
 
-        } catch (FilingResourceInvalidException e) {
+        if (Optional.ofNullable(pscApi.getCeasedOn()).isPresent()) {
             validationContext.errors().add(
                 new FieldError("object", "psc_appointment_id", validationContext.dto().pscAppointmentId(), false,
                     new String[]{null, validationContext.dto().pscAppointmentId()}, null, validation.get("psc-is-ceased")));
