@@ -32,37 +32,29 @@ public class BaseControllerIT {
     protected static final String URL_PSC_RESOURCE = URL_PSC + "/{filingResourceId}";
     protected static final String URL_PSC_VALIDATION_STATUS = URL_PSC_RESOURCE + "/validation_status";
     protected static final String APPLICATION_JSON_MERGE_PATCH = "application/merge-patch+json";
-    protected static final String COMMON_FRAGMENT = new StringBuilder().append(
-            "\"company_number\": \"")
-        .append(COMPANY_NUMBER)
-        .append("\",")
-        .append("\"psc_appointment_id\": \"")
-        .append(PSC_ID)
-        .append("\",")
-        .append("\"verification_details\": {")
-        .append("\"uvid\": \"")
-        .append(UVID)
-        .append("\",")
-        .append("\"verification_statements\": [")
-        .toString();
-    protected static final String INDIVIDUAL_FRAGMENT = new StringBuilder().append(
-        "\"INDIVIDUAL_VERIFIED\"").append("]}").toString();
-    protected static final String RLE_FRAGMENT = new StringBuilder().append("\"RO_IDENTIFIED\",")
-        .append("\"RO_VERIFIED\",")
-        .append("\"RO_DECLARATION\"")
-        .append("]}")
-        .toString();
-    protected static final String RO_FRAGMENT = new StringBuilder().append(
-            ",\"relevant_officer\":{")
-        .append("\"name_elements\":{")
-        .append("\"title\": \"Sir\",")
-        .append("\"forename\": \"Forename\",")
-        .append("\"other_forenames\": \"Other Forenames\",")
-        .append("\"surname\": \"Surname\"},")
-        .append("\"date_of_birth\": \"1970-01-01\",")
-        .append("\"is_employee\": true,")
-        .append("\"is_director\": true}")
-        .toString();
+    protected static final String COMMON_FRAGMENT = "\"company_number\": \""
+        + COMPANY_NUMBER
+        + "\","
+        + "\"psc_appointment_id\": \""
+        + PSC_ID
+        + "\","
+        + "\"verification_details\": {"
+        + "\"uvid\": \""
+        + UVID
+        + "\","
+        + "\"verification_statements\": [";
+    protected static final String INDIVIDUAL_FRAGMENT = "\"INDIVIDUAL_VERIFIED\"" + "]}";
+    protected static final String RLE_FRAGMENT =
+        "\"RO_IDENTIFIED\"," + "\"RO_VERIFIED\"," + "\"RO_DECLARATION\"" + "]}";
+    protected static final String RO_FRAGMENT = ",\"relevant_officer\":{"
+        + "\"name_elements\":{"
+        + "\"title\": \"Sir\","
+        + "\"forename\": \"Forename\","
+        + "\"other_forenames\": \"Other Forenames\","
+        + "\"surname\": \"Surname\"},"
+        + "\"date_of_birth\": \"1970-01-01\","
+        + "\"is_employee\": true,"
+        + "\"is_director\": true}";
     protected static final String EMPTY_QUOTED_JSON = "\"\"";
     protected static final String MALFORMED_JSON = "{";
     protected static final Instant FIRST_INSTANT = Instant.parse("2022-10-15T09:44:08.108Z");
@@ -93,14 +85,13 @@ public class BaseControllerIT {
 
     protected void setupEricTokenPermissions() {
         httpHeaders.add(EricConstants.ERIC_AUTHORISED_TOKEN_PERMISSIONS,
-            new StringBuilder().append(Permission.Key.USER_PSC_VERIFICATION)
-                .append("=")
-                .append(Permission.Value.CREATE)
-                .append(",")
-                .append(Permission.Value.DELETE)
-                .append(",")
-                .append(Permission.Value.READ)
-                .toString());
+            Permission.Key.USER_PSC_VERIFICATION
+                + "="
+                + Permission.Value.CREATE
+                + ","
+                + Permission.Value.DELETE
+                + ","
+                + Permission.Value.READ);
     }
 
     protected Transaction createOpenTransaction() {

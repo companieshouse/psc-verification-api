@@ -26,4 +26,5 @@ public abstract class BaseVerificationValidator implements VerificationValidator
     public void setNext(final VerificationValidator verificationValidator) {
         this.nextValidator = verificationValidator;
     }
+
 }
