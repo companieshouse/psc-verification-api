@@ -26,7 +26,6 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
         try {
             pscLookupService.getPsc(validationContext.transaction(), validationContext.dto(), validationContext.pscType(),
                 validationContext.passthroughHeader());
-            //TODO - handle - Validation should not continue if the PSC does not exist
         }
         catch (FilingResourceNotFoundException e) {
             validationContext.errors().add(
