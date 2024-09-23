@@ -23,25 +23,20 @@ public class PscIsActiveValidator extends BaseVerificationValidator implements
      * Validates if the PSC is in an active state.
      *
      * @param validationContext the validation context
-     * @return boolean if validation passes
      */
     @Override
-    public boolean validate(final VerificationValidationContext validationContext) {
-
+    public void validate(final VerificationValidationContext validationContext) {
 
         PscApi pscApi = pscLookupService.getPsc(validationContext.transaction(), validationContext.dto(), validationContext.pscType(),
             validationContext.passthroughHeader());
-            setValid(true);
 
         if (Optional.ofNullable(pscApi.getCeasedOn()).isPresent()) {
             validationContext.errors().add(
                 new FieldError("object", "psc_appointment_id", validationContext.dto().pscAppointmentId(), false,
                     new String[]{null, validationContext.dto().pscAppointmentId()}, null, validation.get("psc-is-ceased")));
-            setValid(false);
         }
 
         super.validate(validationContext);
-        return isValid();
     }
 
 }

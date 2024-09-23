@@ -20,16 +20,13 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
      * Validates that the PSC entity is in an active state.
      *
      * @param validationContext the validation context
-     * @return boolean whether the validation passes
      */
     @Override
-    public boolean validate(final VerificationValidationContext validationContext) {
-        setValid(false);
+    public void validate(final VerificationValidationContext validationContext) {
 
         try {
             pscLookupService.getPsc(validationContext.transaction(), validationContext.dto(), validationContext.pscType(),
                 validationContext.passthroughHeader());
-            setValid(true);
             super.validate(validationContext);
         }
         catch (FilingResourceNotFoundException e) {
@@ -38,8 +35,5 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
                     new String[]{null, "notFound.psc_appointment_id"}, null, validation.get("psc-appointment-id-not-found")));
         }
 
-
-        return isValid();
     }
-
 }

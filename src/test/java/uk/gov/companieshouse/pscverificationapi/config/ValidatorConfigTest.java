@@ -33,24 +33,11 @@ class ValidatorConfigTest {
 
     @Test
     void verificationValidationEnable() {
-        when(pscExistsValidator.isValid()).thenReturn(true);
-
         final var valid = testConfig.verificationValidationEnable( pscExistsValidator, pscIsActiveValidator);
 
         assertThat(valid.pscType(), is(PscType.INDIVIDUAL));
         assertThat(valid.first(), is(pscExistsValidator));
         verify(pscExistsValidator, times(1)).setNext(pscIsActiveValidator);
-    }
-
-    @Test
-    void verificationValidationEnableWhenPscDoesNotExist() {
-        when(pscExistsValidator.isValid()).thenReturn(false);
-
-        final var valid = testConfig.verificationValidationEnable( pscExistsValidator, pscIsActiveValidator);
-
-        assertThat(valid.pscType(), is(PscType.INDIVIDUAL));
-        assertThat(valid.first(), is(pscExistsValidator));
-        verify(pscExistsValidator, never()).setNext(pscIsActiveValidator);
     }
 
 }

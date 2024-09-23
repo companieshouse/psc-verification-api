@@ -62,11 +62,10 @@ class PscExistsValidatorTest {
     @Test
     void validateWhenPscExists() {
 
-        boolean isValid = testValidator.validate(
+        testValidator.validate(
             new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));
 
         assertThat(errors, is(empty()));
-        assertThat(isValid, is(true));
 
     }
 
@@ -81,12 +80,11 @@ class PscExistsValidatorTest {
             "PSC Details not found for " + PSC_ID + ": 404 Not Found", errorResponseException));
         when(validation.get("psc-appointment-id-not-found")).thenReturn("not-exists default message");
 
-        boolean isValid = testValidator.validate(
+        testValidator.validate(
             new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));
 
         assertThat(errors.stream().findFirst().orElseThrow(), equalTo(fieldError));
         assertThat(errors, contains(fieldError));
-        assertThat(isValid, is(false));
     }
 
 }
