@@ -21,6 +21,7 @@ public class ValidatorConfig {
     }
 
     private static void createValidationChain(final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator) {
+
         pscExistsValidator.setNext(pscIsActiveValidator);
 
     }

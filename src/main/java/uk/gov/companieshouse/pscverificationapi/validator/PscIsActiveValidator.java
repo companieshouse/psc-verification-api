@@ -21,6 +21,7 @@ public class PscIsActiveValidator extends BaseVerificationValidator implements
 
     /**
      * Validates if the PSC is in an active state.
+     *
      * @param validationContext the validation context
      */
     @Override
