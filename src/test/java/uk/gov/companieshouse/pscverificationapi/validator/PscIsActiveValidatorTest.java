@@ -7,6 +7,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
-import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceInvalidException;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +46,7 @@ class PscIsActiveValidatorTest {
     private String passthroughHeader;
 
     private static final String PSC_ID = "67edfE436y35hetsie6zuAZtr";
+    private static final LocalDate TEST_DATE = LocalDate.of(2024, 5, 5);
 
     @BeforeEach
     void setUp() {
@@ -61,6 +62,8 @@ class PscIsActiveValidatorTest {
     @Test
     void validateWhenPscIsActive() {
 
+        when(pscLookupService.getPsc(transaction, pscVerificationData, pscType,
+            passthroughHeader)).thenReturn(pscApi);
         testValidator.validate(
             new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));
 
@@ -71,13 +74,13 @@ class PscIsActiveValidatorTest {
     void validateWhenPscIsCeased() {
 
         when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
+        when(pscApi.getCeasedOn()).thenReturn(TEST_DATE);
 
         var fieldError = new FieldError("object", "psc_appointment_id", pscVerificationData.pscAppointmentId(), false,
             new String[]{null, PSC_ID}, null, "is ceased default message");
 
         when(pscLookupService.getPsc(transaction, pscVerificationData, pscType,
-            passthroughHeader)).thenThrow(new FilingResourceInvalidException(
-            "PSC is already ceased for " + PSC_ID + ": 400 Bad Request", errorResponseException));
+            passthroughHeader)).thenReturn(pscApi);
         when(validation.get("psc-is-ceased")).thenReturn("is ceased default message");
 
         testValidator.validate(
