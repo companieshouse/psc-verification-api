@@ -26,9 +26,9 @@ public class PscIdProvidedValidator extends BaseVerificationValidator implements
                 .add(new FieldError("object", "psc_appointment_id", null,
                     false, new String[]{null, "psc_appointment_id"}, null,
                     validation.get("psc-appointment-id-missing")));
+        }else {
+            super.validate(validationContext);
         }
-
-        super.validate(validationContext);
     }
 
 }
