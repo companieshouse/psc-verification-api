@@ -3,6 +3,7 @@ package uk.gov.companieshouse.pscverificationapi.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
+import uk.gov.companieshouse.pscverificationapi.validator.CompanyValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscIdProvidedValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.ValidationChainEnable;
 import uk.gov.companieshouse.pscverificationapi.validator.VerificationValidationChain;
@@ -16,17 +17,22 @@ public class ValidatorConfig {
     //TODO add a 2nd validation chain for the RLE journey if required
 
     @Bean
-    public ValidationChainEnable verificationValidationEnable(final PscIdProvidedValidator pscIdProvidedValidator, final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator) {
-        createValidationChain(pscIdProvidedValidator, pscExistsValidator, pscIsActiveValidator);
+    public ValidationChainEnable verificationValidationEnable(final PscIdProvidedValidator pscIdProvidedValidator,
+              final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator,
+              final CompanyValidator companyValidator) {
+
+        createValidationChain(pscIdProvidedValidator, pscExistsValidator, pscIsActiveValidator, companyValidator);
 
         return new VerificationValidationChain(PscType.INDIVIDUAL, pscIdProvidedValidator);
     }
 
     private static void createValidationChain(final PscIdProvidedValidator pscIdProvidedValidator,
-        final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator) {
-        pscIdProvidedValidator.setNext(pscExistsValidator);
+        final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator,
+        final CompanyValidator companyValidator) {
 
+        pscIdProvidedValidator.setNext(pscExistsValidator);
         pscExistsValidator.setNext(pscIsActiveValidator);
+        pscIsActiveValidator.setNext(companyValidator);
 
     }
 
