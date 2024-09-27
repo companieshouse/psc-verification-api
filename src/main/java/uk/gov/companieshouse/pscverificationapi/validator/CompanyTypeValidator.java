@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class CompanyValidator extends BaseVerificationValidator implements
+public class CompanyTypeValidator extends BaseVerificationValidator implements
     VerificationValidator {
 
     private final CompanyProfileService companyProfileService;
     private final Map<String, List<String>> company;
 
-    public CompanyValidator(final CompanyProfileService companyProfileService,
-                            @Qualifier(value = "validation") Map<String, String> validation,
-                            @Qualifier(value = "company") Map<String, List<String>> company) {
+    public CompanyTypeValidator(final CompanyProfileService companyProfileService,
+                                @Qualifier(value = "validation") Map<String, String> validation,
+                                @Qualifier(value = "company") Map<String, List<String>> company) {
         super(validation);
         this.companyProfileService = companyProfileService;
         this.validation = validation;
@@ -38,9 +38,9 @@ public class CompanyValidator extends BaseVerificationValidator implements
 
         if (companyProfile != null && !company.get("type-allowed").contains(companyProfile.getType())) {
 
-                validationContext.errors().add(
-                    new FieldError("object", "type", companyProfile.getType(), false,
-                        new String[]{null, "data.type"}, null, validation.get("company-type-not-allowed")));
+            validationContext.errors().add(
+                new FieldError("object", "type", companyProfile.getType(), false,
+                    new String[]{null, "data.type"}, null, validation.get("company-type-not-allowed")));
         }
 
         super.validate(validationContext);
