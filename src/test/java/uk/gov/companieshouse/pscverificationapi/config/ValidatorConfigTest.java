@@ -11,7 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
-import uk.gov.companieshouse.pscverificationapi.validator.CompanyValidator;
+import uk.gov.companieshouse.pscverificationapi.validator.CompanyStatusValidator;
+import uk.gov.companieshouse.pscverificationapi.validator.CompanyTypeValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscExistsValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscIdProvidedValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscIsActiveValidator;
@@ -28,7 +29,9 @@ class ValidatorConfigTest {
     @Mock
     private PscIsActiveValidator pscIsActiveValidator;
     @Mock
-    private CompanyValidator companyValidator;
+    private CompanyTypeValidator companyTypeValidator;
+    @Mock
+    private CompanyStatusValidator companyStatusValidator;
 
     @BeforeEach
     void setUp() {
@@ -38,12 +41,13 @@ class ValidatorConfigTest {
     @Test
     void verificationValidationEnable() {
         final var valid = testConfig.verificationValidationEnable(pscIdProvidedValidator, pscExistsValidator,
-            pscIsActiveValidator, companyValidator);
+            pscIsActiveValidator, companyTypeValidator, companyStatusValidator);
 
         assertThat(valid.pscType(), is(PscType.INDIVIDUAL));
         assertThat(valid.first(), is(pscIdProvidedValidator));
         verify(pscExistsValidator, times(1)).setNext(pscIsActiveValidator);
-        verify(pscIsActiveValidator, times(1)).setNext(companyValidator);
+        verify(pscIsActiveValidator, times(1)).setNext(companyTypeValidator);
+        verify(companyTypeValidator, times(1)).setNext(companyStatusValidator);
     }
 
 }

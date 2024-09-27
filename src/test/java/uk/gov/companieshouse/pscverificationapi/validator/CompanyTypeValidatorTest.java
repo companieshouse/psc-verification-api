@@ -25,7 +25,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CompanyValidatorTest {
+class CompanyTypeValidatorTest {
 
     @Mock
     private CompanyProfileApi companyProfile;
@@ -40,7 +40,7 @@ class CompanyValidatorTest {
     @Mock
     private Transaction transaction;
 
-    CompanyValidator testValidator;
+    CompanyTypeValidator testValidator;
     private PscType pscType;
     private List<FieldError> errors;
     private String passthroughHeader;
@@ -54,7 +54,7 @@ class CompanyValidatorTest {
         pscType = PscType.INDIVIDUAL;
         passthroughHeader = "passthroughHeader";
 
-        testValidator = new CompanyValidator(companyProfileService, validation, company);
+        testValidator = new CompanyTypeValidator(companyProfileService, validation, company);
     }
 
     @AfterEach
@@ -88,5 +88,4 @@ class CompanyValidatorTest {
         assertThat(errors.stream().findFirst().orElseThrow(), equalTo(fieldError));
         assertThat(errors, IsIterableContainingInOrder.contains(fieldError));
     }
-
 }
