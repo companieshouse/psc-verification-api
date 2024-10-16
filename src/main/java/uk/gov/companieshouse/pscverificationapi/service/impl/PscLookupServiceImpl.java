@@ -2,10 +2,15 @@ package uk.gov.companieshouse.pscverificationapi.service.impl;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
+import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -15,6 +20,7 @@ import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
+import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
 
 @Service
 public class PscLookupServiceImpl implements PscLookupService {
@@ -28,11 +34,22 @@ public class PscLookupServiceImpl implements PscLookupService {
         this.logger = logger;
     }
 
+    /**
+     * Retrieve a PSC by PscVerificationData.
+     *
+     * @param transaction       the Transaction
+     * @param data              the PSC verification data
+     * @param pscType           the PSC Type
+     * @param ericPassThroughHeader includes authorisation for transaction fetch
+     * @return the PSC details, if found
+     * @throws PscLookupServiceException if the PSC was not found or an error occurred
+     */
     @Override
     public PscApi getPsc(final Transaction transaction, final PscVerificationData data,
                                          final PscType pscType, final String ericPassThroughHeader)
         throws PscLookupServiceException {
 
+        final var logMap = LogHelper.createLogMap(transaction.getId());
         String pscAppointmentId = data.pscAppointmentId();
 
         try {
@@ -51,6 +68,7 @@ public class PscLookupServiceImpl implements PscLookupService {
 
         } catch (final ApiErrorResponseException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                logger.errorContext(transaction.getId(), UNEXPECTED_STATUS_CODE, e, logMap);
                 throw new FilingResourceNotFoundException(
                     MessageFormat.format("PSC Details not found for {0}: {1} {2}", pscAppointmentId,
                         e.getStatusCode(), e.getStatusMessage()), e);
@@ -60,9 +78,53 @@ public class PscLookupServiceImpl implements PscLookupService {
                     e.getStatusCode(), e.getStatusMessage()), e);
 
         } catch (URIValidationException | IOException e) {
+            logger.errorContext(transaction.getId(), UNEXPECTED_STATUS_CODE, e, logMap);
             throw new PscLookupServiceException(
                 MessageFormat.format("Error Retrieving PSC details for {0}: {1}", pscAppointmentId,
                     e.getMessage()), e);
         }
+    }
+
+    /**
+     * Retrieve a UvidMatch with the PSC data.
+     *
+     * @param transaction       the Transaction
+     * @param data              the PSC verification data
+     * @param pscType           the PSC Type
+     * @param ericPassThroughHeader includes authorisation for transaction fetch
+     * @return the UvidMatch, if found
+     * @throws PscLookupServiceException if the PSC was not found or an error occurred
+     */
+    @Override
+    public UvidMatch getUvidMatchWithPscData(final Transaction transaction,
+        final PscVerificationData data, final PscType pscType, final String ericPassThroughHeader)
+        throws PscLookupServiceException {
+
+        UvidMatch uvidMatch = new UvidMatch();
+        Optional<String> uvid = Optional.ofNullable(data.verificationDetails().uvid());
+        uvidMatch.setUvid(uvid.orElse(""));
+
+        PscApi pscData = getPsc(transaction, data, pscType, ericPassThroughHeader);
+        setUvidDataFromPsc(uvidMatch, pscData);
+
+        return uvidMatch;
+    }
+
+    //TODO Update UvidMatch with the full DOB when available from the PscDetails
+    private void setUvidDataFromPsc(UvidMatch uvidMatch, PscApi pscData) {
+
+        List<String> forenames = new ArrayList<>();
+        Optional<String> forename = Optional.ofNullable(pscData.getNameElements().getForename());
+        //Note: In live, the middleName field may contain multiple names,
+        //but there is no data populated in the otherForenames field
+        Optional<String> middleName = Optional.ofNullable(pscData.getNameElements().getMiddleName());
+        Optional<String> surname = Optional.ofNullable(pscData.getNameElements().getSurname());
+
+        forename.ifPresent(forenames::addFirst);
+        middleName.ifPresent(names -> forenames.addAll(Arrays.asList(names.split("\\s+"))));
+
+        uvidMatch.setForenames(forenames);
+        uvidMatch.setSurname(surname.orElse(""));
+
     }
 }
