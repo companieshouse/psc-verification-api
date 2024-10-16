@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.pscverificationapi.service;
 
+import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -11,10 +12,10 @@ import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceExcept
  */
 public interface PscLookupService {
     /**
-     * Retrieve a PSC by ID.
+     * Retrieve a PSC by PscVerificationData.
      *
      * @param transaction       the Transaction
-     * @param data              the psc verification data
+     * @param data              the PSC verification data
      * @param pscType           the PSC Type
      * @param ericPassThroughHeader includes authorisation for transaction fetch
      * @return the PSC details, if found
@@ -22,4 +23,19 @@ public interface PscLookupService {
      */
     PscApi getPsc(Transaction transaction, PscVerificationData data, PscType pscType, final String ericPassThroughHeader)
         throws PscLookupServiceException;
+
+
+    /**
+     * Retrieve a UvidMatch with the PSC data.
+     *
+     * @param transaction       the Transaction
+     * @param data              the PSC verification data
+     * @param pscType           the PSC Type
+     * @param ericPassThroughHeader includes authorisation for transaction fetch
+     * @return the UvidMatch, if found
+     * @throws PscLookupServiceException if the PSC was not found or an error occurred
+     */
+    UvidMatch getUvidMatchWithPscData(Transaction transaction, PscVerificationData data, PscType pscType, final String ericPassThroughHeader)
+        throws PscLookupServiceException;
+
 }
