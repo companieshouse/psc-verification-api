@@ -26,7 +26,7 @@ public interface PscLookupService {
 
 
     /**
-     * Retrieve a UvidMatch by PscVerificationData.
+     * Retrieve a UvidMatch with the PSC data.
      *
      * @param transaction       the Transaction
      * @param data              the PSC verification data
@@ -35,7 +35,7 @@ public interface PscLookupService {
      * @return the UvidMatch, if found
      * @throws PscLookupServiceException if the PSC was not found or an error occurred
      */
-    UvidMatch getUvidMatchFromPscData(Transaction transaction, PscVerificationData data, PscType pscType, final String ericPassThroughHeader)
+    UvidMatch getUvidMatchWithPscData(Transaction transaction, PscVerificationData data, PscType pscType, final String ericPassThroughHeader)
         throws PscLookupServiceException;
 
 }

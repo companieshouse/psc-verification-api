@@ -3,6 +3,7 @@ package uk.gov.companieshouse.pscverificationapi.service.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -34,6 +35,7 @@ import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
+import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.sdk.ApiClientService;
 import uk.gov.companieshouse.logging.Logger;
@@ -46,8 +48,14 @@ import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 class PscLookupServiceImplTest extends TestBaseService {
 
     private static final String PSC_ID = "654321";
+    private static final VerificationDetails verificationDetails =
+        VerificationDetails.newBuilder().uvid("XY222222223")
+            .build();
     private static final PscVerificationData PSC_VERIFICATION_DATA =
-        PscVerificationData.newBuilder().pscAppointmentId(PSC_ID).companyNumber(COMPANY_NUMBER)
+        PscVerificationData.newBuilder()
+            .pscAppointmentId(PSC_ID)
+            .companyNumber(COMPANY_NUMBER)
+            .verificationDetails(verificationDetails)
             .build();
 
     @Mock
@@ -151,7 +159,7 @@ class PscLookupServiceImplTest extends TestBaseService {
             is("Error Retrieving PSC details for " + PSC_ID + ": 403 test case"));
     }
 
-    //TODO - Add if it is agreed to implement RO verifications
+    //TODO - Add if RO verifications implemented
     @Disabled
     @Test
     void getPscWhenTypeNotRecognised() {
@@ -164,9 +172,10 @@ class PscLookupServiceImplTest extends TestBaseService {
     }
 
     @Test
-    void getUvidMatchFromPscDataWhenFound() throws IOException, URIValidationException {
+    void getUvidMatchWithPscData() throws IOException, URIValidationException {
 
         UvidMatch uvidMatch = new UvidMatch();
+        uvidMatch.setUvid("XY222222223");
         List<String> forenames =
             new ArrayList<>(Arrays.asList("Forename1", "Forename2", "Forename3"));
         uvidMatch.setForenames(forenames);
@@ -175,7 +184,7 @@ class PscLookupServiceImplTest extends TestBaseService {
         PscApi pscData = new PscApi();
         NameElementsApi nameElements = new NameElementsApi();
         nameElements.setForename("Forename1");
-        nameElements.setOtherForenames("Forename2 Forename3");
+        nameElements.setMiddleName("Forename2 Forename3");
         nameElements.setSurname("Surname");
         pscData.setNameElements(nameElements);
 
@@ -191,17 +200,67 @@ class PscLookupServiceImplTest extends TestBaseService {
         when(apiClientService.getApiClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
 
         var uvidMatchTest =
-            testService.getUvidMatchFromPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL,
+            testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL,
                 PASSTHROUGH_HEADER);
 
         assertThat(uvidMatchTest, samePropertyValuesAs(uvidMatch));
+        //verify the forenames are in the correct order
+        assertEquals(uvidMatchTest.getForenames(), uvidMatch.getForenames());
 
     }
 
     @Test
-    void getUvidMatchFromPscDataWhenForenamesBlank() throws IOException, URIValidationException {
+    void getUvidMatchWithNoUvid() throws IOException, URIValidationException {
+
+        VerificationDetails verificationDetails = VerificationDetails.newBuilder().build();
+        PscVerificationData pscVerificationData =
+            PscVerificationData.newBuilder()
+                .pscAppointmentId(PSC_ID)
+                .companyNumber(COMPANY_NUMBER)
+                .verificationDetails(verificationDetails)
+                .build();
 
         UvidMatch uvidMatch = new UvidMatch();
+        List<String> forenames =
+            new ArrayList<>(Arrays.asList("Forename1", "Forename2", "Forename3"));
+        uvidMatch.setForenames(forenames);
+        uvidMatch.setSurname("Surname");
+        uvidMatch.setUvid("");
+
+        PscApi pscData = new PscApi();
+        NameElementsApi nameElements = new NameElementsApi();
+        nameElements.setForename("Forename1");
+        nameElements.setMiddleName("Forename2 Forename3");
+        nameElements.setSurname("Surname");
+        pscData.setNameElements(nameElements);
+
+        when(apiResponse.getData()).thenReturn(pscData);
+        when(pscIndividualGet.execute()).thenReturn(apiResponse);
+        when(pscsResourceHandler.getIndividual("/company/"
+            + COMPANY_NUMBER
+            + "/persons-with-significant-control/"
+            + INDIVIDUAL.getValue()
+            + "/"
+            + PSC_ID)).thenReturn(pscIndividualGet);
+        when(apiClient.pscs()).thenReturn(pscsResourceHandler);
+        when(apiClientService.getApiClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
+
+        var uvidMatchTest =
+            testService.getUvidMatchWithPscData(transaction, pscVerificationData, INDIVIDUAL,
+                PASSTHROUGH_HEADER);
+
+        assertThat(uvidMatchTest, samePropertyValuesAs(uvidMatch));
+        //verify the forenames are in the correct order
+        assertEquals(uvidMatchTest.getForenames(), uvidMatch.getForenames());
+
+    }
+
+    @Test
+    void getUvidMatchWithPscDataWhenForenamesBlank()
+        throws IOException, URIValidationException {
+
+        UvidMatch uvidMatch = new UvidMatch();
+        uvidMatch.setUvid("XY222222223");
         List<String> forenames = new ArrayList<>(List.of());
         uvidMatch.setForenames(forenames);
         uvidMatch.setSurname("Surname");
@@ -223,17 +282,20 @@ class PscLookupServiceImplTest extends TestBaseService {
         when(apiClientService.getApiClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
 
         var uvidMatchTest =
-            testService.getUvidMatchFromPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL,
+            testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL,
                 PASSTHROUGH_HEADER);
 
         assertThat(uvidMatchTest, samePropertyValuesAs(uvidMatch));
+        //verify the forenames are in the correct order
+        assertEquals(uvidMatchTest.getForenames(), uvidMatch.getForenames());
 
     }
 
     @Test
-    void getUvidMatchWhenSurnameBlank() throws IOException, URIValidationException {
+    void getUvidMatchWithPscDataWhenSurnameBlank() throws IOException, URIValidationException {
 
         UvidMatch uvidMatch = new UvidMatch();
+        uvidMatch.setUvid("XY222222223");
         List<String> forenames =
             new ArrayList<>(Arrays.asList("Forename1", "Forename2", "Forename3"));
         uvidMatch.setForenames(forenames);
@@ -242,7 +304,7 @@ class PscLookupServiceImplTest extends TestBaseService {
         PscApi pscData = new PscApi();
         NameElementsApi nameElements = new NameElementsApi();
         nameElements.setForename("Forename1");
-        nameElements.setOtherForenames("Forename2 Forename3");
+        nameElements.setMiddleName("Forename2 Forename3");
         pscData.setNameElements(nameElements);
 
         when(apiResponse.getData()).thenReturn(pscData);
@@ -257,15 +319,16 @@ class PscLookupServiceImplTest extends TestBaseService {
         when(apiClientService.getApiClient(PASSTHROUGH_HEADER)).thenReturn(apiClient);
 
         var uvidMatchTest =
-            testService.getUvidMatchFromPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL,
+            testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL,
                 PASSTHROUGH_HEADER);
 
         assertThat(uvidMatchTest, samePropertyValuesAs(uvidMatch));
+        assertEquals(uvidMatchTest.getForenames(), uvidMatch.getForenames());
 
     }
 
     @Test
-    void getUvidMatchFromPscDataWhenNotFound() throws IOException {
+    void getUvidMatchWithPscDataWhenNotFound() throws IOException {
 
         final var exception = new ApiErrorResponseException(
             new HttpResponseException.Builder(HttpStatusCodes.STATUS_CODE_NOT_FOUND, "test case",
@@ -273,7 +336,7 @@ class PscLookupServiceImplTest extends TestBaseService {
         when(apiClientService.getApiClient(PASSTHROUGH_HEADER)).thenThrow(exception);
 
         final var thrown = assertThrows(FilingResourceNotFoundException.class,
-            () -> testService.getUvidMatchFromPscData(transaction, PSC_VERIFICATION_DATA,
+            () -> testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA,
                 INDIVIDUAL, PASSTHROUGH_HEADER));
 
         assertThat(thrown.getMessage(),
@@ -282,14 +345,14 @@ class PscLookupServiceImplTest extends TestBaseService {
     }
 
     @Test
-    void getUvidMatchWhenErrorRetrieving() throws IOException {
+    void getUvidMatchWithPscDataWhenErrorRetrieving() throws IOException {
         final var exception = new ApiErrorResponseException(
             new HttpResponseException.Builder(HttpStatusCodes.STATUS_CODE_FORBIDDEN, "test case",
                 new HttpHeaders()));
         when(apiClientService.getApiClient(PASSTHROUGH_HEADER)).thenThrow(exception);
 
         final var thrown = assertThrows(PscLookupServiceException.class,
-            () -> testService.getUvidMatchFromPscData(transaction, PSC_VERIFICATION_DATA,
+            () -> testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA,
                 INDIVIDUAL, PASSTHROUGH_HEADER));
 
         assertThat(thrown.getMessage(),
@@ -298,7 +361,7 @@ class PscLookupServiceImplTest extends TestBaseService {
 
     @Disabled
     @Test
-    void getUvidMatchFromPscDataWhenTypeNotRecognised() {
-        //TODO - Add if it is agreed to implement RO verifications
+    void getUvidMatchWithPscDataWhenTypeNotRecognised() {
+        //TODO - Add if RO verifications implemented
     }
 }

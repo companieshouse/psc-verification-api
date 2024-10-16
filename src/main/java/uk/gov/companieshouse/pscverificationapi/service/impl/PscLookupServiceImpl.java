@@ -86,7 +86,7 @@ public class PscLookupServiceImpl implements PscLookupService {
     }
 
     /**
-     * Retrieve a UvidMatch by PscVerificationData.
+     * Retrieve a UvidMatch with the PSC data.
      *
      * @param transaction       the Transaction
      * @param data              the PSC verification data
@@ -96,32 +96,35 @@ public class PscLookupServiceImpl implements PscLookupService {
      * @throws PscLookupServiceException if the PSC was not found or an error occurred
      */
     @Override
-    public UvidMatch getUvidMatchFromPscData(final Transaction transaction,
+    public UvidMatch getUvidMatchWithPscData(final Transaction transaction,
         final PscVerificationData data, final PscType pscType, final String ericPassThroughHeader)
         throws PscLookupServiceException {
 
+        UvidMatch uvidMatch = new UvidMatch();
+        Optional<String> uvid = Optional.ofNullable(data.verificationDetails().uvid());
+        uvidMatch.setUvid(uvid.orElse(""));
+
         PscApi pscData = getPsc(transaction, data, pscType, ericPassThroughHeader);
-        UvidMatch uvidMatch;
-        uvidMatch = getUvidMatch(pscData);
+        setUvidDataFromPsc(uvidMatch, pscData);
 
         return uvidMatch;
     }
 
     //TODO Update UvidMatch with the full DOB when available from the PscDetails
-    private UvidMatch getUvidMatch(PscApi pscData) {
-        UvidMatch uvidMatch = new UvidMatch();
+    private void setUvidDataFromPsc(UvidMatch uvidMatch, PscApi pscData) {
 
         List<String> forenames = new ArrayList<>();
         Optional<String> forename = Optional.ofNullable(pscData.getNameElements().getForename());
-        Optional<String> otherForenames = Optional.ofNullable(pscData.getNameElements().getOtherForenames());
+        //Note: In live, the middleName field may contain multiple names,
+        //but there is no data populated in the otherForenames field
+        Optional<String> middleName = Optional.ofNullable(pscData.getNameElements().getMiddleName());
         Optional<String> surname = Optional.ofNullable(pscData.getNameElements().getSurname());
 
-        forename.ifPresent(forenames::add);
-        otherForenames.ifPresent(names -> forenames.addAll(Arrays.asList(names.split("\\s+"))));
+        forename.ifPresent(forenames::addFirst);
+        middleName.ifPresent(names -> forenames.addAll(Arrays.asList(names.split("\\s+"))));
 
         uvidMatch.setForenames(forenames);
         uvidMatch.setSurname(surname.orElse(""));
 
-        return uvidMatch;
     }
 }
