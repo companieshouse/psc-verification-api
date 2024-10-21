@@ -16,6 +16,7 @@ import uk.gov.companieshouse.pscverificationapi.validator.CompanyTypeValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscExistsValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscIdProvidedValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscIsActiveValidator;
+import uk.gov.companieshouse.pscverificationapi.validator.UvidExistsValidator;
 
 @ExtendWith(MockitoExtension.class)
 class ValidatorConfigTest {
@@ -32,6 +33,8 @@ class ValidatorConfigTest {
     private CompanyTypeValidator companyTypeValidator;
     @Mock
     private CompanyStatusValidator companyStatusValidator;
+    @Mock
+    private UvidExistsValidator uvidExistsValidator;
 
     @BeforeEach
     void setUp() {
@@ -41,13 +44,14 @@ class ValidatorConfigTest {
     @Test
     void verificationValidationEnable() {
         final var valid = testConfig.verificationValidationEnable(pscIdProvidedValidator, pscExistsValidator,
-            pscIsActiveValidator, companyTypeValidator, companyStatusValidator);
+            pscIsActiveValidator, companyTypeValidator, companyStatusValidator, uvidExistsValidator);
 
         assertThat(valid.pscType(), is(PscType.INDIVIDUAL));
         assertThat(valid.first(), is(pscIdProvidedValidator));
         verify(pscExistsValidator, times(1)).setNext(pscIsActiveValidator);
         verify(pscIsActiveValidator, times(1)).setNext(companyTypeValidator);
         verify(companyTypeValidator, times(1)).setNext(companyStatusValidator);
+        verify(companyStatusValidator, times(1)).setNext(uvidExistsValidator);
     }
 
 }

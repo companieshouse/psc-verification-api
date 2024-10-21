@@ -8,11 +8,11 @@ import uk.gov.companieshouse.api.handler.identityverification.request.PrivateUvi
 import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse;
 import uk.gov.companieshouse.api.model.ApiResponse;
-import uk.gov.companieshouse.api.sdk.ApiClientService;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.exception.TransactionServiceException;
 import uk.gov.companieshouse.pscverificationapi.exception.IdvLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
+import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.InternalApiClientService;
 import uk.gov.companieshouse.pscverificationapi.service.IdvLookupService;
 
 @Service
@@ -23,15 +23,15 @@ public class IdvLookupServiceImpl implements IdvLookupService {
     private static final String UVID_MATCH_URI_PART = "/uvid_match";
     private static final String UNEXPECTED_STATUS_CODE = "Unexpected Status Code received";
 
-    private final ApiClientService apiClientService;
     private final Logger logger;
+    private final InternalApiClientService internalApiClientService;
 
     /**
      * Interacts with the external CHS IDV API service to confirm a UVID match
      */
-    public IdvLookupServiceImpl(ApiClientService apiClientService, final Logger logger) {
-        this.apiClientService = apiClientService;
+    public IdvLookupServiceImpl(final Logger logger, InternalApiClientService internalApiClientService) {
         this.logger = logger;
+        this.internalApiClientService = internalApiClientService;
     }
 
     /**
@@ -40,16 +40,15 @@ public class IdvLookupServiceImpl implements IdvLookupService {
      * @return uvidMatchResponse, if found
      * @throws IdvLookupServiceException if an error occurs within this service
      * @throws ApiErrorResponseException if the API responds with an error
-     * @throws URIValidationException for a UVID validation error
      */
     @Override
     public UvidMatchResponse matchUvid(UvidMatch uvidMatch)
-        throws IdvLookupServiceException, ApiErrorResponseException, URIValidationException {
+        throws IdvLookupServiceException, ApiErrorResponseException {
 
         final var logMap = LogMapHelper.createLogMap(uvidMatch.getUvid());
         var uvidMatchUrl = IDENTITY_BASE_URI + UVID_MATCH_URI_PART;
 
-        var internalApiClient = apiClientService.getInternalApiClient();
+        var internalApiClient = internalApiClientService.getInternalApiClient();
         PrivateUvidMatchResourcePost uvidMatchResourcePost =
             internalApiClient.privateIdentityVerificationResourceHandler()
                 .matchUvid(uvidMatchUrl, uvidMatch);
@@ -57,7 +56,6 @@ public class IdvLookupServiceImpl implements IdvLookupService {
         try {
             ApiResponse<UvidMatchResponse> uvidMatchResponse = uvidMatchResourcePost.execute();
             return uvidMatchResponse.getData();
-
         }
         catch (final URIValidationException e) {
             logger.errorContext(uvidMatch.getUvid(), UNEXPECTED_STATUS_CODE, e, logMap);
