@@ -81,7 +81,6 @@ class RestExceptionHandlerTest {
 
     private FieldError fieldError;
     private FieldError fieldErrorWithRejectedValue;
-    private ApiError expectedError;
     private ApiError expectedErrorWithRejectedValue;
 
     @BeforeEach
@@ -104,7 +103,6 @@ class RestExceptionHandlerTest {
             new FieldError("object", "appointmentId", "1kdaTltWeaP1EB70SSD9SLmiK5Z", false, codes2, null,
                 "errorWithRejectedValue");
 
-        expectedError = new ApiError("field is blank", "$.company_number", "json-path", "ch:validation");
         expectedErrorWithRejectedValue =
             new ApiError("{rejected-value} is ceased", "$.psc_appointment_id", "json-path", "ch:validation");
 

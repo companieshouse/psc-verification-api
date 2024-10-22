@@ -12,10 +12,10 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
 public class ClosedTransactionInterceptor implements HandlerInterceptor {
-    private final Logger LOGGER;
+    private final Logger logger;
 
     public ClosedTransactionInterceptor(String loggingNamespace) {
-        this.LOGGER = LoggerFactory.getLogger(loggingNamespace);
+        this.logger = LoggerFactory.getLogger(loggingNamespace);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ClosedTransactionInterceptor implements HandlerInterceptor {
         } else {
             Map<String, Object> debugMap = new HashMap<>();
             debugMap.put("request_method", request.getMethod());
-            this.LOGGER.errorRequest(request, "ClosedTransactionInterceptor error: " +
+            this.logger.errorRequest(request, "ClosedTransactionInterceptor error: " +
                 "transaction is not closed. The filings cannot be generated.", debugMap);
             response.setStatus(403);
             return false;

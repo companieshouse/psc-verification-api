@@ -163,8 +163,7 @@ class PscLookupServiceImplTest extends TestBaseService {
         assertThat(thrown.getMessage(), is("Error Retrieving PSC details for " + PSC_ID + ": 403 test case"));
     }
 
-    //TODO - Add if RO verifications implemented
-    @Disabled
+    @Disabled("Disabled as RLE functionality is on hold")
     @Test
     void getPscWhenTypeNotRecognised() {
 
@@ -324,12 +323,6 @@ class PscLookupServiceImplTest extends TestBaseService {
         assertThat(thrown.getMessage(),
             is("Error Retrieving PSC details for " + PSC_ID + ": 403 test case"));
 
-    }
-
-    @Disabled
-    @Test
-    void getUvidMatchWithPscDataWhenTypeNotRecognised() {
-        //TODO - Add if RO verifications implemented
     }
 
     private static UvidMatch createUvid(String uvidCode) {

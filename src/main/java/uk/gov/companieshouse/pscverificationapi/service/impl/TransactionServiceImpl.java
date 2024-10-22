@@ -49,8 +49,6 @@ public class TransactionServiceImpl implements TransactionService {
                             .get(uri)
                             .execute()
                             .getData();
-// N/A           logMap.put("company_number", transaction.getCompanyNumber());
-// N/A           logMap.put("company_name", transaction.getCompanyName());
             logger.debugContext(transactionId, "Retrieved transaction details", logMap);
             return transaction;
         }

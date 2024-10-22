@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @Tag("app")
 @SpringBootTest
-public class PscVerificationApiApplicationTests {
+class PscVerificationApiApplicationTests {
 
     @Test
     void contextLoads() {
