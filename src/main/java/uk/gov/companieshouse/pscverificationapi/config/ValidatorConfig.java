@@ -6,6 +6,7 @@ import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.validator.CompanyStatusValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.CompanyTypeValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscIdProvidedValidator;
+import uk.gov.companieshouse.pscverificationapi.validator.UvidExistsValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.ValidationChainEnable;
 import uk.gov.companieshouse.pscverificationapi.validator.VerificationValidationChain;
 import uk.gov.companieshouse.pscverificationapi.validator.PscExistsValidator;
@@ -19,23 +20,26 @@ public class ValidatorConfig {
 
     @Bean
     public ValidationChainEnable verificationValidationEnable(final PscIdProvidedValidator pscIdProvidedValidator,
-              final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator,
-              final CompanyTypeValidator companyTypeValidator, final CompanyStatusValidator companyStatusValidator) {
+          final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator,
+          final CompanyTypeValidator companyTypeValidator, final CompanyStatusValidator companyStatusValidator,
+          final UvidExistsValidator uvidExistsValidator) {
 
         createValidationChain(pscIdProvidedValidator, pscExistsValidator, pscIsActiveValidator, companyTypeValidator,
-            companyStatusValidator);
+            companyStatusValidator, uvidExistsValidator);
 
         return new VerificationValidationChain(PscType.INDIVIDUAL, pscIdProvidedValidator);
     }
 
     private static void createValidationChain(final PscIdProvidedValidator pscIdProvidedValidator,
         final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator,
-        final CompanyTypeValidator companyTypeValidator, final CompanyStatusValidator companyStatusValidator) {
+        final CompanyTypeValidator companyTypeValidator, final CompanyStatusValidator companyStatusValidator,
+        final UvidExistsValidator uvidExistsValidator) {
 
         pscIdProvidedValidator.setNext(pscExistsValidator);
         pscExistsValidator.setNext(pscIsActiveValidator);
         pscIsActiveValidator.setNext(companyTypeValidator);
         companyTypeValidator.setNext(companyStatusValidator);
+        companyStatusValidator.setNext(uvidExistsValidator);
 
     }
 
