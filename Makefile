@@ -67,7 +67,7 @@ coverage:
 	cp ./target/$(artifact_name)-$(version).jar ./$(artifact_name).jar
 
 .PHONY: sonar
-sonar: security-check
+sonar:
 	mvn sonar:sonar
 
 .PHONY: sonar-pr-analysis
