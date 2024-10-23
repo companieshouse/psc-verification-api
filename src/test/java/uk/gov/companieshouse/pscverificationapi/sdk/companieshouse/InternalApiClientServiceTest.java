@@ -24,7 +24,7 @@ class InternalApiClientServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new InternalApiClientService();
+        service = new InternalApiClientService("DummyUrl");
     }
 
     @Test
