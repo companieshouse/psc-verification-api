@@ -24,7 +24,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -43,7 +42,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.validation.Errors;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
@@ -121,7 +119,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     }
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         baseSetUp();
         links = ResourceLinks.newBuilder().self(SELF).validationStatus(VALID).build();
     }
@@ -133,7 +131,6 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
         //Skip for time being if isRLE is true, remove when RLE functionality is implemented
         assumeFalse(isRLE, "Skipping test because isRLE is true");
 
-        final var validationErrors = new ArrayList<Errors>();
         final var body = "{" + COMMON_FRAGMENT + (isRLE ? RLE_FRAGMENT + RO_FRAGMENT :
             INDIVIDUAL_FRAGMENT) + "}";
         final var entity = PscVerification.newBuilder()
@@ -193,7 +190,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     }
 
     //FIXME
-    @Disabled
+    @Disabled("Disabled until confirmed that RLE functionality is required")
     @ParameterizedTest(name = "[{index}] isRLE={1}")
     @MethodSource("provideCreateVerificationData")
     void getPscVerificationThenResponse200(final PscVerificationData data,
@@ -247,7 +244,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     }
 
     //FIXME
-    @Disabled
+    @Disabled("Disabled until confirmed that RLE functionality is required")
     @Test
     void getPscVerificationNotFoundThenResponse404() throws Exception {
 

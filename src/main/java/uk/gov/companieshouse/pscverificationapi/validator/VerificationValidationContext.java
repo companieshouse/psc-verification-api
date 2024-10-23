@@ -1,13 +1,14 @@
 package uk.gov.companieshouse.pscverificationapi.validator;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
 import org.springframework.lang.NonNull;
 import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 public record VerificationValidationContext(@NonNull PscVerificationData dto,
                                             @NonNull List<FieldError> errors,

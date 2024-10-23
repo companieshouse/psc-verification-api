@@ -13,7 +13,7 @@ public abstract class BaseVerificationValidator implements VerificationValidator
     protected Map<String, String> validation;
     private VerificationValidator nextValidator;
 
-    public BaseVerificationValidator(@Qualifier(value = "validation") final Map<String, String> validation) {
+    protected BaseVerificationValidator(@Qualifier(value = "validation") final Map<String, String> validation) {
         this.validation = validation;
     }
 

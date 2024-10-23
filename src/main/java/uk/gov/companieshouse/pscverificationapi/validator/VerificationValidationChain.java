@@ -1,8 +1,9 @@
 package uk.gov.companieshouse.pscverificationapi.validator;
 
+import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
+
 import java.util.Objects;
 import java.util.StringJoiner;
-import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 
 /**
  * Record representing a validation chain for a specific PSC (Person with Significant Control) type.
