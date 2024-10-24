@@ -239,6 +239,9 @@
                                     <fileset dir="src/main/resources">
                                         <include name="*.properties"/>
                                     </fileset>
+                                    <fileset dir="src/test/resources">
+                                        <include name="*.properties"/>
+                                    </fileset>
                                 </copy>
                             </target>
                         </configuration>
