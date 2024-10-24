@@ -9,10 +9,9 @@ import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 @Service
 public class InternalApiClientService {
 
-    @Value("internal.api.url")
     private String internalApiUrl;
 
-    public InternalApiClientService(String internalApiUrl) {
+    public InternalApiClientService(@Value("internal.api.url") String internalApiUrl) {
         this.internalApiUrl = internalApiUrl;
     }
 
