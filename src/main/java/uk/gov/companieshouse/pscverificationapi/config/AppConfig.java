@@ -12,8 +12,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +22,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import uk.gov.companieshouse.api.sdk.ApiClientService;
 import uk.gov.companieshouse.api.sdk.impl.ApiClientServiceImpl;
-import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.InternalApiClientService;
 
 @Configuration
 @EnableTransactionManagement
@@ -94,10 +91,5 @@ public class AppConfig {
                 .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
                 .setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS)
                 ;
-    }
-
-    @Bean("internalApiClientService")
-    public InternalApiClientService internalApiClientService(@Value("${internal.api.url}") String internalApiUrl) {
-        return new InternalApiClientService(internalApiUrl);
     }
 }
