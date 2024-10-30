@@ -53,6 +53,11 @@ variable "eric_memory" {
   description = "The required memory for eric"
   default = 512
 }
+variable "min_task_count" {
+  type        = number
+  description = "The minimum number of tasks for this service."
+  default     = 1
+}
 
 variable "max_task_count" {
   type        = number
@@ -78,7 +83,7 @@ variable "service_autoscale_enabled" {
 variable "service_autoscale_target_value_cpu" {
   type        = number
   description = "Target CPU percentage for the ECS Service to autoscale on"
-  default     = 50 # 100 disables autoscaling using CPU as a metric
+  default     = 80 # 100 disables autoscaling using CPU as a metric
 }
 variable "service_scaledown_schedule" {
   type        = string
@@ -123,7 +128,7 @@ variable "ssm_version_prefix" {
 
 variable "use_set_environment_files" {
   type        = bool
-  default     = false
+  default     = true
   description = "Toggle default global and shared  environment files"
 }
 variable "log_level" {
