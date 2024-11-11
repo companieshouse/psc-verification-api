@@ -55,6 +55,9 @@ module "ecs-service" {
   docker_repo       = local.docker_repo
   container_version = var.psc_verification_api_version
   container_port    = local.container_port
+  read_only_root_filesystem = true
+  volumes         = [ { "name": "tmp" } ]
+  mount_points    = [ {  "sourceVolume": "tmp",  "containerPath": "/tmp",  "readOnly": false  } ]
 
   # Service configuration
   service_name = local.service_name
