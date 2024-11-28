@@ -6,7 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.collection.IsArrayWithSize.arrayWithSize;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.pscverificationapi.controller.impl.ValidationStatusControllerImpl.TRANSACTION_NOT_SUPPORTED_ERROR;
 
@@ -88,7 +88,7 @@ class ValidationStatusControllerImplTest {
         final var filing = PscVerification.newBuilder().links(links).build();
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filing));
-        when(errorMapper.map(anyList())).thenReturn(new ValidationStatusError[0]);
+        when(errorMapper.map(anySet())).thenReturn(new ValidationStatusError[0]);
 
         final var response = testController.validate(TRANS_ID, FILING_ID, transaction, request);
 

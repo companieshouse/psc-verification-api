@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.pscverificationapi.mapper;
 
-import java.util.List;
+import java.util.Set;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.validation.FieldError;
@@ -16,5 +17,5 @@ public interface ErrorMapper {
     @Mapping(target="locationType", expression = "java(LocationType.JSON_PATH.getValue())")
     ValidationStatusError map(final FieldError fieldError);
 
-    ValidationStatusError[] map(final List<FieldError> fieldErrors);
+    ValidationStatusError[] map(final Set<FieldError> fieldErrors);
 }

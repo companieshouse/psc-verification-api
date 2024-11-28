@@ -3,12 +3,11 @@ package uk.gov.companieshouse.pscverificationapi.validator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,13 +17,12 @@ import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
-import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 
 @ExtendWith(MockitoExtension.class)
 class VerificationValidationContextTest {
     private static final String PASSTHROUGH_HEADER = "passthrough";
     private VerificationValidationContext testContext;
-    private List<FieldError> errors;
+    private Set<FieldError> errors;
     @Mock
     private PscVerificationData dto;
     @Mock
@@ -33,7 +31,7 @@ class VerificationValidationContextTest {
 
     @BeforeEach
     void setUp() {
-        errors = new ArrayList<>();
+        errors = new HashSet<>();
         testContext = new VerificationValidationContext(dto, errors, transaction, PscType.INDIVIDUAL, PASSTHROUGH_HEADER);
     }
 
