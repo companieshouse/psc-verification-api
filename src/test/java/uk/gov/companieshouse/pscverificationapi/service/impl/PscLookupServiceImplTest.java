@@ -43,6 +43,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
+import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.InternalApiClientService;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,6 +68,8 @@ class PscLookupServiceImplTest extends TestBaseService {
 
     @Mock
     private ApiClientService apiClientService;
+    @Mock
+    private InternalApiClientService internalApiClientService;
     @Mock
     private ApiClient apiClient;
     @Mock
@@ -97,7 +100,7 @@ class PscLookupServiceImplTest extends TestBaseService {
 
     @BeforeEach
     void setUp() {
-        testService = new PscLookupServiceImpl(apiClientService, logger);
+        testService = new PscLookupServiceImpl(apiClientService, internalApiClientService, logger);
     }
 
     @AfterEach

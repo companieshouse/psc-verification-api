@@ -14,11 +14,13 @@ import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.api.sdk.ApiClientService;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
+import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.InternalApiClientService;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
 
@@ -27,10 +29,12 @@ public class PscLookupServiceImpl implements PscLookupService {
     private static final String UNEXPECTED_STATUS_CODE = "Unexpected Status Code received";
 
     private final ApiClientService apiClientService;
+    private final InternalApiClientService internalApiClientService;
     private final Logger logger;
 
-    public PscLookupServiceImpl(final ApiClientService apiClientService, Logger logger) {
+    public PscLookupServiceImpl(final ApiClientService apiClientService, InternalApiClientService internalApiClientService, Logger logger) {
         this.apiClientService = apiClientService;
+        this.internalApiClientService = internalApiClientService;
         this.logger = logger;
     }
 
@@ -82,6 +86,57 @@ public class PscLookupServiceImpl implements PscLookupService {
             throw new PscLookupServiceException(
                 MessageFormat.format("Error Retrieving PSC details for {0}: {1}", pscAppointmentId,
                     e.getMessage()), e);
+        }
+    }
+
+    /**
+     * Retrieve a PSC by PscVerificationData.
+     *
+     * @param transaction           the Transaction
+     * @param data                  the PSC verification data
+     * @param pscType               the PSC Type
+     * @return the PSC Full Record details, if found
+     * @throws PscLookupServiceException if the PSC was not found or an error occurred
+     */
+    @Override
+    public IndividualFullRecord getPscIndividualFullRecord(final Transaction transaction, final PscVerificationData data,
+                                                           final PscType pscType)
+            throws PscLookupServiceException {
+
+        final var logMap = LogHelper.createLogMap(transaction.getId());
+        String pscAppointmentId = data.pscAppointmentId();
+
+        try {
+            final var uri = "/company/"
+                    + data.companyNumber()
+                    + "/persons-with-significant-control/"
+                    + pscType.getValue()
+                    + "/"
+                    + pscAppointmentId
+                    + "/full_record";
+
+            return internalApiClientService.getInternalApiClient()
+                    .privatePscResourceHandler()
+                    .getPscIndividualFullRecord(uri)
+                    .execute()
+                    .getData();
+
+        } catch (final ApiErrorResponseException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
+                logger.errorContext(transaction.getId(), UNEXPECTED_STATUS_CODE, e, logMap);
+                throw new FilingResourceNotFoundException(
+                        MessageFormat.format("PSC Details not found for {0}: {1} {2}", pscAppointmentId,
+                                e.getStatusCode(), e.getStatusMessage()), e);
+            }
+            throw new PscLookupServiceException(
+                    MessageFormat.format("Error Retrieving PSC details for {0}: {1} {2}", pscAppointmentId,
+                            e.getStatusCode(), e.getStatusMessage()), e);
+
+        } catch (URIValidationException e) {
+            logger.errorContext(transaction.getId(), UNEXPECTED_STATUS_CODE, e, logMap);
+            throw new PscLookupServiceException(
+                    MessageFormat.format("Error Retrieving PSC details for {0}: {1}", pscAppointmentId,
+                            e.getMessage()), e);
         }
     }
 
