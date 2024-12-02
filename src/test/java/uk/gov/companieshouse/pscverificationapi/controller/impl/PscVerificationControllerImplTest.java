@@ -86,7 +86,6 @@ class PscVerificationControllerImplTest {
     private HttpServletRequest request;
     @Mock
     private Transaction transaction;
-    private VerificationDetails verification;
     private PscVerificationApi pscVerificationApi;
     private PscVerificationData filing;
     private PscVerification entity;
@@ -101,7 +100,7 @@ class PscVerificationControllerImplTest {
     void setUp() {
         testController = new PscVerificationControllerImpl(transactionService,
             pscVerificationService, filingMapper, clock, logger);
-        verification = VerificationDetails.newBuilder()
+        VerificationDetails verification = VerificationDetails.newBuilder()
             .uvid(UVID)
             .statements(EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED))
             .build();
@@ -249,6 +248,42 @@ class PscVerificationControllerImplTest {
             .build();
 
         entityWithLinks = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
+            .thenReturn(Optional.of(updatedEntity));
+
+        when(
+            pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(
+            true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
+
+        final var response = testController.updatePscVerification(TRANS_ID, FILING_ID,
+            mergePatch, request);
+        final var expectedBody = filingMapper.toApi(updatedEntity);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(notNullValue()));
+        assertThat(response.getBody(), is(expectedBody));
+        assertThat(response.getBody().getUpdatedAt(),
+            is(not(equalTo(response.getBody().getCreatedAt()))));
+        assertThat(response.getHeaders().getLocation(), is(entityWithLinks.getLinks().self()));
+
+    }
+
+    @Test
+    void updatePscVerificationVerificationDetailsNull() {
+
+        final var success = new PatchResult();
+        final var updatedEntity = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        mergePatch.clear();
+
+        entityWithLinks = PscVerification.newBuilder(entityWithLinks)
+            .data(PscVerificationData.newBuilder(filing).verificationDetails(null).build())
             .updatedAt(SECOND_INSTANT)
             .build();
 
