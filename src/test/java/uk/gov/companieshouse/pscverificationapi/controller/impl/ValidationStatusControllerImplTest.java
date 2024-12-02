@@ -34,8 +34,6 @@ class ValidationStatusControllerImplTest {
     private static final String TRANS_ID = "117524-754816-491724";
     private static final String FILING_ID = "6332aa6ed28ad2333c3a520a";
     private static final String PASSTHROUGH_HEADER = "passthrough";
-    private static final String SELF_FRAGMENT =
-            "/transactions/" + TRANS_ID + "/persons-with-significant-control-verification/";
 
     @Mock
     private PscVerificationService pscVerificationService;

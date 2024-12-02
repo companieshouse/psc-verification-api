@@ -66,9 +66,6 @@ class PscVerificationControllerImplTest {
     private static final URI REQUEST_URI = URI.create(
         "/transactions/" + TRANS_ID + "/persons-with-significant-control-verification");
 
-    private static final URI SELF_URI = URI.create(REQUEST_URI + FILING_ID);
-    private static final URI VALIDATION_URI = URI.create(
-            SELF_URI + "/validation_status");
     private static final LocalDate TEST_DATE = LocalDate.of(2024, 5, 5);
 
     private PscVerificationController testController;
