@@ -7,9 +7,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,7 @@ class PscExistsValidatorTest {
 
     PscExistsValidator testValidator;
     private PscType pscType;
-    private List<FieldError> errors;
+    private Set<FieldError> errors;
     private String passthroughHeader;
 
     private static final String PSC_ID = "67edfE436y35hetsie6zuAZtr";
@@ -48,7 +47,7 @@ class PscExistsValidatorTest {
     @BeforeEach
     void setUp() {
 
-        errors = new ArrayList<>();
+        errors = new HashSet<>();
         pscType = PscType.INDIVIDUAL;
         passthroughHeader = "passthroughHeader";
 

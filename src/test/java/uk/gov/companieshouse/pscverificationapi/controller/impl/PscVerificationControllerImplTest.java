@@ -18,12 +18,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,9 +66,6 @@ class PscVerificationControllerImplTest {
     private static final URI REQUEST_URI = URI.create(
         "/transactions/" + TRANS_ID + "/persons-with-significant-control-verification");
 
-    private static final URI SELF_URI = URI.create(REQUEST_URI + FILING_ID);
-    private static final URI VALIDATION_URI = URI.create(
-            SELF_URI + "/validation_status");
     private static final LocalDate TEST_DATE = LocalDate.of(2024, 5, 5);
 
     private PscVerificationController testController;
@@ -99,6 +91,7 @@ class PscVerificationControllerImplTest {
     private PscVerificationData filing;
     private PscVerification entity;
     private PscVerification entityWithLinks;
+    private Map<String, Object> mergePatch;
 
     public static Stream<Arguments> provideCreateParams() {
         return Stream.of(Arguments.of(false, false, false), Arguments.of(true, true, true));
@@ -129,6 +122,9 @@ class PscVerificationControllerImplTest {
                 .data(filing).links(links)
                 .build();
         entityWithLinks = PscVerification.newBuilder(entity).links(links).build();
+        var mergeVerificationDetails = new HashMap<>(Map.of());
+        mergePatch = new HashMap<>();
+        mergePatch.put("verification_details", mergeVerificationDetails);
     }
 
     @ParameterizedTest(
@@ -188,7 +184,163 @@ class PscVerificationControllerImplTest {
         when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
 
         final var response = testController.updatePscVerification(TRANS_ID, FILING_ID,
-            Collections.emptyMap(), request);
+            mergePatch, request);
+        final var expectedBody = filingMapper.toApi(updatedEntity);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(notNullValue()));
+        assertThat(response.getBody(), is(expectedBody));
+        assertThat(response.getBody().getUpdatedAt(),
+            is(not(equalTo(response.getBody().getCreatedAt()))));
+        assertThat(response.getHeaders().getLocation(), is(entityWithLinks.getLinks().self()));
+
+    }
+
+    @Test
+    void updatePscVerificationNoUvid() {
+
+        final var success = new PatchResult();
+        final var updatedEntity = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        VerificationDetails verificationNoUvid = VerificationDetails.newBuilder()
+            .statements(EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED))
+            .build();
+        entityWithLinks = PscVerification.newBuilder(entityWithLinks)
+            .data(PscVerificationData.newBuilder(filing).verificationDetails(verificationNoUvid).build())
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
+            .thenReturn(Optional.of(updatedEntity));
+
+        when(
+            pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(
+            true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
+
+        final var response = testController.updatePscVerification(TRANS_ID, FILING_ID,
+            mergePatch, request);
+        final var expectedBody = filingMapper.toApi(updatedEntity);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(notNullValue()));
+        assertThat(response.getBody(), is(expectedBody));
+        assertThat(response.getBody().getUpdatedAt(),
+            is(not(equalTo(response.getBody().getCreatedAt()))));
+        assertThat(response.getHeaders().getLocation(), is(entityWithLinks.getLinks().self()));
+
+    }
+
+    @Test
+    void updatePscVerificationPatchUvidMatch() {
+
+        final var success = new PatchResult();
+
+        var mergeVerificationDetails = new HashMap<>(Map.of());
+        mergeVerificationDetails.put("uvid", UVID);
+        mergePatch.clear();
+        mergePatch.put("verification_details", mergeVerificationDetails);
+
+
+        final var updatedEntity = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        entityWithLinks = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
+            .thenReturn(Optional.of(updatedEntity));
+
+        when(
+            pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(
+            true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
+
+        final var response = testController.updatePscVerification(TRANS_ID, FILING_ID,
+            mergePatch, request);
+        final var expectedBody = filingMapper.toApi(updatedEntity);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(notNullValue()));
+        assertThat(response.getBody(), is(expectedBody));
+        assertThat(response.getBody().getUpdatedAt(),
+            is(not(equalTo(response.getBody().getCreatedAt()))));
+        assertThat(response.getHeaders().getLocation(), is(entityWithLinks.getLinks().self()));
+
+    }
+
+    @Test
+    void updatePscVerificationNoNameMismatchPatch() {
+
+        final var success = new PatchResult();
+
+        var mergeVerificationDetails = new HashMap<>(Map.of());
+        mergeVerificationDetails.put("uvid", "12345678");
+        mergePatch.clear();
+        mergePatch.put("verification_details", mergeVerificationDetails);
+
+        final var updatedEntity = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        entityWithLinks = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
+            .thenReturn(Optional.of(updatedEntity));
+
+        when(
+            pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(
+            true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
+
+        final var response = testController.updatePscVerification(TRANS_ID, FILING_ID,
+            mergePatch, request);
+        final var expectedBody = filingMapper.toApi(updatedEntity);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(notNullValue()));
+        assertThat(response.getBody(), is(expectedBody));
+        assertThat(response.getBody().getUpdatedAt(),
+            is(not(equalTo(response.getBody().getCreatedAt()))));
+        assertThat(response.getHeaders().getLocation(), is(entityWithLinks.getLinks().self()));
+
+    }
+
+    @Test
+    void updatePscVerificationNameMismatchPatchPresent() {
+
+        final var success = new PatchResult();
+
+        var mergeVerificationDetails = new HashMap<>(Map.of());
+        mergeVerificationDetails.put("uvid", "12345678");
+        mergeVerificationDetails.put("name_mismatch_reason", "PREFER_NOT_TO_SAY");
+        mergePatch.clear();
+        mergePatch.put("verification_details", mergeVerificationDetails);
+
+        final var updatedEntity = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        entityWithLinks = PscVerification.newBuilder(entityWithLinks)
+            .updatedAt(SECOND_INSTANT)
+            .build();
+
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
+            .thenReturn(Optional.of(updatedEntity));
+
+        when(
+            pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(
+            true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
+
+        final var response = testController.updatePscVerification(TRANS_ID, FILING_ID,
+            mergePatch, request);
         final var expectedBody = filingMapper.toApi(updatedEntity);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
@@ -203,7 +355,6 @@ class PscVerificationControllerImplTest {
     @Test
     void updatePscVerificationWhenPatchProviderRetrievalFails() {
         final var failure = new PatchResult(RetrievalFailureReason.FILING_NOT_FOUND);
-        final Map<String, Object> patchMap = Collections.emptyMap();
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks));
         when(
@@ -212,7 +363,7 @@ class PscVerificationControllerImplTest {
         when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(failure);
 
         final var exception = assertThrows(FilingResourceNotFoundException.class,
-            () -> testController.updatePscVerification(TRANS_ID, FILING_ID, patchMap, request));
+            () -> testController.updatePscVerification(TRANS_ID, FILING_ID, mergePatch, request));
 
         assertThat(exception.getMessage(), is(FILING_ID));
     }
@@ -224,7 +375,6 @@ class PscVerificationControllerImplTest {
                 "future" + ".date.java.time.LocalDate", "future.date"},
             new Object[]{TEST_DATE}, "bad date");
         final var failure = new PatchResult(List.of(error));
-        final Map<String, Object> patchMap = Collections.emptyMap();
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks));
         when(
@@ -233,14 +383,13 @@ class PscVerificationControllerImplTest {
         when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(failure);
 
         final var exception = assertThrows(InvalidPatchException.class,
-            () -> testController.updatePscVerification(TRANS_ID, FILING_ID, patchMap, request));
+            () -> testController.updatePscVerification(TRANS_ID, FILING_ID, mergePatch, request));
 
         assertThat(exception.getFieldErrors(), contains(error));
     }
 
     @Test
     void updatePscVerificationWhenSelfLinkMatchFails() {
-        final Map<String, Object> patchMap = Collections.emptyMap();
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks));
         when(
@@ -248,7 +397,7 @@ class PscVerificationControllerImplTest {
             false);
 
         final var exception = assertThrows(FilingResourceNotFoundException.class,
-            () -> testController.updatePscVerification(TRANS_ID, FILING_ID, patchMap, request));
+            () -> testController.updatePscVerification(TRANS_ID, FILING_ID, mergePatch, request));
 
         assertThat(exception.getMessage(), is(FILING_ID));
 

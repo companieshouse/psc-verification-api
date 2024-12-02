@@ -6,34 +6,15 @@ import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 
 public record VerificationValidationContext(@NonNull PscVerificationData dto,
-                                            @NonNull List<FieldError> errors,
+                                            @NonNull Set<FieldError> errors,
                                             @NonNull Transaction transaction,
                                             @NonNull PscType pscType,
                                             String passthroughHeader) {
-
-
-
-    /**
-     * @param dto               the DTO to validate
-     * @param errors            the list of errors append; MUST be non-null and modifiable
-     * @param transaction       the Transaction
-     * @param pscType           the PSC type
-     * @param passthroughHeader the request pass through header
-     */
-    public VerificationValidationContext(@NonNull final PscVerificationData dto,
-        @NonNull final List<FieldError> errors, @NonNull final Transaction transaction,
-        @NonNull final PscType pscType, final String passthroughHeader) {
-        this.dto = dto;
-        this.errors = errors;
-        this.transaction = transaction;
-        this.pscType = pscType;
-        this.passthroughHeader = passthroughHeader;
-    }
 
     @Override
     public boolean equals(final Object o) {

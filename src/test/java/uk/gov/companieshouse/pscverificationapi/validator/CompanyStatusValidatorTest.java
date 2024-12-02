@@ -14,10 +14,7 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.service.CompanyProfileService;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,7 +40,7 @@ class CompanyStatusValidatorTest {
 
     CompanyStatusValidator testValidator;
     private PscType pscType;
-    private List<FieldError> errors;
+    private Set<FieldError> errors;
     private String passthroughHeader;
 
     private static final List<String> companyStatusList = Collections.singletonList("dissolved");
@@ -51,7 +48,7 @@ class CompanyStatusValidatorTest {
     @BeforeEach
     void setUp() {
 
-        errors = new ArrayList<>();
+        errors = new HashSet<>();
         pscType = PscType.INDIVIDUAL;
         passthroughHeader = "passthroughHeader";
 

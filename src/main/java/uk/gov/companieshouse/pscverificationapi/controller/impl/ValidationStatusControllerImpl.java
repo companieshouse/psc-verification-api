@@ -1,7 +1,8 @@
 package uk.gov.companieshouse.pscverificationapi.controller.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.util.HashSet;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -93,7 +94,7 @@ public class ValidationStatusControllerImpl implements ValidationStatusControlle
     private ValidationStatusError[] calculateIsValid(final PscVerification pscVerification,
                                                      final String passthroughHeader, final Transaction transaction) {
 
-        final var errors = new ArrayList<FieldError>();
+        final var errors = new HashSet<FieldError>();
 
         VerificationValidationContext context = new VerificationValidationContext(
             pscVerification.getData(), errors, transaction, PscType.INDIVIDUAL, passthroughHeader);

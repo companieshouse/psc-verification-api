@@ -1,14 +1,11 @@
 package uk.gov.companieshouse.pscverificationapi.controller.impl;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Clock;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
@@ -31,6 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
+import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
@@ -113,7 +111,11 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             final HttpServletRequest request) {
 
         final var logMap = LogMapHelper.createLogMap(transId);
-        final var patchResult = pscVerificationService.get(filingResource).filter(
+        Optional<PscVerification> pscVerification = pscVerificationService.get(filingResource);
+
+        pscVerification.ifPresent(v -> clearNameMismatchReasonIfRequired(v, mergePatch));
+
+        final var patchResult = pscVerification.filter(
                 f1 -> pscVerificationService.requestMatchesResourceSelf(request, f1)).map(
                 f -> pscVerificationService.patch(filingResource, mergePatch)).orElse(
                 new PatchResult(RetrievalFailureReason.FILING_NOT_FOUND));
@@ -149,6 +151,20 @@ public class PscVerificationControllerImpl implements PscVerificationController 
                     .map(PscVerificationControllerImpl::createOKResponse)
                     .orElse(ResponseEntity.notFound()
                             .build());
+        }
+    }
+
+    private static void clearNameMismatchReasonIfRequired(PscVerification pscVerification, Map<String, Object> mergePatch) {
+
+        VerificationDetails verificationDetails = pscVerification.getData().verificationDetails();
+        Map<String, Object> mergeVerificationDetails = (Map<String, Object>) mergePatch.get("verification_details");
+        String mergeUvid = (String) mergeVerificationDetails.get("uvid");
+
+        if (verificationDetails.uvid() != null && mergeUvid != null
+            && !verificationDetails.uvid().equals(mergeUvid)
+            && isEmpty(mergeVerificationDetails.get("name_mismatch_reason"))) {
+
+            mergeVerificationDetails.put("name_mismatch_reason", null);
         }
     }
 

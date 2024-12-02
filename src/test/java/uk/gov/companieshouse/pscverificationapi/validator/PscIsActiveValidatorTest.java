@@ -8,9 +8,8 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +41,7 @@ class PscIsActiveValidatorTest {
 
     PscIsActiveValidator testValidator;
     private PscType pscType;
-    private List<FieldError> errors;
+    private Set<FieldError> errors;
     private String passthroughHeader;
 
     private static final String PSC_ID = "67edfE436y35hetsie6zuAZtr";
@@ -51,7 +50,7 @@ class PscIsActiveValidatorTest {
     @BeforeEach
     void setUp() {
 
-        errors = new ArrayList<>();
+        errors = new HashSet<>();
         pscType = PscType.INDIVIDUAL;
         passthroughHeader = "passthroughHeader";
 
