@@ -157,14 +157,17 @@ public class PscVerificationControllerImpl implements PscVerificationController 
     private static void clearNameMismatchReasonIfRequired(PscVerification pscVerification, Map<String, Object> mergePatch) {
 
         VerificationDetails verificationDetails = pscVerification.getData().verificationDetails();
-        Map<String, Object> mergeVerificationDetails = (Map<String, Object>) mergePatch.get("verification_details");
-        String mergeUvid = (String) mergeVerificationDetails.get("uvid");
 
-        if (verificationDetails.uvid() != null && mergeUvid != null
-            && !verificationDetails.uvid().equals(mergeUvid)
-            && isEmpty(mergeVerificationDetails.get("name_mismatch_reason"))) {
+        if (verificationDetails != null) {
+            Map<String, Object> mergeVerificationDetails = (Map<String, Object>) mergePatch.get("verification_details");
+            String mergeUvid = (String) mergeVerificationDetails.get("uvid");
 
-            mergeVerificationDetails.put("name_mismatch_reason", null);
+            if (verificationDetails.uvid() != null && mergeUvid != null
+                && !verificationDetails.uvid().equals(mergeUvid)
+                && isEmpty(mergeVerificationDetails.get("name_mismatch_reason"))) {
+
+                mergeVerificationDetails.put("name_mismatch_reason", null);
+            }
         }
     }
 
