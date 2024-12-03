@@ -15,6 +15,7 @@ import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse;
+import uk.gov.companieshouse.api.model.pscverification.NameMismatchReasonConstants;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -106,6 +107,19 @@ class UvidExistsValidatorTest {
         final var exception = Assertions.assertThrows(IdvLookupServiceException.class,
             () -> testValidator.validate(new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader)));
         assertThat(exception.getMessage(), is("Error matching UVID 1234567890: null test error"));
+    }
+
+    @Test
+    void validateWhenNameMismatchNotNull() throws ApiErrorResponseException {
+
+        when(pscVerificationData.verificationDetails()).thenReturn(verificationDetails);
+        when(pscVerificationData.verificationDetails().nameMismatchReason()).thenReturn(NameMismatchReasonConstants.PREFERRED_NAME);
+        when(pscLookupService.getUvidMatchWithPscData(transaction, pscVerificationData, pscType, passthroughHeader))
+            .thenReturn(uvidMatch);
+        when(idvLookupService.matchUvid(uvidMatch)).thenReturn(uvidMatchResponse);
+        when(uvidMatchResponse.getAccuracyStatement()).thenReturn(Collections.singletonList(FORENAMES_MISMATCH));
+
+        testValidator.validate(validationContext);
     }
 
     @ParameterizedTest

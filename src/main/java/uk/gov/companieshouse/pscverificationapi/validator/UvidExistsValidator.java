@@ -1,5 +1,8 @@
 package uk.gov.companieshouse.pscverificationapi.validator;
 
+import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.FORENAMES_MISMATCH;
+import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.SURNAME_MISMATCH;
+
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
@@ -61,6 +64,12 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
                                         PscVerificationData dto, VerificationValidationContext validationContext) {
 
         for (UvidMatchResponse.AccuracyStatementEnum accuracyStatement : accuracyStatementList) {
+
+            if ((accuracyStatement == FORENAMES_MISMATCH || accuracyStatement == SURNAME_MISMATCH)
+                && dto.verificationDetails().nameMismatchReason() != null) {
+                continue;
+            }
+
             String accuracyStatementValue = switch (accuracyStatement.getValue()){
                 case "forenames_mismatch", "surname_mismatch" -> "no-name-mismatch-reason";
                 default -> accuracyStatement.getValue();
@@ -69,6 +78,7 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
                 new FieldError("object", "uvid_match", dto.verificationDetails().uvid(), false,
                     new String[]{null, dto.verificationDetails().uvid()}, null,
                     validation.get(snakeToKebab(accuracyStatementValue))));
+
         }
     }
 
