@@ -17,6 +17,7 @@ import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class UvidExistsValidator extends BaseVerificationValidator implements
@@ -64,21 +65,21 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
                                         PscVerificationData dto, VerificationValidationContext validationContext) {
 
         for (UvidMatchResponse.AccuracyStatementEnum accuracyStatement : accuracyStatementList) {
-
-            if ((accuracyStatement == FORENAMES_MISMATCH || accuracyStatement == SURNAME_MISMATCH)
-                && dto.verificationDetails().nameMismatchReason() != null) {
-                continue;
+            // Determine the action based on the accuracy statement
+            if (Objects.requireNonNull(accuracyStatement) == FORENAMES_MISMATCH || accuracyStatement == SURNAME_MISMATCH) {
+                if (dto.verificationDetails().nameMismatchReason() != null) {
+                    continue;
+                }
+                validationContext.errors().add(
+                    new FieldError("object", "uvid_match", dto.verificationDetails().uvid(), false,
+                        new String[]{null, dto.verificationDetails().uvid()}, null,
+                        validation.get("no-name-mismatch-reason")));
+            } else {
+                validationContext.errors().add(
+                    new FieldError("object", "uvid_match", dto.verificationDetails().uvid(), false,
+                        new String[]{null, dto.verificationDetails().uvid()}, null,
+                        validation.get(snakeToKebab(accuracyStatement.getValue()))));
             }
-
-            String accuracyStatementValue = switch (accuracyStatement.getValue()){
-                case "forenames_mismatch", "surname_mismatch" -> "no-name-mismatch-reason";
-                default -> accuracyStatement.getValue();
-            };
-            validationContext.errors().add(
-                new FieldError("object", "uvid_match", dto.verificationDetails().uvid(), false,
-                    new String[]{null, dto.verificationDetails().uvid()}, null,
-                    validation.get(snakeToKebab(accuracyStatementValue))));
-
         }
     }
 
