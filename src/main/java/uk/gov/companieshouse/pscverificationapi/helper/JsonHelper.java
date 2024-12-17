@@ -24,14 +24,25 @@ public final class JsonHelper {
      */
     public static Map<String, Object> convertObject(final Object obj,
             final PropertyNamingStrategy namingStrategy) {
+        initialiseMapper(namingStrategy);
+
+        return mapper.convertValue(obj, new TypeReference<>() {
+        });
+    }
+
+    private static void initialiseMapper(PropertyNamingStrategy namingStrategy) {
         if (mapper == null) {
             mapper = new ObjectMapper().registerModule(new JavaTimeModule())
                     .setPropertyNamingStrategy(namingStrategy)
                     .setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
         }
+    }
 
-        return mapper.convertValue(obj, new TypeReference<>() {
-        });
+    public static <T>T convertLinkedHashmap(final Object hashMap, final PropertyNamingStrategy namingStrategy,
+                                            Class<T> clazz) {
+        initialiseMapper(namingStrategy);
+
+        return mapper.convertValue(hashMap, clazz);
     }
 
 }

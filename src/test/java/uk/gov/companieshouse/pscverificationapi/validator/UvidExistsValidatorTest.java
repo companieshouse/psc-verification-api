@@ -83,7 +83,7 @@ class UvidExistsValidatorTest {
     @Test
     void validateWhenUvidMatch() throws ApiErrorResponseException {
 
-        when(pscLookupService.getUvidMatchWithPscData(transaction, pscVerificationData, pscType, passthroughHeader))
+        when(pscLookupService.getUvidMatchWithPscData(transaction, pscVerificationData, pscType))
             .thenReturn(uvidMatch);
         when(idvLookupService.matchUvid(uvidMatch)).thenReturn(uvidMatchResponse);
         when(uvidMatchResponse.getAccuracyStatement()).thenReturn(Collections.singletonList(DETAILS_MATCH_UVID));
@@ -99,7 +99,7 @@ class UvidExistsValidatorTest {
 
         when(pscVerificationData.verificationDetails()).thenReturn(verificationDetails);
         when(pscVerificationData.verificationDetails().uvid()).thenReturn("1234567890");
-        when(pscLookupService.getUvidMatchWithPscData(transaction, pscVerificationData, pscType, passthroughHeader))
+        when(pscLookupService.getUvidMatchWithPscData(transaction, pscVerificationData, pscType))
             .thenReturn(uvidMatch);
         when(idvLookupService.matchUvid(uvidMatch)).thenThrow(new ApiErrorResponseException(
                 new HttpResponseException.Builder(400, "test error", new HttpHeaders())));
@@ -114,7 +114,7 @@ class UvidExistsValidatorTest {
 
         when(pscVerificationData.verificationDetails()).thenReturn(verificationDetails);
         when(pscVerificationData.verificationDetails().nameMismatchReason()).thenReturn(NameMismatchReasonConstants.PREFERRED_NAME);
-        when(pscLookupService.getUvidMatchWithPscData(transaction, pscVerificationData, pscType, passthroughHeader))
+        when(pscLookupService.getUvidMatchWithPscData(transaction, pscVerificationData, pscType))
             .thenReturn(uvidMatch);
         when(idvLookupService.matchUvid(uvidMatch)).thenReturn(uvidMatchResponse);
         when(uvidMatchResponse.getAccuracyStatement()).thenReturn(Collections.singletonList(FORENAMES_MISMATCH));
@@ -128,7 +128,7 @@ class UvidExistsValidatorTest {
 
         when(pscVerificationData.verificationDetails()).thenReturn(verificationDetails);
         when(pscVerificationData.verificationDetails().uvid()).thenReturn(errorValue);
-        when(pscLookupService.getUvidMatchWithPscData(transaction, pscVerificationData, pscType, passthroughHeader))
+        when(pscLookupService.getUvidMatchWithPscData(transaction, pscVerificationData, pscType))
             .thenReturn(uvidMatch);
         when(idvLookupService.matchUvid(uvidMatch)).thenReturn(uvidMatchResponse);
         when(uvidMatchResponse.getAccuracyStatement()).thenReturn(statementEnums);

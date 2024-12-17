@@ -74,9 +74,8 @@ class PscExistsValidatorTest {
             new String[]{null, "notFound.psc_appointment_id"}, null,
             "not-exists default message");
         when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
-        when(pscLookupService.getPsc(transaction, pscVerificationData, pscType,
-            passthroughHeader)).thenThrow(new FilingResourceNotFoundException(
-            "PSC Details not found for " + PSC_ID + ": 404 Not Found", errorResponseException));
+        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).
+            thenThrow(new FilingResourceNotFoundException("PSC Details not found for " + PSC_ID + ": 404 Not Found", errorResponseException));
         when(validation.get("psc-appointment-id-not-found")).thenReturn("not-exists default message");
 
         testValidator.validate(

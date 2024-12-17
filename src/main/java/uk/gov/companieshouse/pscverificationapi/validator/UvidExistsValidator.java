@@ -42,9 +42,9 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
 
         PscVerificationData dto = validationContext.dto();
         UvidMatch uvidMatch = pscLookupService.getUvidMatchWithPscData(validationContext.transaction(),
-            dto, PscType.INDIVIDUAL, validationContext.passthroughHeader());
+            dto, PscType.INDIVIDUAL);
 
-        UvidMatchResponse uvidMatchResponse = null;
+        UvidMatchResponse uvidMatchResponse;
         try {
             uvidMatchResponse = idvLookupService.matchUvid(uvidMatch);
         } catch (ApiErrorResponseException e) {
