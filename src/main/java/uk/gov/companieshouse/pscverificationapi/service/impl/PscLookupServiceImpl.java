@@ -13,17 +13,19 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
+import uk.gov.companieshouse.api.model.psc.IndividualFullRecord;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.psc.DateOfBirth;
-import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.api.psc.NameElements;
+import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.helper.JsonHelper;
-import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.InternalApiClientService;
+import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.ApiClientService;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
 
@@ -31,11 +33,11 @@ import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
 public class PscLookupServiceImpl implements PscLookupService {
     private static final String UNEXPECTED_STATUS_CODE = "Unexpected Status Code received";
 
-    private final InternalApiClientService internalApiClientService;
+    private final ApiClientService apiClientService;
     private final Logger logger;
 
-    public PscLookupServiceImpl(InternalApiClientService internalApiClientService, Logger logger) {
-        this.internalApiClientService = internalApiClientService;
+    public PscLookupServiceImpl(ApiClientService apiClientService, Logger logger) {
+        this.apiClientService = apiClientService;
         this.logger = logger;
     }
 
@@ -55,6 +57,8 @@ public class PscLookupServiceImpl implements PscLookupService {
 
         final var logMap = LogHelper.createLogMap(transaction.getId());
         String pscAppointmentId = data.pscAppointmentId();
+        EnvironmentReader environmentReader = new EnvironmentReaderImpl();
+        String chsInternalApiKey = environmentReader.getMandatoryString("CHS_INTERNAL_API_KEY");
 
         try {
             final var uri = "/company/"
@@ -65,11 +69,12 @@ public class PscLookupServiceImpl implements PscLookupService {
                     + pscAppointmentId
                     + "/full_record";
 
-            return internalApiClientService.getInternalApiClient()
-                    .privatePscResourceHandler()
-                    .getPscIndividualFullRecord(uri)
-                    .execute()
-                    .getData();
+            return apiClientService.getApiClient(chsInternalApiKey)
+                .pscs()
+                .getIndividualFullRecord(uri)
+                .execute()
+                .getData();
+
 
         } catch (final ApiErrorResponseException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
