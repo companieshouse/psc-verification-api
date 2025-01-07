@@ -20,8 +20,6 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import uk.gov.companieshouse.api.sdk.ApiClientService;
-import uk.gov.companieshouse.api.sdk.impl.ApiClientServiceImpl;
 
 @Configuration
 @EnableTransactionManagement
@@ -40,11 +38,6 @@ public class AppConfig {
     @Bean
     MongoTransactionManager transactionManager(final MongoDatabaseFactory dbFactory) {
         return new MongoTransactionManager(dbFactory);
-    }
-
-    @Bean
-    public ApiClientService apiClientService() {
-        return new ApiClientServiceImpl();
     }
 
     @Bean

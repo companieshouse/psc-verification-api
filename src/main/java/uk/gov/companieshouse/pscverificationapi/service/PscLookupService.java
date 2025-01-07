@@ -1,9 +1,9 @@
 package uk.gov.companieshouse.pscverificationapi.service;
 
 import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
+import uk.gov.companieshouse.api.model.psc.IndividualFullRecord;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
 
