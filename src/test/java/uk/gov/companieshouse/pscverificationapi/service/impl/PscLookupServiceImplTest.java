@@ -33,7 +33,6 @@ import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.handler.psc.PscsResourceHandler;
-import uk.gov.companieshouse.api.handler.psc.request.IndividualFullRecordGet;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
@@ -77,8 +76,8 @@ class PscLookupServiceImplTest extends TestBaseService {
     private InternalApiClient internalApiClient;
     @Mock
     private ApiResponse<IndividualFullRecord> apiResponse;
-    @Mock
-    private IndividualFullRecordGet individualFullRecordGet;
+//    @Mock
+//    private IndividualFullRecordGet individualFullRecordGet;
     @Mock
     private PscsResourceHandler pscResourceHandler;
     @Mock
