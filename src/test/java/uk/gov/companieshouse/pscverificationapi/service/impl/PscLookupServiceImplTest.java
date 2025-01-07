@@ -32,8 +32,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
-import uk.gov.companieshouse.api.handler.psc.PscsResourceHandler;
-import uk.gov.companieshouse.api.handler.psc.request.IndividualFullRecordGet;
+import uk.gov.companieshouse.api.handler.psc.PrivatePscResourceHandler;
+import uk.gov.companieshouse.api.handler.psc.request.PscIndividualFullRecordGet;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
@@ -46,7 +46,7 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
-import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.ApiClientService;
+import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.InternalApiClientService;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,15 +72,15 @@ class PscLookupServiceImplTest extends TestBaseService {
 
     @Mock
         (answer = Answers.RETURNS_DEEP_STUBS)
-    private ApiClientService apiClientService;
+    private InternalApiClientService internalApiClientService;
     @Mock
     private InternalApiClient internalApiClient;
     @Mock
     private ApiResponse<IndividualFullRecord> apiResponse;
     @Mock
-    private IndividualFullRecordGet individualFullRecordGet;
+    private PscIndividualFullRecordGet pscIndividualFullRecordGet;
     @Mock
-    private PscsResourceHandler pscResourceHandler;
+    private PrivatePscResourceHandler privatePscResourceHandler;
     @Mock
     private Transaction transaction;
     @Mock
@@ -103,267 +103,267 @@ class PscLookupServiceImplTest extends TestBaseService {
 
     @BeforeEach
     void setUp() {
-        testService = new PscLookupServiceImpl(apiClientService, logger);
+        testService = new PscLookupServiceImpl(internalApiClientService, logger);
     }
 
     @AfterEach
     void tearDown() {
     }
-//
-//    @Test
-//    void getPscIndividualWhenFound() throws IOException, URIValidationException {
-//        when(apiResponse.getData()).thenReturn(new IndividualFullRecord());
-//        when(individualFullRecordGet.execute()).thenReturn(apiResponse);
-//        when(pscResourceHandler.getIndividualFullRecord("/company/"
-//            + COMPANY_NUMBER
-//            + "/persons-with-significant-control/"
-//            + INDIVIDUAL.getValue()
-//            + "/"
-//            + PSC_ID
-//            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
-//        when(apiClientService.getApiClient("key")).thenReturn(internalApiClient);
-//        when(apiClientService.getApiClient("key").pscs()).thenReturn(pscResourceHandler);
-//
-//        var pscApi =
-//            testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
-//
-//        assertThat(pscApi, samePropertyValuesAs(new IndividualFullRecord()));
-//
-//    }
-//
-//
-//    @Test
-//    void getPscWhenErrorRetrieving() throws IOException, URIValidationException {
-//        final var exception = new ApiErrorResponseException(
-//            new HttpResponseException.Builder(HttpStatusCodes.STATUS_CODE_FORBIDDEN, "test case",
-//                new HttpHeaders()));
-//        when(apiClientService.getInternalApiClient().privatePscResourceHandler()
-//            .getPscIndividualFullRecord(
-//                "/company/"
-//                    + COMPANY_NUMBER
-//                    + "/persons-with-significant-control/"
-//                    + INDIVIDUAL.getValue()
-//                    + "/"
-//                    + PSC_ID
-//                    + "/full_record"
-//            ).execute()).thenThrow(exception);
-//
-//        final var thrown = assertThrows(PscLookupServiceException.class,
-//            () -> testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL));
-//
-//        assertThat(thrown.getMessage(), is("Error Retrieving PSC details for " + PSC_ID + ": 403 test case"));
-//    }
-//
-//    @Test
-//    void getPscWhenURIErrorRetrieving() throws IOException, URIValidationException {
-//        final var exception = new URIValidationException("Incorrect URI");
-//        when(apiClientService.getInternalApiClient().privatePscResourceHandler()
-//            .getPscIndividualFullRecord(
-//                "/company/"
-//                    + COMPANY_NUMBER
-//                    + "/persons-with-significant-control/"
-//                    + INDIVIDUAL.getValue()
-//                    + "/"
-//                    + PSC_ID
-//                    + "/full_record"
-//            ).execute()).thenThrow(exception);
-//
-//        final var thrown = assertThrows(PscLookupServiceException.class,
-//            () -> testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL));
-//
-//        assertThat(thrown.getMessage(), is("Error Retrieving PSC details for " + PSC_ID + ": Incorrect URI"));
-//    }
-//
-//    @Disabled("Disabled as RLE functionality is on hold")
-//    @Test
-//    void getPscWhenTypeNotRecognised() {
-//
-//        final var thrown = assertThrows(UnsupportedOperationException.class,
-//            () -> testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, mockedValue));
-//
-//        assertThat(thrown.getMessage(), is("PSC type UNKNOWN not supported for PSC ID " + PSC_ID));
-//    }
-//
-//    @Test
-//    void getUvidMatchWithPscData() throws IOException, URIValidationException {
-//
-//        UvidMatch expected = createUvid(UVID_CODE);
-//        setNames(expected, FORENAMES, SURNAME);
-//
-//        String stringDateOfBirth = String.format("%04d-%02d-%02d", 1983, 2, 27);
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
-//
-//        final var pscData = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
-//
-//        when(apiResponse.getData()).thenReturn(pscData);
-//        when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
-//        when(pscResourceHandler.getPscIndividualFullRecord("/company/"
-//            + COMPANY_NUMBER
-//            + "/persons-with-significant-control/"
-//            + INDIVIDUAL.getValue()
-//            + "/"
-//            + PSC_ID
-//            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
-//        when(apiClientService.getInternalApiClient()).thenReturn(internalApiClient);
-//        when(apiClientService.getInternalApiClient().privatePscResourceHandler()).thenReturn(pscResourceHandler);
-//
-//        var testUvid =
-//            testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
-//
-//        assertThat("Forenames order does not match", testUvid.getForenames(), is(equalTo(expected.getForenames())));
-//        assertThat(testUvid, samePropertyValuesAs(expected));
-//    }
-//
-//    @Test
-//    void getUvidMatchWithNoUvid() throws IOException, URIValidationException {
-//
-//        VerificationDetails verificationDetails = VerificationDetails.newBuilder().build();
-//        PscVerificationData pscVerificationData =
-//            PscVerificationData.newBuilder()
-//                .pscAppointmentId(PSC_ID)
-//                .companyNumber(COMPANY_NUMBER)
-//                .verificationDetails(verificationDetails)
-//                .build();
-//        UvidMatch expected = createUvid("");
-//        setNames(expected, FORENAMES, SURNAME);
-//        expected.setDateOfBirth(LocalDate.of(1983, 2, 27));
-//        final var pscData = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
-//
-//        when(apiResponse.getData()).thenReturn(pscData);
-//        when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
-//        when(pscResourceHandler.getPscIndividualFullRecord("/company/"
-//            + COMPANY_NUMBER
-//            + "/persons-with-significant-control/"
-//            + INDIVIDUAL.getValue()
-//            + "/"
-//            + PSC_ID
-//            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
-//        when(apiClientService.getInternalApiClient()).thenReturn(internalApiClient);
-//        when(apiClientService.getInternalApiClient().privatePscResourceHandler()).thenReturn(pscResourceHandler);
-//
-//        var testUvid =
-//            testService.getUvidMatchWithPscData(transaction, pscVerificationData, INDIVIDUAL);
-//
-//        assertThat("Forenames order does not match", testUvid.getForenames(), is(equalTo(expected.getForenames())));
-//        assertThat(testUvid, samePropertyValuesAs(expected));
-//
-//    }
-//
-//    @Test
-//    void getUvidMatchWithPscDataWhenForenamesBlank()
-//        throws IOException, URIValidationException {
-//
-//        UvidMatch expected = createUvid(UVID_CODE);
-//        setNames(expected, new ArrayList<String>(List.of()).toArray(new String[0]), SURNAME);
-//        String stringDateOfBirth = String.format("%04d-%02d-%02d", 1983, 2, 27);
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
-//        final var pscData = createPscData(null, null, PSC_SURNAME, DATE_OF_BIRTH);
-//
-//        when(apiResponse.getData()).thenReturn(pscData);
-//        when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
-//        when(pscResourceHandler.getPscIndividualFullRecord("/company/"
-//            + COMPANY_NUMBER
-//            + "/persons-with-significant-control/"
-//            + INDIVIDUAL.getValue()
-//            + "/"
-//            + PSC_ID
-//            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
-//        when(apiClientService.getInternalApiClient()).thenReturn(internalApiClient);
-//        when(apiClientService.getInternalApiClient().privatePscResourceHandler()).thenReturn(pscResourceHandler);
-//
-//        var testUvid =
-//            testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
-//
-//        assertThat("Forenames order does not match", testUvid.getForenames(), is(equalTo(expected.getForenames())));
-//        assertThat(testUvid, samePropertyValuesAs(expected));
-//
-//    }
-//
-//    @Test
-//    void getUvidMatchWithPscDataWhenSurnameBlank() throws IOException, URIValidationException {
-//
-//        UvidMatch expected = createUvid(UVID_CODE);
-//        setNames(expected, FORENAMES, "");
-//        String stringDateOfBirth = String.format("%04d-%02d-%02d", 1983, 2, 27);
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
-//        final var pscData = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, "", DATE_OF_BIRTH);
-//
-//        when(apiResponse.getData()).thenReturn(pscData);
-//        when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
-//        when(pscResourceHandler.getPscIndividualFullRecord("/company/"
-//            + COMPANY_NUMBER
-//            + "/persons-with-significant-control/"
-//            + INDIVIDUAL.getValue()
-//            + "/"
-//            + PSC_ID
-//            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
-//        when(apiClientService.getInternalApiClient()).thenReturn(internalApiClient);
-//        when(apiClientService.getInternalApiClient().privatePscResourceHandler()).thenReturn(pscResourceHandler);
-//
-//        var testUvid =
-//            testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
-//
-//        assertThat("Forenames order does not match", testUvid.getForenames(),
-//            is(equalTo(expected.getForenames())));
-//        assertThat(testUvid, samePropertyValuesAs(expected));
-//
-//    }
-//
-//    @Test
-//    void getUvidMatchWithPscDataWhenNotFound() throws IOException, URIValidationException {
-//
-//        final var exception = new ApiErrorResponseException(
-//            new HttpResponseException.Builder(HttpStatusCodes.STATUS_CODE_NOT_FOUND, "test case",
-//                new HttpHeaders()));
-//
-//        when(apiClientService.getInternalApiClient().privatePscResourceHandler()
-//            .getPscIndividualFullRecord(
-//                "/company/"
-//                    + COMPANY_NUMBER
-//                    + "/persons-with-significant-control/"
-//                    + INDIVIDUAL.getValue()
-//                    + "/"
-//                    + PSC_ID
-//                    + "/full_record"
-//            ).execute()).thenThrow(exception);
-//
-//        final var thrown = assertThrows(FilingResourceNotFoundException.class,
-//            () -> testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA,
-//                INDIVIDUAL));
-//
-//        assertThat(thrown.getMessage(),
-//            is("PSC Details not found for " + PSC_ID + ": 404 test case"));
-//
-//    }
-//
-//    @Test
-//    void getUvidMatchWithPscDataWhenErrorRetrieving() throws IOException, URIValidationException {
-//
-//        final var exception = new ApiErrorResponseException(
-//            new HttpResponseException.Builder(HttpStatusCodes.STATUS_CODE_FORBIDDEN, "test case",
-//                new HttpHeaders()));
-//        when(apiClientService.getInternalApiClient().privatePscResourceHandler()
-//            .getPscIndividualFullRecord(
-//                "/company/"
-//                    + COMPANY_NUMBER
-//                    + "/persons-with-significant-control/"
-//                    + INDIVIDUAL.getValue()
-//                    + "/"
-//                    + PSC_ID
-//                    + "/full_record"
-//            ).execute()).thenThrow(exception);
-//
-//        final var thrown = assertThrows(PscLookupServiceException.class,
-//            () -> testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA,
-//                INDIVIDUAL));
-//
-//        assertThat(thrown.getMessage(),
-//            is("Error Retrieving PSC details for " + PSC_ID + ": 403 test case"));
-//
-//    }
+
+    @Test
+    void getPscIndividualWhenFound() throws IOException, URIValidationException {
+        when(apiResponse.getData()).thenReturn(new IndividualFullRecord());
+        when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
+        when(privatePscResourceHandler.getPscIndividualFullRecord("/company/"
+            + COMPANY_NUMBER
+            + "/persons-with-significant-control/"
+            + INDIVIDUAL.getValue()
+            + "/"
+            + PSC_ID
+            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
+        when(internalApiClientService.getInternalApiClient()).thenReturn(internalApiClient);
+        when(internalApiClientService.getInternalApiClient().privatePscResourceHandler()).thenReturn(privatePscResourceHandler);
+
+        var pscApi =
+            testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
+
+        assertThat(pscApi, samePropertyValuesAs(new IndividualFullRecord()));
+
+    }
+
+
+    @Test
+    void getPscWhenErrorRetrieving() throws IOException, URIValidationException {
+        final var exception = new ApiErrorResponseException(
+            new HttpResponseException.Builder(HttpStatusCodes.STATUS_CODE_FORBIDDEN, "test case",
+                new HttpHeaders()));
+        when(internalApiClientService.getInternalApiClient().privatePscResourceHandler()
+            .getPscIndividualFullRecord(
+                "/company/"
+                    + COMPANY_NUMBER
+                    + "/persons-with-significant-control/"
+                    + INDIVIDUAL.getValue()
+                    + "/"
+                    + PSC_ID
+                    + "/full_record"
+            ).execute()).thenThrow(exception);
+
+        final var thrown = assertThrows(PscLookupServiceException.class,
+            () -> testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL));
+
+        assertThat(thrown.getMessage(), is("Error Retrieving PSC details for " + PSC_ID + ": 403 test case"));
+    }
+
+    @Test
+    void getPscWhenURIErrorRetrieving() throws IOException, URIValidationException {
+        final var exception = new URIValidationException("Incorrect URI");
+        when(internalApiClientService.getInternalApiClient().privatePscResourceHandler()
+            .getPscIndividualFullRecord(
+                "/company/"
+                    + COMPANY_NUMBER
+                    + "/persons-with-significant-control/"
+                    + INDIVIDUAL.getValue()
+                    + "/"
+                    + PSC_ID
+                    + "/full_record"
+            ).execute()).thenThrow(exception);
+
+        final var thrown = assertThrows(PscLookupServiceException.class,
+            () -> testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL));
+
+        assertThat(thrown.getMessage(), is("Error Retrieving PSC details for " + PSC_ID + ": Incorrect URI"));
+    }
+
+    @Disabled("Disabled as RLE functionality is on hold")
+    @Test
+    void getPscWhenTypeNotRecognised() {
+
+        final var thrown = assertThrows(UnsupportedOperationException.class,
+            () -> testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, mockedValue));
+
+        assertThat(thrown.getMessage(), is("PSC type UNKNOWN not supported for PSC ID " + PSC_ID));
+    }
+
+    @Test
+    void getUvidMatchWithPscData() throws IOException, URIValidationException {
+
+        UvidMatch expected = createUvid(UVID_CODE);
+        setNames(expected, FORENAMES, SURNAME);
+
+        String stringDateOfBirth = String.format("%04d-%02d-%02d", 1983, 2, 27);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
+
+        final var pscData = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
+
+        when(apiResponse.getData()).thenReturn(pscData);
+        when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
+        when(privatePscResourceHandler.getPscIndividualFullRecord("/company/"
+            + COMPANY_NUMBER
+            + "/persons-with-significant-control/"
+            + INDIVIDUAL.getValue()
+            + "/"
+            + PSC_ID
+            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
+        when(internalApiClientService.getInternalApiClient()).thenReturn(internalApiClient);
+        when(internalApiClientService.getInternalApiClient().privatePscResourceHandler()).thenReturn(privatePscResourceHandler);
+
+        var testUvid =
+            testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
+
+        assertThat("Forenames order does not match", testUvid.getForenames(), is(equalTo(expected.getForenames())));
+        assertThat(testUvid, samePropertyValuesAs(expected));
+    }
+
+    @Test
+    void getUvidMatchWithNoUvid() throws IOException, URIValidationException {
+
+        VerificationDetails verificationDetails = VerificationDetails.newBuilder().build();
+        PscVerificationData pscVerificationData =
+            PscVerificationData.newBuilder()
+                .pscAppointmentId(PSC_ID)
+                .companyNumber(COMPANY_NUMBER)
+                .verificationDetails(verificationDetails)
+                .build();
+        UvidMatch expected = createUvid("");
+        setNames(expected, FORENAMES, SURNAME);
+        expected.setDateOfBirth(LocalDate.of(1983, 2, 27));
+        final var pscData = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
+
+        when(apiResponse.getData()).thenReturn(pscData);
+        when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
+        when(privatePscResourceHandler.getPscIndividualFullRecord("/company/"
+            + COMPANY_NUMBER
+            + "/persons-with-significant-control/"
+            + INDIVIDUAL.getValue()
+            + "/"
+            + PSC_ID
+            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
+        when(internalApiClientService.getInternalApiClient()).thenReturn(internalApiClient);
+        when(internalApiClientService.getInternalApiClient().privatePscResourceHandler()).thenReturn(privatePscResourceHandler);
+
+        var testUvid =
+            testService.getUvidMatchWithPscData(transaction, pscVerificationData, INDIVIDUAL);
+
+        assertThat("Forenames order does not match", testUvid.getForenames(), is(equalTo(expected.getForenames())));
+        assertThat(testUvid, samePropertyValuesAs(expected));
+
+    }
+
+    @Test
+    void getUvidMatchWithPscDataWhenForenamesBlank()
+        throws IOException, URIValidationException {
+
+        UvidMatch expected = createUvid(UVID_CODE);
+        setNames(expected, new ArrayList<String>(List.of()).toArray(new String[0]), SURNAME);
+        String stringDateOfBirth = String.format("%04d-%02d-%02d", 1983, 2, 27);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
+        final var pscData = createPscData(null, null, PSC_SURNAME, DATE_OF_BIRTH);
+
+        when(apiResponse.getData()).thenReturn(pscData);
+        when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
+        when(privatePscResourceHandler.getPscIndividualFullRecord("/company/"
+            + COMPANY_NUMBER
+            + "/persons-with-significant-control/"
+            + INDIVIDUAL.getValue()
+            + "/"
+            + PSC_ID
+            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
+        when(internalApiClientService.getInternalApiClient()).thenReturn(internalApiClient);
+        when(internalApiClientService.getInternalApiClient().privatePscResourceHandler()).thenReturn(privatePscResourceHandler);
+
+        var testUvid =
+            testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
+
+        assertThat("Forenames order does not match", testUvid.getForenames(), is(equalTo(expected.getForenames())));
+        assertThat(testUvid, samePropertyValuesAs(expected));
+
+    }
+
+    @Test
+    void getUvidMatchWithPscDataWhenSurnameBlank() throws IOException, URIValidationException {
+
+        UvidMatch expected = createUvid(UVID_CODE);
+        setNames(expected, FORENAMES, "");
+        String stringDateOfBirth = String.format("%04d-%02d-%02d", 1983, 2, 27);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
+        final var pscData = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, "", DATE_OF_BIRTH);
+
+        when(apiResponse.getData()).thenReturn(pscData);
+        when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
+        when(privatePscResourceHandler.getPscIndividualFullRecord("/company/"
+            + COMPANY_NUMBER
+            + "/persons-with-significant-control/"
+            + INDIVIDUAL.getValue()
+            + "/"
+            + PSC_ID
+            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
+        when(internalApiClientService.getInternalApiClient()).thenReturn(internalApiClient);
+        when(internalApiClientService.getInternalApiClient().privatePscResourceHandler()).thenReturn(privatePscResourceHandler);
+
+        var testUvid =
+            testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
+
+        assertThat("Forenames order does not match", testUvid.getForenames(),
+            is(equalTo(expected.getForenames())));
+        assertThat(testUvid, samePropertyValuesAs(expected));
+
+    }
+
+    @Test
+    void getUvidMatchWithPscDataWhenNotFound() throws IOException, URIValidationException {
+
+        final var exception = new ApiErrorResponseException(
+            new HttpResponseException.Builder(HttpStatusCodes.STATUS_CODE_NOT_FOUND, "test case",
+                new HttpHeaders()));
+
+        when(internalApiClientService.getInternalApiClient().privatePscResourceHandler()
+            .getPscIndividualFullRecord(
+                "/company/"
+                    + COMPANY_NUMBER
+                    + "/persons-with-significant-control/"
+                    + INDIVIDUAL.getValue()
+                    + "/"
+                    + PSC_ID
+                    + "/full_record"
+            ).execute()).thenThrow(exception);
+
+        final var thrown = assertThrows(FilingResourceNotFoundException.class,
+            () -> testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA,
+                INDIVIDUAL));
+
+        assertThat(thrown.getMessage(),
+            is("PSC Details not found for " + PSC_ID + ": 404 test case"));
+
+    }
+
+    @Test
+    void getUvidMatchWithPscDataWhenErrorRetrieving() throws IOException, URIValidationException {
+
+        final var exception = new ApiErrorResponseException(
+            new HttpResponseException.Builder(HttpStatusCodes.STATUS_CODE_FORBIDDEN, "test case",
+                new HttpHeaders()));
+        when(internalApiClientService.getInternalApiClient().privatePscResourceHandler()
+            .getPscIndividualFullRecord(
+                "/company/"
+                    + COMPANY_NUMBER
+                    + "/persons-with-significant-control/"
+                    + INDIVIDUAL.getValue()
+                    + "/"
+                    + PSC_ID
+                    + "/full_record"
+            ).execute()).thenThrow(exception);
+
+        final var thrown = assertThrows(PscLookupServiceException.class,
+            () -> testService.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA,
+                INDIVIDUAL));
+
+        assertThat(thrown.getMessage(),
+            is("Error Retrieving PSC details for " + PSC_ID + ": 403 test case"));
+
+    }
 
     private static UvidMatch createUvid(String uvidCode) {
         UvidMatch uvidMatch = new UvidMatch();

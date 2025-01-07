@@ -13,11 +13,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
+import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.sdk.manager.ApiClientManager;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,9 +32,12 @@ class InternalApiClientServiceTest {
     @Mock
     private InternalApiClient internalApiClient;
 
+    @Mock
+    private Logger logger;
+
     @BeforeEach
     void setUp() {
-        service = new InternalApiClientService("API_URL");
+        service = new InternalApiClientService("API_URL", logger);
     }
 
     @Disabled
