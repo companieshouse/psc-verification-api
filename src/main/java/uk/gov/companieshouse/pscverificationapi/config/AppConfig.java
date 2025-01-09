@@ -20,6 +20,8 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import uk.gov.companieshouse.environment.EnvironmentReader;
+import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
 @Configuration
 @EnableTransactionManagement
@@ -84,5 +86,10 @@ public class AppConfig {
                 .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
                 .setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS)
                 ;
+    }
+
+    @Bean("environmentReader")
+    public EnvironmentReader environmentReader() {
+        return new EnvironmentReaderImpl();
     }
 }
