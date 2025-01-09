@@ -19,7 +19,6 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.psc.DateOfBirth;
 import uk.gov.companieshouse.api.psc.NameElements;
 import uk.gov.companieshouse.environment.EnvironmentReader;
-import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
@@ -35,10 +34,12 @@ public class PscLookupServiceImpl implements PscLookupService {
 
     private final ApiClientService apiClientService;
     private final Logger logger;
+    private EnvironmentReader environmentReader;
 
-    public PscLookupServiceImpl(ApiClientService apiClientService, Logger logger) {
+    public PscLookupServiceImpl(ApiClientService apiClientService, Logger logger, EnvironmentReader environmentReader) {
         this.apiClientService = apiClientService;
         this.logger = logger;
+        this.environmentReader = environmentReader;
     }
 
     /**
@@ -57,7 +58,6 @@ public class PscLookupServiceImpl implements PscLookupService {
 
         final var logMap = LogHelper.createLogMap(transaction.getId());
         String pscAppointmentId = data.pscAppointmentId();
-        EnvironmentReader environmentReader = new EnvironmentReaderImpl();
         String chsInternalApiKey = environmentReader.getMandatoryString("CHS_INTERNAL_API_KEY");
 
         try {
