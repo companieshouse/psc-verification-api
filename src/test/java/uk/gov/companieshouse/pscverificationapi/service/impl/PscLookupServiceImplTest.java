@@ -5,7 +5,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.pscverificationapi.enumerations.PscType.INDIVIDUAL;
 
@@ -17,10 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -40,7 +36,6 @@ import uk.gov.companieshouse.api.psc.DateOfBirth;
 import uk.gov.companieshouse.api.psc.NameElements;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.logging.Logger;
-import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.ApiClientService;
@@ -86,20 +81,6 @@ class PscLookupServiceImplTest extends TestBaseService {
     private EnvironmentReader environmentReader;
 
     private PscLookupService testService;
-
-    @BeforeAll
-    public static void setUpForClass() {
-        PscType[] newEnumValues = addNewEnumValue();
-        myMockedEnum = mockStatic(PscType.class);
-        myMockedEnum.when(PscType::values).thenReturn(newEnumValues);
-        mockedValue = newEnumValues[newEnumValues.length - 1];
-        when(mockedValue.name()).thenReturn("UNKNOWN");
-    }
-
-    @AfterAll
-    public static void tearDownForClass() {
-        myMockedEnum.close();
-    }
 
     @BeforeEach
     void setUp() {
@@ -181,16 +162,6 @@ class PscLookupServiceImplTest extends TestBaseService {
             () -> testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL));
 
         assertThat(thrown.getMessage(), is("Error Retrieving PSC details for " + PSC_ID + ": Incorrect URI"));
-    }
-
-    @Disabled("Disabled as RLE functionality is on hold")
-    @Test
-    void getPscWhenTypeNotRecognised() {
-
-        final var thrown = assertThrows(UnsupportedOperationException.class,
-            () -> testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, mockedValue));
-
-        assertThat(thrown.getMessage(), is("PSC type UNKNOWN not supported for PSC ID " + PSC_ID));
     }
 
     @Test
