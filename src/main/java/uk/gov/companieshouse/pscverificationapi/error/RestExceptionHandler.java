@@ -122,6 +122,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ResponseEntity<Object> handleMergePatchException(final MergePatchException ex,
         final WebRequest request) {
+        logError(chLogger, request, "Invalid patch data", ex, null);
         return createRedactedErrorResponseEntity(ex, request, ex.getCause(),
             validation.get("patch-merge-error-prefix"));
     }

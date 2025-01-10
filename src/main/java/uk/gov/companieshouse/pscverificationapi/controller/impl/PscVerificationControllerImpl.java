@@ -159,8 +159,8 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         VerificationDetails verificationDetails = pscVerification.getData().verificationDetails();
 
         if (verificationDetails != null) {
-            Map<String, Object> mergeVerificationDetails = (Map<String, Object>) mergePatch.get("verification_details");
-            String mergeUvid = (String) mergeVerificationDetails.get("uvid");
+            final var mergeVerificationDetails = (Map<String, Object>) mergePatch.get("verification_details");
+            final var mergeUvid = mergeVerificationDetails != null ? (String) mergeVerificationDetails.get("uvid") : null;
 
             if (verificationDetails.uvid() != null && mergeUvid != null
                 && !verificationDetails.uvid().equals(mergeUvid)
