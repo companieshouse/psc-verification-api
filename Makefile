@@ -31,7 +31,7 @@ test-unit:
 
 .PHONY: test-integration
 test-integration: clean
-	mvn test -Dskip.unit.tests=true
+	mvn integration-test -Dskip.unit.tests=true
 
 .PHONY: verify
 verify: clean
