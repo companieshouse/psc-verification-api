@@ -5,8 +5,7 @@ package uk.gov.companieshouse.pscverificationapi.exception;
  */
 public class MergePatchException extends RuntimeException {
 
-    public MergePatchException(final Throwable cause) {
-        super(cause);
+    public MergePatchException(final String message, final Throwable cause) {
+        super(message, cause);
     }
-
 }

@@ -71,7 +71,7 @@ public class PscVerificationServiceImpl implements PscVerificationService {
             patchResult = patchEntity(filingId, pscVerificationFilingProvider, patchMap,
                     mergeProcessor, postMergeProcessor, pscVerificationPatchValidator);
         } catch (final IOException e) {
-            throw new MergePatchException(e);
+            throw new MergePatchException(e.getMessage(), e);
         }
 
         return patchResult;

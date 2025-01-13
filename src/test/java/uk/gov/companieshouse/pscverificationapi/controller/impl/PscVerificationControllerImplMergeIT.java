@@ -53,7 +53,7 @@ import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
 class PscVerificationControllerImplMergeIT extends BaseControllerIT {
     private static final URI SELF = URI.create(
         "/transactions/" + TRANS_ID + "/persons-with-significant-control-verification/" + FILING_ID);
-    private static final URI VALID = URI.create(SELF.toString() + "/validation_status");
+    private static final URI VALID = URI.create(SELF + "/validation_status");
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1970, 1, 1);
     private static final String DOB_STRING = DATE_OF_BIRTH.toString();
 
@@ -102,7 +102,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .append("1990-11-11")
             .append("\"},")
             .append("\"verification_details\":{")
-            .append("\"name_mismatch_reason\":\"MAIDEN_NAME\",")
+            .append("\"name_mismatch_reason\":\"LEGAL_NAME_CHANGE\",")
             .append("\"verification_statements\":[")
             .append("\"RO_IDENTIFIED\",")
             .append("\"RO_VERIFIED\",")
@@ -194,7 +194,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .append("1990-11-11")
             .append("\"},")
             .append("\"verification_details\":{")
-            .append("\"name_mismatch_reason\":\"MAIDEN_NAME\",")
+            .append("\"name_mismatch_reason\":\"LEGAL_NAME_CHANGE\",")
             .append("\"verification_statements\":[")
             .append("\"RO_IDENTIFIED\",")
             .append("\"RO_VERIFIED\",")
@@ -278,7 +278,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .append("\"surname\": null},")
             .append("\"date_of_birth\": null},")
             .append("\"verification_details\":{")
-            .append("\"name_mismatch_reason\":\"MAIDEN_NAME\",")
+            .append("\"name_mismatch_reason\":\"LEGAL_NAME_CHANGE\",")
             .append("\"verification_statements\": null}")
             .append("}")
             .toString();
