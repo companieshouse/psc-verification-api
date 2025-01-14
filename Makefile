@@ -54,11 +54,11 @@ endif
 .PHONY: build
 build: clean submodules
 	mvn versions:set -DnewVersion=$(version) -DgenerateBackupPoms=false
-	mvn package
+	mvn verify
 	cp ./target/$(artifact_name)-$(version).jar ./$(artifact_name).jar
 
 .PHONY: dist
-dist: clean coverage submodules package
+dist: clean coverage submodules verify
 
 .PHONY: coverage
 coverage:
