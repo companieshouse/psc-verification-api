@@ -31,7 +31,7 @@ test-unit:
 
 .PHONY: test-integration
 test-integration: clean
-	mvn test -Dskip.unit.tests=true
+	mvn integration-test -Dskip.unit.tests=true
 
 .PHONY: verify
 verify: clean
@@ -54,11 +54,11 @@ endif
 .PHONY: build
 build: clean submodules
 	mvn versions:set -DnewVersion=$(version) -DgenerateBackupPoms=false
-	mvn package
+	mvn verify
 	cp ./target/$(artifact_name)-$(version).jar ./$(artifact_name).jar
 
 .PHONY: dist
-dist: clean coverage submodules package
+dist: clean coverage submodules verify
 
 .PHONY: coverage
 coverage:
