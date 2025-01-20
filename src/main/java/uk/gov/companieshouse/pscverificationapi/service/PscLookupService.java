@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.pscverificationapi.service;
 
-import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.model.psc.IndividualFullRecord;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -23,17 +22,4 @@ public interface PscLookupService {
      */
     IndividualFullRecord getPscIndividualFullRecord(Transaction transaction, PscVerificationData data, PscType pscType)
             throws PscLookupServiceException;
-
-    /**
-     * Retrieve a UvidMatch with the PSC data.
-     *
-     * @param transaction       the Transaction
-     * @param data              the PSC verification data
-     * @param pscType           the PSC Type
-     * @return the UvidMatch, if found
-     * @throws PscLookupServiceException if the PSC was not found or an error occurred
-     */
-    UvidMatch getUvidMatchWithPscData(Transaction transaction, PscVerificationData data, PscType pscType)
-        throws PscLookupServiceException;
-
 }
