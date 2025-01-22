@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonLocation;
@@ -22,7 +23,9 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,8 +41,11 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.context.request.ServletWebRequest;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.pscverificationapi.exception.ConflictingFilingException;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.InvalidFilingException;
+import uk.gov.companieshouse.pscverificationapi.exception.MergePatchException;
+import uk.gov.companieshouse.service.ServiceException;
 
 @ExtendWith(MockitoExtension.class)
 class RestExceptionHandlerTest {
@@ -82,6 +88,7 @@ class RestExceptionHandlerTest {
     private FieldError fieldError;
     private FieldError fieldErrorWithRejectedValue;
     private ApiError expectedErrorWithRejectedValue;
+    private Throwable mergePatchCause;
 
     @BeforeEach
     void setUp() {
@@ -102,6 +109,7 @@ class RestExceptionHandlerTest {
         fieldErrorWithRejectedValue =
             new FieldError("object", "appointmentId", "1kdaTltWeaP1EB70SSD9SLmiK5Z", false, codes2, null,
                 "errorWithRejectedValue");
+        mergePatchCause = new Throwable();
 
         expectedErrorWithRejectedValue =
             new ApiError("{rejected-value} is ceased", "$.psc_appointment_id", "json-path", "ch:validation");
@@ -208,10 +216,6 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void handleHttpMessageNotReadable() {
-    }
-
-    @Test
     void handleInvalidFilingException() {
         when(request.getRequest()).thenReturn(servletRequest);
         final var exception = new InvalidFilingException(List.of(fieldError, fieldErrorWithRejectedValue));
@@ -237,11 +241,16 @@ class RestExceptionHandlerTest {
         ));
     }
 
-    //TODO
     @Test
     void handleMergePatchException() {
-    }
+        when(request.getRequest()).thenReturn(servletRequest);
+        final var exception = new MergePatchException("Test message", mergePatchCause);
 
+        final var response = testExceptionHandler.handleMergePatchException(exception, request);
+
+        assertThat(response, is(notNullValue()));
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+    }
 
     @Test
     void handleResourceNotFoundException() {
@@ -261,24 +270,75 @@ class RestExceptionHandlerTest {
         assertThat(apiErrors.getErrors(), contains(expectedError));
     }
 
-    //TODO
+    @Disabled
+    @Test
+    void handleConflictingFilingException() {
+
+        when(request.getRequest()).thenReturn(servletRequest);
+        final var exception = new ConflictingFilingException(List.of(fieldError, fieldErrorWithRejectedValue));
+
+        final var apiErrors = testExceptionHandler.handleConflictingFilingException(exception, request);
+
+        assertThat(apiErrors.getErrors(), hasSize(2));
+
+        assertThat(apiErrors.getErrors(), containsInAnyOrder(
+            allOf(
+                hasProperty("error", is("field is blank")),
+                hasProperty("location", is("$.company_number")),
+                hasProperty("locationType", is("json-path")),
+                hasProperty("type", is("ch:validation"))
+            ),
+            allOf(
+                hasProperty("error", is("{rejected-value} is ceased")),
+                hasProperty("location", is("$.psc_appointment_id")),
+                hasProperty("locationType", is("json-path")),
+                hasProperty("type", is("ch:validation")),
+                hasProperty("errorValues", hasEntry("rejected-value", "1kdaTltWeaP1EB70SSD9SLmiK5Z"))
+            )
+        ));
+    }
+
     @Test
     void handleServiceException() {
+        final var exception = new ServiceException(
+            "Service exception");
+
+        when(request.getRequest()).thenReturn(servletRequest);
+
+        final var apiErrors = testExceptionHandler.handleServiceException(exception,
+            request);
+        final var expectedError = new ApiError("Service Unavailable: {error}",
+            null, "resource", "ch:service");
+
+        expectedError.addErrorValue("error",
+            "Service exception");
+
+        assertThat(apiErrors.getErrors(), contains(expectedError));
     }
 
-    //TODO
-    @Test
-    void handleExceptionInternal() {
-    }
-
-    //TODO
     @Test
     void handleAllUncaughtException() {
+        final var exception = new RuntimeException(
+            "Runtime exception");
+
+        when(request.getRequest()).thenReturn(servletRequest);
+
+        final var apiErrors = testExceptionHandler.handleAllUncaughtException(exception,
+            request);
+        final var expectedError = new ApiError("Service Unavailable: {error}",
+            null, "resource", "ch:service");
+
+        expectedError.addErrorValue("error",
+            "Runtime exception");
+
+        assertThat(apiErrors.getErrors(), contains(expectedError));
     }
 
-    //TODO
     @Test
     void getMostSpecificCause() {
+
+        final var thrown = RestExceptionHandler.getMostSpecificCause(null);
+        assertNull(thrown);
     }
 
     private static HttpMessageNotReadableException getHttpMessageNotReadableException(String blankJsonQuoted) {
