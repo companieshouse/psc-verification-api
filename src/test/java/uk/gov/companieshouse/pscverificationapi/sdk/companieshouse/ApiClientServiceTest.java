@@ -22,7 +22,7 @@ class ApiClientServiceTest {
         apiClientService = new ApiClientService();
     }
 
-    @Disabled
+    @Disabled("We can't get coverage here because of environment variables")
     @Test
     void getSdk() {
         when(apiClientService.getApiClient("key")).thenReturn(apiClient);
