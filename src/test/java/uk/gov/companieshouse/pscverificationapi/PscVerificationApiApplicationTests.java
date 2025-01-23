@@ -1,6 +1,8 @@
 package uk.gov.companieshouse.pscverificationapi;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,7 @@ class PscVerificationApiApplicationTests {
     @Test
     void contextLoads() {
         // This test will fail if the application context cannot start
-        assertNotNull(app);
+        assertThat(app, is(notNullValue()));
     }
 
 }

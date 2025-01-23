@@ -270,7 +270,7 @@ class RestExceptionHandlerTest {
         assertThat(apiErrors.getErrors(), contains(expectedError));
     }
 
-    @Disabled
+    @Disabled("Similar tests pass but this fails - looking into issue")
     @Test
     void handleConflictingFilingException() {
 
