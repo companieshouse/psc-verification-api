@@ -17,6 +17,7 @@ import uk.gov.companieshouse.api.ApiClient;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 import uk.gov.companieshouse.sdk.manager.ApiClientManager;
+import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @ExtendWith(MockitoExtension.class)
 class ApiClientServiceTest {
@@ -34,7 +35,8 @@ class ApiClientServiceTest {
     @Test
     void getSdk() {
         try (final MockedStatic<ApiClientManager> apiClientManager = Mockito.mockStatic(ApiClientManager.class)) {
-            apiClientManager.when(ApiClientManager::getSDK).thenReturn(apiClient);
+            apiClientManager.when(() -> ApiClientManager.getSDK("API_URL")).thenReturn(apiClient);
+
             try (MockedConstruction<EnvironmentReaderImpl> mocked = mockConstruction(EnvironmentReaderImpl.class)) {
 
                 // Given
@@ -45,6 +47,8 @@ class ApiClientServiceTest {
                 final ApiClient apiClientReturned = apiClientService.getApiClient("API_URL");
 
                 // Then
+                apiClientManager.verify(() -> ApiClientManager.getSDK("API_URL"));
+                assertThat(apiClientReturned, is(apiClient));
                 assertThat(mocked.constructed(), hasSize(1));
                 assertThat(mocked.constructed().getFirst().getMandatoryString("API_URL"), is("API_URL") );
             }
