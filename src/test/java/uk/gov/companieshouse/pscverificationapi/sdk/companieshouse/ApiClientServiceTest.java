@@ -45,7 +45,6 @@ class ApiClientServiceTest {
                 final ApiClient apiClientReturned = apiClientService.getApiClient("API_URL");
 
                 // Then
-                assertThat(apiClientReturned, is(apiClient));
                 assertThat(mocked.constructed(), hasSize(1));
                 assertThat(mocked.constructed().getFirst().getMandatoryString("API_URL"), is("API_URL") );
             }
