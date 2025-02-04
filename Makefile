@@ -21,8 +21,6 @@ submodules:
 	git submodule init
 	git submodule update
 
-FAIL_BUILD_CVSS_LIMIT ?= 0
-
 .PHONY: test-unit
 test-unit:
 	echo "make test-unit does nothing, use build target instead"
