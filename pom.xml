@@ -41,6 +41,7 @@
         <api-sdk-manager-java-library.version>3.0.5</api-sdk-manager-java-library.version>
         <private-api-sdk-java.version>4.0.241</private-api-sdk-java.version>
         <api-helper-java.version>3.0.1</api-helper-java.version>
+        <dependency-check-plugin.version>12.0.2</dependency-check-plugin.version>
         <!--sonar configuration-->
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml,
             ${project.basedir}/target/site/jacoco-it/jacoco.xml
@@ -334,6 +335,23 @@
                             <!-- Sets the output directory for the code coverage report. -->
                             <outputDirectory>${sonar.jacoco.reports}/jacoco-it</outputDirectory>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${dependency-check-plugin.version}</version>
+                <configuration>
+                    <suppressionFiles>
+                        <suppressionFile>suppress.xml</suppressionFile>
+                    </suppressionFiles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
