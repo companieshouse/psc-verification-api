@@ -18,7 +18,7 @@
         <skip.integration.tests>false</skip.integration.tests>
         <skip.unit.tests>false</skip.unit.tests>
         <!-- Spring -->
-        <spring-boot-dependencies.version>3.2.0</spring-boot-dependencies.version>
+        <spring-boot-dependencies.version>3.4.2</spring-boot-dependencies.version>
         <!-- Maven -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -37,7 +37,7 @@
         <api-security-java.version>2.0.7</api-security-java.version>
         <api-helper-java.version>3.0.1</api-helper-java.version>
         <api-sdk-java.version>6.0.26</api-sdk-java.version>
-        <sdk-manager-java.version>3.0.9</sdk-manager-java.version>
+        <sdk-manager-java.version>3.0.10</sdk-manager-java.version>
         <api-sdk-manager-java-library.version>3.0.5</api-sdk-manager-java-library.version>
         <private-api-sdk-java.version>4.0.241</private-api-sdk-java.version>
         <api-helper-java.version>3.0.1</api-helper-java.version>
