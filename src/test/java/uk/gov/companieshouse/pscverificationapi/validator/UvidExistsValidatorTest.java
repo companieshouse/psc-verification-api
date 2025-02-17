@@ -40,19 +40,14 @@ import java.util.Collections;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.DETAILS_MATCH_UVID;
-import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.FORENAMES_MISMATCH;
-import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.SURNAME_MISMATCH;
-import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.UNKNOWN_UVID;
-import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.DOB_MISMATCH;
-import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.EXPIRED_UVID;
-import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.INVALID_RECORD;
+import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.*;
 import static uk.gov.companieshouse.pscverificationapi.enumerations.PscType.INDIVIDUAL;
 
 @ExtendWith(MockitoExtension.class)
@@ -129,8 +124,11 @@ class UvidExistsValidatorTest {
         when(idvLookupService.matchUvid(expected)).thenThrow(new ApiErrorResponseException(
                 new HttpResponseException.Builder(400, "test error", new HttpHeaders())));
 
-        final var exception = Assertions.assertThrows(IdvLookupServiceException.class,
-            () -> testValidator.validate(new VerificationValidationContext(PSC_VERIFICATION_DATA, errors, transaction, pscType, passthroughHeader)));
+        final IdvLookupServiceException exception;
+        final VerificationValidationContext verificationValidationContext =
+                new VerificationValidationContext(PSC_VERIFICATION_DATA, errors, transaction, pscType, passthroughHeader);
+
+        exception = Assertions.assertThrows(IdvLookupServiceException.class, () -> testValidator.validate(verificationValidationContext));
         assertThat(exception.getMessage(), is("Error matching UVID XY222222223: null test error"));
     }
 
@@ -174,6 +172,36 @@ class UvidExistsValidatorTest {
         when(uvidMatchResponse.getAccuracyStatement()).thenReturn(Collections.singletonList(DETAILS_MATCH_UVID));
 
         testValidator.validate(validationContext);
+    }
+
+    @Test
+    void validateWhenUvidMatchIsExpired() throws ApiErrorResponseException {
+
+        UvidMatch expected = createUvid(UVID_CODE);
+        setNames(expected, FORENAMES, SURNAME);
+
+        List<UvidMatchResponse.AccuracyStatementEnum> accuracyStatementList = new ArrayList<>();
+        accuracyStatementList.add(DETAILS_MATCH_UVID);
+        accuracyStatementList.add(EXPIRED_UVID);
+
+        String stringDateOfBirth = String.format("%04d-%02d-%02d", 1983, 2, 27);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
+
+        final var individualFullRecord = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
+        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
+        when(pscVerificationData.verificationDetails()).thenReturn(VERIFICATION_DETAILS);
+        when(idvLookupService.matchUvid(expected)).thenReturn(uvidMatchResponse);
+        when(uvidMatchResponse.getAccuracyStatement()).thenReturn(accuracyStatementList);
+
+        testValidator.validate(validationContext);
+
+        assertThat(errors, is((notNullValue())));
+
+        Optional<FieldError> received = (errors.stream().findFirst());
+        assertThat(received.isPresent(), is(true));
+        assertThat(received.get().getField(), is("uvid_match"));
+        assertThat(received.get().getCode(), is("expired-uvid"));
     }
 
     @Test

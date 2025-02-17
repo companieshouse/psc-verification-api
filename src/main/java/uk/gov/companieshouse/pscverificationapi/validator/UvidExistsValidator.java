@@ -69,8 +69,10 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
 
         List<UvidMatchResponse.AccuracyStatementEnum> accuracyStatementList = uvidMatchResponse.getAccuracyStatement();
 
+        // Filter for when the uvid is valid but expired
         if (!accuracyStatementList.equals(VALID_UVID_ACCURACY_STATEMENT)) {
-            checkForValidationErrors(accuracyStatementList, dto, validationContext);
+            checkForValidationErrors(accuracyStatementList.stream().filter(item ->
+                            !item.equals(UvidMatchResponse.AccuracyStatementEnum.DETAILS_MATCH_UVID)).toList(), dto, validationContext);
         }
 
         super.validate(validationContext);
