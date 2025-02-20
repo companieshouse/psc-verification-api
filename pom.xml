@@ -42,16 +42,13 @@
         <private-api-sdk-java.version>4.0.241</private-api-sdk-java.version>
         <api-helper-java.version>3.0.1</api-helper-java.version>
         <!--sonar configuration-->
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml,
-            ${project.basedir}/target/site/jacoco-it/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.jacoco.reports>${project.basedir}/target/site</sonar.jacoco.reports>
-        <sonar.dependencyCheck.htmlReportPath>
-            ${project.basedir}/target/dependency-check-report.html
-        </sonar.dependencyCheck.htmlReportPath>
-        <sonar.dependencyCheck.jsonReportPath>
-            ${project.basedir}/target/dependency-check-report.json
-        </sonar.dependencyCheck.jsonReportPath>
+        <sonar-maven-plugin.version>4.0.0.4121</sonar-maven-plugin.version>
+        <sonar.java.binaries>${project.basedir}/target,${project.basedir}/target/*</sonar.java.binaries>
+        <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+        <sonar.login></sonar.login>
+        <sonar.password></sonar.password>
+        <sonar.projectKey>uk.gov.companieshouse:psc-verification-api</sonar.projectKey>
+        <sonar.projectName>psc-verification-api</sonar.projectName>
     </properties>
     <dependencyManagement>
         <dependencies>
