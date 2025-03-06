@@ -21,11 +21,11 @@ public class PscIdProvidedValidator extends BaseVerificationValidator implements
     @Override
     public void validate(final VerificationValidationContext validationContext) {
 
-        if (Optional.ofNullable(validationContext.dto().pscAppointmentId()).isEmpty()) {
+        if (Optional.ofNullable(validationContext.dto().pscNotificationId()).isEmpty()) {
             validationContext.errors()
-                .add(new FieldError("object", "psc_appointment_id", null,
-                    false, new String[]{null, "psc_appointment_id"}, null,
-                    validation.get("psc-appointment-id-missing")));
+                .add(new FieldError("object", "psc_notification_id", null,
+                    false, new String[]{null, "psc_notification_id"}, null,
+                    validation.get("psc-notification-id-missing")));
         }else {
             super.validate(validationContext);
         }
