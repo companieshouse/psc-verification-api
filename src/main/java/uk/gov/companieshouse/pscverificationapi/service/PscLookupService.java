@@ -1,6 +1,6 @@
 package uk.gov.companieshouse.pscverificationapi.service;
 
-import uk.gov.companieshouse.api.model.psc.IndividualFullRecord;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
@@ -20,6 +20,6 @@ public interface PscLookupService {
      * @return the PSC Full Record details, if found
      * @throws PscLookupServiceException if the PSC was not found or an error occurred
      */
-    IndividualFullRecord getPscIndividualFullRecord(Transaction transaction, PscVerificationData data, PscType pscType)
+    PscIndividualFullRecordApi getPscIndividualFullRecord(Transaction transaction, PscVerificationData data, PscType pscType)
             throws PscLookupServiceException;
 }

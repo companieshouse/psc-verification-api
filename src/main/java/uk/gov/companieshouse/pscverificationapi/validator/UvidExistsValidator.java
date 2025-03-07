@@ -9,7 +9,7 @@ import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse;
-import uk.gov.companieshouse.api.model.psc.IndividualFullRecord;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.psc.DateOfBirth;
@@ -108,13 +108,13 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
         Optional<String> uvid = Optional.ofNullable(data.verificationDetails().uvid());
         uvidMatch.setUvid(uvid.orElse(""));
 
-        IndividualFullRecord pscIndividualFullRecord = pscLookupService.getPscIndividualFullRecord(transaction, data, pscType);
+        PscIndividualFullRecordApi pscIndividualFullRecord = pscLookupService.getPscIndividualFullRecord(transaction, data, pscType);
         setUvidDataFromPsc(uvidMatch, pscIndividualFullRecord);
 
         return uvidMatch;
     }
 
-    private void setUvidDataFromPsc(UvidMatch uvidMatch, IndividualFullRecord pscData) {
+    private void setUvidDataFromPsc(UvidMatch uvidMatch, PscIndividualFullRecordApi pscData) {
 
         NameElements convertedNameElements = JsonHelper.convertLinkedHashmap(pscData.getNameElements(), PropertyNamingStrategies.SNAKE_CASE, NameElements.class);
         List<String> forenames = new ArrayList<>();

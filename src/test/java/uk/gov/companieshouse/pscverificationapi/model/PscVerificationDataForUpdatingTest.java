@@ -31,7 +31,7 @@ class PscVerificationDataForUpdatingTest extends BaseControllerIT {
             NameMismatchReasonConstants.PREFERRED_NAME,
             EnumSet.of(VerificationStatementConstants.RO_DECLARATION,
                 VerificationStatementConstants.RO_IDENTIFIED));
-        testData = new PscVerificationDataForUpdating("companyNumber", "pscAppointmentId",
+        testData = new PscVerificationDataForUpdating("companyNumber", "pscNotificationId",
             relevantOfficer, verificationDetails);
     }
 
@@ -42,8 +42,8 @@ class PscVerificationDataForUpdatingTest extends BaseControllerIT {
     }
 
     @Test
-    void getPscAppointmentId() {
-        assertThat(testData.getPscAppointmentId(), is("pscAppointmentId"));
+    void getPscNotificationId() {
+        assertThat(testData.getPscNotificationId(), is("pscNotificationId"));
     }
 
     @Test
@@ -65,7 +65,7 @@ class PscVerificationDataForUpdatingTest extends BaseControllerIT {
     void testToString() {
         assertThat(testData.toString(),
             is("PscVerificationDataForUpdating[companyNumber=companyNumber, "
-                + "pscAppointmentId=pscAppointmentId, "
+                + "pscNotificationId=pscNotificationId, "
                 + "relevantOfficer=RelevantOfficerForUpdating[nameElements=NameElementsApi[title"
                 + "='Sir', forename='Forename', otherForenames='Other Forenames', "
                 + "middleName='null', surname='Surname'], dateOfBirth=1990-01-04, "

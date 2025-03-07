@@ -107,7 +107,7 @@ class PscVerificationControllerImplTest {
         filing = PscVerificationData.newBuilder()
             .verificationDetails(verification)
             .companyNumber(COMPANY_NUMBER)
-            .pscAppointmentId(PSC_ID)
+            .pscNotificationId(PSC_ID)
             .build();
         entity = PscVerification.newBuilder()
             .createdAt(FIRST_INSTANT)

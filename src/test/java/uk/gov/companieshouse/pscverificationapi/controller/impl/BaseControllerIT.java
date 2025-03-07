@@ -35,7 +35,7 @@ public class BaseControllerIT {
     protected static final String COMMON_FRAGMENT = "\"company_number\": \""
         + COMPANY_NUMBER
         + "\","
-        + "\"psc_appointment_id\": \""
+        + "\"psc_notification_id\": \""
         + PSC_ID
         + "\","
         + "\"verification_details\": {"
