@@ -107,7 +107,7 @@ class RestExceptionHandlerTest {
         String[] codes2 = new String[]{"code1", "object.psc_notification_id", "code3", "pscIsCeased"};
         fieldError = new FieldError("object", "field1", null, false, codes1, null, "error");
         fieldErrorWithRejectedValue =
-            new FieldError("object", "appointmentId", "1kdaTltWeaP1EB70SSD9SLmiK5Z", false, codes2, null,
+            new FieldError("object", "pscNotificationId", "1kdaTltWeaP1EB70SSD9SLmiK5Z", false, codes2, null,
                 "errorWithRejectedValue");
         mergePatchCause = new Throwable();
 
