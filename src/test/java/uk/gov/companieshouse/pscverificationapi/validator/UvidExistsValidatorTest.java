@@ -144,7 +144,7 @@ class UvidExistsValidatorTest {
 
         var verificationDetails = VerificationDetails.newBuilder(PSC_VERIFICATION_DATA.verificationDetails()).nameMismatchReason(NameMismatchReasonConstants.PREFERRED_NAME).build();
 
-        final PscIndividualFullRecordApi pscIndividualFullRecord = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
+        final var pscIndividualFullRecord = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
 
         when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(pscIndividualFullRecord);
         when(pscVerificationData.verificationDetails()).thenReturn(verificationDetails);
