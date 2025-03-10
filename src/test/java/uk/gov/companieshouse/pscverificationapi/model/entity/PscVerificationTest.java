@@ -63,7 +63,7 @@ class PscVerificationTest {
             .build();
         data = PscVerificationData.newBuilder()
             .companyNumber("company-number")
-            .pscNotificationId("notification-id")
+            .pscNotificationId("psc-notification-id")
             .verificationDetails(verif)
             .relevantOfficer(relevantOfficer)
             .build();
@@ -100,7 +100,7 @@ class PscVerificationTest {
                 + "updatedAt=2024-01-01T10:08:42Z, "
                 + "links=ResourceLinks[self=self, validationStatus=valid], "
                 + "data=PscVerificationData[companyNumber=company-number, "
-                + "pscNotificationId=notification-id, "
+                + "pscNotificationId=psc-notification-id, "
                 + "relevantOfficer=RelevantOfficer["
                 + "nameElements=NameElementsApi[title='Sir', forename='Forename', "
                 + "otherForenames='Other Forenames', middleName='Middlename', "
