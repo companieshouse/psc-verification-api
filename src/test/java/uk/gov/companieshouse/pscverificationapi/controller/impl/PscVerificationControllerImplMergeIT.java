@@ -111,7 +111,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .toString();
         final var rleDto = PscVerificationData.newBuilder()
             .companyNumber(COMPANY_NUMBER)
-            .pscAppointmentId(PSC_ID)
+            .pscNotificationId(PSC_ID)
             .relevantOfficer(RelevantOfficer.newBuilder()
                 .nameElements(NAME_ELEMENTS)
                 .dateOfBirth(DATE_OF_BIRTH)
@@ -164,7 +164,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .andExpect(jsonPath("$.created_at", is(FIRST_INSTANT.toString())))
             .andExpect(jsonPath("$.updated_at", is(SECOND_INSTANT.toString())))
             .andExpect(jsonPath("$.data.company_number", is("REPLACED")))
-            .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
+            .andExpect(jsonPath("$.data.psc_notification_id", is(PSC_ID)))
             .andExpect(jsonPath("$.data.relevant_officer.name_elements.forename",
                 is(NAME_ELEMENTS.getForename())))
             .andExpect(jsonPath("$.data.relevant_officer.name_elements.other_forenames",
@@ -203,7 +203,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .toString();
         final var partialName = createNameElements("Sir", "Forename", "Other Forenames", null);
         final var rleDto = PscVerificationData.newBuilder()
-            .pscAppointmentId(PSC_ID)
+            .pscNotificationId(PSC_ID)
             .relevantOfficer(RelevantOfficer.newBuilder()
                 .nameElements(partialName)
                 .isDirector(false)
@@ -249,7 +249,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .andExpect(jsonPath("$.created_at", is(FIRST_INSTANT.toString())))
             .andExpect(jsonPath("$.updated_at", is(SECOND_INSTANT.toString())))
             .andExpect(jsonPath("$.data.company_number", is("ADDED")))
-            .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
+            .andExpect(jsonPath("$.data.psc_notification_id", is(PSC_ID)))
             .andExpect(jsonPath("$.data.relevant_officer.name_elements.forename",
                 is(NAME_ELEMENTS.getForename())))
             .andExpect(jsonPath("$.data.relevant_officer.name_elements.other_forenames",
@@ -283,7 +283,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .append("}")
             .toString();
         final var rleDto = PscVerificationData.newBuilder()
-            .pscAppointmentId(PSC_ID)
+            .pscNotificationId(PSC_ID)
             .relevantOfficer(RelevantOfficer.newBuilder()
                 .nameElements(NAME_ELEMENTS)
                 .dateOfBirth(DATE_OF_BIRTH)
@@ -324,7 +324,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .andExpect(jsonPath("$.created_at", is(FIRST_INSTANT.toString())))
             .andExpect(jsonPath("$.updated_at", is(SECOND_INSTANT.toString())))
             .andExpect(jsonPath("$.data.company_number").doesNotExist())
-            .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
+            .andExpect(jsonPath("$.data.psc_notification_id", is(PSC_ID)))
             .andExpect(jsonPath("$.data.relevant_officer.name_elements.forename",
                 is(NAME_ELEMENTS.getForename())))
             .andExpect(jsonPath("$.data.relevant_officer.name_elements.other_forenames",
@@ -347,7 +347,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
         final var body = "{ }";
         final var rleDto = PscVerificationData.newBuilder()
             .companyNumber(COMPANY_NUMBER)
-            .pscAppointmentId(PSC_ID)
+            .pscNotificationId(PSC_ID)
             .relevantOfficer(RelevantOfficer.newBuilder()
                 .nameElements(NAME_ELEMENTS)
                 .dateOfBirth(DATE_OF_BIRTH)
@@ -383,7 +383,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .andExpect(jsonPath("$.created_at", is(FIRST_INSTANT.toString())))
             .andExpect(jsonPath("$.updated_at", is(SECOND_INSTANT.toString())))
             .andExpect(jsonPath("$.data.company_number", is(COMPANY_NUMBER)))
-            .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
+            .andExpect(jsonPath("$.data.psc_notification_id", is(PSC_ID)))
             .andExpect(jsonPath("$.data.relevant_officer.name_elements.forename",
                 is(NAME_ELEMENTS.getForename())))
             .andExpect(jsonPath("$.data.relevant_officer.name_elements.other_forenames",

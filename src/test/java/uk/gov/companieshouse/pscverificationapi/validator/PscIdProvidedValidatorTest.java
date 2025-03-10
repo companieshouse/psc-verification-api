@@ -75,14 +75,14 @@ class PscIdProvidedValidatorTest {
 
     @Test
     void validateWhenPscIdNotProvided() {
-        var fieldError = new FieldError("object", "psc_appointment_id", null, false,
-            new String[]{null, "psc_appointment_id"}, null,
+        var fieldError = new FieldError("object", "psc_notification_id", null, false,
+            new String[]{null, "psc_notification_id"}, null,
             "not-provided default message");
 
         pscVerificationData = mock(PscVerificationData.class);
 
-        when(pscVerificationData.pscAppointmentId()).thenReturn(null);
-        when(validation.get("psc-appointment-id-missing")).thenReturn("not-provided default message");
+        when(pscVerificationData.pscNotificationId()).thenReturn(null);
+        when(validation.get("psc-notification-id-missing")).thenReturn("not-provided default message");
 
         testValidator.validate(
             new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));

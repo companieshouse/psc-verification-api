@@ -30,8 +30,8 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
         }
         catch (FilingResourceNotFoundException e) {
             validationContext.errors().add(
-                new FieldError("object", "psc_appointment_id", validationContext.dto().pscAppointmentId(), false,
-                    new String[]{null, "notFound.psc_appointment_id"}, null, validation.get("psc-appointment-id-not-found")));
+                new FieldError("object", "psc_notification_id", validationContext.dto().pscNotificationId(), false,
+                    new String[]{null, "notFound.psc_notification_id"}, null, validation.get("psc-notification-id-not-found")));
         }
 
     }

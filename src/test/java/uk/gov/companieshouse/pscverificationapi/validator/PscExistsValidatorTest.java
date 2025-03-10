@@ -70,13 +70,13 @@ class PscExistsValidatorTest {
 
     @Test
     void validateWhenPscDoesNotExist() {
-        var fieldError = new FieldError("object", "psc_appointment_id", PSC_ID, false,
-            new String[]{null, "notFound.psc_appointment_id"}, null,
+        var fieldError = new FieldError("object", "psc_notification_id", PSC_ID, false,
+            new String[]{null, "notFound.psc_notification_id"}, null,
             "not-exists default message");
-        when(pscVerificationData.pscAppointmentId()).thenReturn(PSC_ID);
+        when(pscVerificationData.pscNotificationId()).thenReturn(PSC_ID);
         when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).
             thenThrow(new FilingResourceNotFoundException("PSC Details not found for " + PSC_ID + ": 404 Not Found", errorResponseException));
-        when(validation.get("psc-appointment-id-not-found")).thenReturn("not-exists default message");
+        when(validation.get("psc-notification-id-not-found")).thenReturn("not-exists default message");
 
         testValidator.validate(
             new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));

@@ -99,7 +99,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     public static Stream<Arguments> provideCreateVerificationData() {
         final var commonDto = PscVerificationData.newBuilder()
             .companyNumber(COMPANY_NUMBER)
-            .pscAppointmentId(PSC_ID)
+            .pscNotificationId(PSC_ID)
             .build();
 
         return Stream.of(
@@ -164,7 +164,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
             .andExpect(jsonPath("$.links.self", is(SELF.toString())))
             .andExpect(jsonPath("$.links.validation_status", is(VALID.toString())))
             .andExpect(jsonPath("$.data.company_number", is(COMPANY_NUMBER)))
-            .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
+            .andExpect(jsonPath("$.data.psc_notification_id", is(PSC_ID)))
             .andExpect(jsonPath("$.data.verification_details.uvid", is(UVID)))
             .andExpect(jsonPath("$.data.verification_details.verification_statements",
                 containsInAnyOrder(expectedStatementNames)));
@@ -218,7 +218,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
             .andExpect(jsonPath("$.links.self", is(SELF.toString())))
             .andExpect(jsonPath("$.links.validation_status", is(VALID.toString())))
             .andExpect(jsonPath("$.data.company_number", is(COMPANY_NUMBER)))
-            .andExpect(jsonPath("$.data.psc_appointment_id", is(PSC_ID)))
+            .andExpect(jsonPath("$.data.psc_notification_id", is(PSC_ID)))
             .andExpect(jsonPath("$.data.verification_details.uvid", is(UVID)))
             .andExpect(jsonPath("$.data.verification_details.verification_statements",
                 containsInAnyOrder(expectedStatementNames)));
