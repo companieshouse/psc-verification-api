@@ -37,7 +37,7 @@ class FilingDataServiceImplTest {
     private static final String TRANS_ID = "23445657412";
     private static final String COMPANY_NUMBER = "12345678";
     private static final String FILING_ID = "6332aa6ed28ad2333c3a520a";
-    private static final String PSC_APPOINTMENT_ID = "abcdefgh";
+    private static final String PSC_NOTIFICATION_ID = "abcdefgh";
     private static final String UVID = "999999999";
     private static final String TITLE = "MR";
     private static final String FORENAME = "JOE";
@@ -71,7 +71,7 @@ class FilingDataServiceImplTest {
                 .build();
         final var data = PscVerificationData.newBuilder()
                 .companyNumber(COMPANY_NUMBER)
-                .pscAppointmentId(PSC_APPOINTMENT_ID)
+                .pscNotificationId(PSC_NOTIFICATION_ID)
                 .verificationDetails(verificationDetails)
                 .build();
         final var filingData = PscVerification.newBuilder()
@@ -87,7 +87,7 @@ class FilingDataServiceImplTest {
         final String expectedDescription;
 
         expectedMap = Map.of("company_number", COMPANY_NUMBER,
-                "psc_appointment_id", PSC_APPOINTMENT_ID,
+                "psc_notification_id", PSC_NOTIFICATION_ID,
                 "verification_details", Map.of("name_mismatch_reason", "PREFERRED_NAME",
                                                     "verification_statements", List.of("INDIVIDUAL_VERIFIED"),
                                                     "uvid", UVID));
@@ -117,7 +117,7 @@ class FilingDataServiceImplTest {
                 .build();
         final var data = PscVerificationData.newBuilder()
                 .companyNumber(COMPANY_NUMBER)
-                .pscAppointmentId(PSC_APPOINTMENT_ID)
+                .pscNotificationId(PSC_NOTIFICATION_ID)
                 .verificationDetails(verificationDetails)
                 .relevantOfficer(relevantOfficer)
                 .build();
@@ -134,7 +134,7 @@ class FilingDataServiceImplTest {
         final String expectedDescription;
 
         expectedMap = Map.of("company_number", COMPANY_NUMBER,
-                "psc_appointment_id", PSC_APPOINTMENT_ID,
+                "psc_notification_id", PSC_NOTIFICATION_ID,
                 "verification_details", Map.of("name_mismatch_reason", "PREFERRED_NAME",
                         "verification_statements", List.of("RO_IDENTIFIED"),
                         "uvid", UVID),

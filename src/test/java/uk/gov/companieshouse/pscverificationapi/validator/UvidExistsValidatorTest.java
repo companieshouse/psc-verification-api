@@ -15,13 +15,13 @@ import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse;
-import uk.gov.companieshouse.api.model.psc.IndividualFullRecord;
+import uk.gov.companieshouse.api.model.common.Date3Tuple;
+import uk.gov.companieshouse.api.model.psc.NameElementsApi;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.NameMismatchReasonConstants;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
-import uk.gov.companieshouse.api.psc.DateOfBirth;
-import uk.gov.companieshouse.api.psc.NameElements;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.IdvLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.service.IdvLookupService;
@@ -85,7 +85,7 @@ class UvidExistsValidatorTest {
             .build();
     private static final PscVerificationData PSC_VERIFICATION_DATA =
         PscVerificationData.newBuilder()
-            .pscAppointmentId(PSC_ID)
+            .pscNotificationId(PSC_ID)
             .companyNumber(COMPANY_NUMBER)
             .verificationDetails(VERIFICATION_DETAILS)
             .build();
@@ -94,7 +94,7 @@ class UvidExistsValidatorTest {
     private static final String PSC_FORENAME = "Forename1";
     private static final String PSC_MIDDLE_NAME = "Forename2 Forename3";
     private static final String PSC_SURNAME = "Surname";
-    private static final DateOfBirth DATE_OF_BIRTH = new DateOfBirth(2, 1983).day(27);
+    private static final Date3Tuple DATE_OF_BIRTH = new Date3Tuple(27, 2, 1983);
 
     @BeforeEach
     void setUp() {
@@ -144,9 +144,9 @@ class UvidExistsValidatorTest {
 
         var verificationDetails = VerificationDetails.newBuilder(PSC_VERIFICATION_DATA.verificationDetails()).nameMismatchReason(NameMismatchReasonConstants.PREFERRED_NAME).build();
 
-        final var individualFullRecord = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
+        final var pscIndividualFullRecord = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
 
-        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
+        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(pscIndividualFullRecord);
         when(pscVerificationData.verificationDetails()).thenReturn(verificationDetails);
         when(idvLookupService.matchUvid(expected)).thenReturn(uvidMatchResponse);
         when(uvidMatchResponse.getAccuracyStatement()).thenReturn(Collections.singletonList(FORENAMES_MISMATCH));
@@ -295,9 +295,9 @@ class UvidExistsValidatorTest {
         uvidMatch.setSurname(surname);
     }
 
-    private static IndividualFullRecord createPscData(String forename, String middleName, String surname, DateOfBirth dateOfBirth) {
-        IndividualFullRecord individualFullRecord = new IndividualFullRecord();
-        NameElements nameElements = new NameElements();
+    private static PscIndividualFullRecordApi createPscData(String forename, String middleName, String surname, Date3Tuple dateOfBirth) {
+        PscIndividualFullRecordApi individualFullRecord = new PscIndividualFullRecordApi();
+        NameElementsApi nameElements = new NameElementsApi();
         nameElements.setForename(forename);
         nameElements.setMiddleName(middleName);
         nameElements.setSurname(surname);

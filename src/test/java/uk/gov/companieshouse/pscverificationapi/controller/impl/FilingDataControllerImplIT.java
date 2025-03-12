@@ -64,7 +64,7 @@ class FilingDataControllerImplIT extends BaseControllerIT {
     @Test
     void getFilingsWhenFound() throws Exception {
         final Map<String, Object> dataMap = Map.of("company_number", COMPANY_NUMBER,
-                "psc_appointment_id", PSC_ID,
+                "psc_notification_id", PSC_ID,
                 "verification_details", Map.of("name_mismatch_reason", "PREFERRED_NAME",
                         "verification_statements", List.of("INDIVIDUAL_VERIFIED"),
                         "uvid", UVID));

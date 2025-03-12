@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import static uk.gov.companieshouse.pscverificationapi.enumerations.PscType.INDIVIDUAL;
 
 import com.google.api.client.http.HttpHeaders;
@@ -23,7 +24,6 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.handler.psc.PscsResourceHandler;
 import uk.gov.companieshouse.api.handler.psc.request.PscIndividualFullRecordGet;
 import uk.gov.companieshouse.api.model.ApiResponse;
-import uk.gov.companieshouse.api.model.psc.IndividualFullRecord;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
@@ -44,7 +44,7 @@ class PscLookupServiceImplTest extends TestBaseService {
             .build();
     private static final PscVerificationData PSC_VERIFICATION_DATA =
         PscVerificationData.newBuilder()
-            .pscAppointmentId(PSC_ID)
+            .pscNotificationId(PSC_ID)
             .companyNumber(COMPANY_NUMBER)
             .verificationDetails(VERIFICATION_DETAILS)
             .build();
@@ -55,7 +55,7 @@ class PscLookupServiceImplTest extends TestBaseService {
     @Mock
     private ApiClient apiClient;
     @Mock
-    private ApiResponse<IndividualFullRecord> apiResponse;
+    private ApiResponse<PscIndividualFullRecordApi> apiResponse;
     @Mock
     private PscIndividualFullRecordGet pscIndividualFullRecordGet;
     @Mock
@@ -90,12 +90,12 @@ class PscLookupServiceImplTest extends TestBaseService {
             + "/full_record")).thenReturn(pscIndividualFullRecordGet);
 
         when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
-        when(apiResponse.getData()).thenReturn(new IndividualFullRecord());
+        when(apiResponse.getData()).thenReturn(new PscIndividualFullRecordApi());
 
         var pscApi =
             testService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
 
-        assertThat(pscApi, samePropertyValuesAs(new IndividualFullRecord()));
+        assertThat(pscApi, samePropertyValuesAs(new PscIndividualFullRecordApi()));
 
     }
 

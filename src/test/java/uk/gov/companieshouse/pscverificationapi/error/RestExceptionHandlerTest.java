@@ -55,7 +55,7 @@ class RestExceptionHandlerTest {
     private static final String VERIFICATION_FRAGMENT =
         "{\"reference_etag\": \"etag\","
         + "\"company_number\": \"12345678\","
-        + "\"psc_appointment_id\": \"id\","
+        + "\"psc_notification_id\": \"id\","
         + "\"verification_details\": { "
             + "\"uvid\": \"999999\","
             + "\"verification_statements\": "
@@ -104,15 +104,15 @@ class RestExceptionHandlerTest {
         servletRequest = new MockHttpServletRequest();
         servletRequest.setRequestURI("/path/to/resource");
         String[] codes1 = new String[]{"code1", "object.company_number", "code3", "NotBlank"};
-        String[] codes2 = new String[]{"code1", "object.psc_appointment_id", "code3", "pscIsCeased"};
+        String[] codes2 = new String[]{"code1", "object.psc_notification_id", "code3", "pscIsCeased"};
         fieldError = new FieldError("object", "field1", null, false, codes1, null, "error");
         fieldErrorWithRejectedValue =
-            new FieldError("object", "appointmentId", "1kdaTltWeaP1EB70SSD9SLmiK5Z", false, codes2, null,
+            new FieldError("object", "pscNotificationId", "1kdaTltWeaP1EB70SSD9SLmiK5Z", false, codes2, null,
                 "errorWithRejectedValue");
         mergePatchCause = new Throwable();
 
         expectedErrorWithRejectedValue =
-            new ApiError("{rejected-value} is ceased", "$.psc_appointment_id", "json-path", "ch:validation");
+            new ApiError("{rejected-value} is ceased", "$.psc_notification_id", "json-path", "ch:validation");
 
         expectedErrorWithRejectedValue.addErrorValue("rejected-value", "1kdaTltWeaP1EB70SSD9SLmiK5Z");
     }
@@ -233,7 +233,7 @@ class RestExceptionHandlerTest {
             ),
             allOf(
                 hasProperty("error", is("{rejected-value} is ceased")),
-                hasProperty("location", is("$.psc_appointment_id")),
+                hasProperty("location", is("$.psc_notification_id")),
                 hasProperty("locationType", is("json-path")),
                 hasProperty("type", is("ch:validation")),
                 hasProperty("errorValues", hasEntry("rejected-value", "1kdaTltWeaP1EB70SSD9SLmiK5Z"))
@@ -290,7 +290,7 @@ class RestExceptionHandlerTest {
             ),
             allOf(
                 hasProperty("error", is("{rejected-value} is ceased")),
-                hasProperty("location", is("$.psc_appointment_id")),
+                hasProperty("location", is("$.psc_notification_id")),
                 hasProperty("locationType", is("json-path")),
                 hasProperty("type", is("ch:validation")),
                 hasProperty("errorValues", hasEntry("rejected-value", "1kdaTltWeaP1EB70SSD9SLmiK5Z"))
