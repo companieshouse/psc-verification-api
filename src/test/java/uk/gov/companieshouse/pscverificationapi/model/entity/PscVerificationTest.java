@@ -107,6 +107,8 @@ class PscVerificationTest {
                 + "surname='Surname'], "
                 + "dateOfBirth=1990-12-31, isEmployee=true, isDirector=true], "
                 + "verificationDetails=VerificationDetails[uvid='uvid', "
-                + "nameMismatchReason=PREFERRED_NAME, statements=[INDIVIDUAL_VERIFIED]]]]"));
+                + "nameMismatchReason=PREFERRED_NAME, statements=[INDIVIDUAL_VERIFIED]]], "
+                + "internalData=null]")
+        );
     }
 }
