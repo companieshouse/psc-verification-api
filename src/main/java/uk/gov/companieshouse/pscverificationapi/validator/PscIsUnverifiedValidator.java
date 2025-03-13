@@ -30,6 +30,8 @@ public class PscIsUnverifiedValidator extends BaseVerificationValidator implemen
                             new String[] { null, verificationState.verificationStatus().toString() }, null,
                             validation.get("psc-already-verified")));
         }
+
+        super.validate(validationContext);
     }
 
 }
