@@ -16,6 +16,7 @@ import uk.gov.companieshouse.pscverificationapi.validator.CompanyTypeValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscExistsValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscIdProvidedValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscIsActiveValidator;
+import uk.gov.companieshouse.pscverificationapi.validator.PscIsPastStartDateValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.PscIsUnverifiedValidator;
 import uk.gov.companieshouse.pscverificationapi.validator.UvidExistsValidator;
 
@@ -38,6 +39,8 @@ class ValidatorConfigTest {
     private UvidExistsValidator uvidExistsValidator;
     @Mock
     private PscIsUnverifiedValidator pscIsUnverifiedValidator;
+    @Mock
+    private PscIsPastStartDateValidator pscIsPastStartDateValidator;
 
     @BeforeEach
     void setUp() {
@@ -48,7 +51,7 @@ class ValidatorConfigTest {
     void verificationValidationEnable() {
         final var valid = testConfig.verificationValidationEnable(pscIdProvidedValidator, pscExistsValidator,
                 pscIsActiveValidator, companyTypeValidator, companyStatusValidator, uvidExistsValidator,
-                pscIsUnverifiedValidator);
+                pscIsUnverifiedValidator, pscIsPastStartDateValidator);
 
         assertThat(valid.pscType(), is(PscType.INDIVIDUAL));
         assertThat(valid.first(), is(pscIdProvidedValidator));
@@ -57,6 +60,7 @@ class ValidatorConfigTest {
         verify(companyTypeValidator, times(1)).setNext(companyStatusValidator);
         verify(companyStatusValidator, times(1)).setNext(uvidExistsValidator);
         verify(uvidExistsValidator, times(1)).setNext(pscIsUnverifiedValidator);
+        verify(pscIsUnverifiedValidator, times(1)).setNext(pscIsPastStartDateValidator);
     }
 
 }

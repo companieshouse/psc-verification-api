@@ -1,0 +1,98 @@
+package uk.gov.companieshouse.pscverificationapi.validator;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.validation.FieldError;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
+import uk.gov.companieshouse.api.model.psc.VerificationState;
+import uk.gov.companieshouse.api.model.psc.VerificationStatus;
+import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
+import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
+import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class PscIsPastStartDateValidatorTest {
+
+    @Mock
+    private PscLookupService pscLookupService;
+    @Mock
+    private PscVerificationData pscVerificationData;
+    @Mock
+    private Map<String, String> validation;
+    @Mock
+    private Transaction transaction;
+    @Mock
+    private PscIndividualFullRecordApi pscIndividualFullRecord;
+
+    PscIsPastStartDateValidator testValidator;
+    private PscType pscType;
+    private Set<FieldError> errors;
+    private String passthroughHeader;
+
+    @BeforeEach
+    void setUp() {
+
+        errors = new HashSet<>();
+        pscType = PscType.INDIVIDUAL;
+        passthroughHeader = "passthroughHeader";
+
+        testValidator = new PscIsPastStartDateValidator(validation, pscLookupService);
+        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType))
+                .thenReturn(pscIndividualFullRecord);
+    }
+
+    @Test
+    void validateWhenStartDateIsToday() {
+        var verificationState = new VerificationState(VerificationStatus.UNVERIFIED,
+                LocalDate.now(), LocalDate.now().plusDays(14));
+        when(pscIndividualFullRecord.getVerificationState()).thenReturn(verificationState);
+
+        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType))
+                .thenReturn(pscIndividualFullRecord);
+            testValidator.validate(
+                    new VerificationValidationContext(pscVerificationData, errors, transaction, pscType,
+                                                      passthroughHeader));
+
+        assertThat(errors, is(empty()));
+    }
+
+    @Test
+    void validateWhenStartDateIsTomorrow() {
+        var startDate = LocalDate.now().plusDays(1);
+        var verificationState = new VerificationState(VerificationStatus.UNVERIFIED,
+                startDate, startDate.plusDays(14));
+        when(pscIndividualFullRecord.getVerificationState()).thenReturn(verificationState);
+
+        var fieldError = new FieldError("object", "psc_verification_start_date", startDate, false,
+                new String[] { null, startDate.toString() }, null,
+                "This PSC cannot provide their identity verification details yet");
+
+        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType))
+                .thenReturn(pscIndividualFullRecord);
+        when(validation.get("psc-cannot-verify-yet"))
+                .thenReturn("This PSC cannot provide their identity verification details yet");
+
+        testValidator.validate(
+                new VerificationValidationContext(pscVerificationData, errors, transaction, pscType,
+                        passthroughHeader));
+
+        assertThat(errors.stream().findFirst().orElseThrow(), equalTo(fieldError));
+        assertThat(errors, contains(fieldError));
+    }
+}
