@@ -35,6 +35,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
+import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
@@ -43,14 +45,17 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.patch.model.PatchResult;
 import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
+import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.error.RetrievalFailureReason;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.InvalidPatchException;
+import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapperImpl;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
+import uk.gov.companieshouse.pscverificationapi.service.impl.PscLookupServiceImpl;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @ExtendWith(SpringExtension.class) // JUnit 5
@@ -74,6 +79,8 @@ class PscVerificationControllerImplTest {
     private TransactionService transactionService;
     @Mock
     private PscVerificationService pscVerificationService;
+    @Mock
+    private PscLookupServiceImpl pscLookupService;
     @Autowired
     private PscVerificationMapper filingMapper;
     @Mock
@@ -86,7 +93,9 @@ class PscVerificationControllerImplTest {
     private HttpServletRequest request;
     @Mock
     private Transaction transaction;
+    private PscIndividualFullRecordApi pscIndividualFullRecordApi;
     private PscVerificationApi pscVerificationApi;
+    private InternalData internalData;
     private PscVerificationData filing;
     private PscVerification entity;
     private PscVerification entityWithLinks;
@@ -99,20 +108,23 @@ class PscVerificationControllerImplTest {
     @BeforeEach
     void setUp() {
         testController = new PscVerificationControllerImpl(transactionService,
-            pscVerificationService, filingMapper, clock, logger);
+            pscVerificationService, pscLookupService, filingMapper, clock, logger);
         VerificationDetails verification = VerificationDetails.newBuilder()
             .uvid(UVID)
             .statements(EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED))
             .build();
+        pscIndividualFullRecordApi = new PscIndividualFullRecordApi().internalId(123L);
         filing = PscVerificationData.newBuilder()
             .verificationDetails(verification)
             .companyNumber(COMPANY_NUMBER)
             .pscNotificationId(PSC_ID)
             .build();
+        internalData = InternalData.newBuilder().internalId("123").build();
         entity = PscVerification.newBuilder()
             .createdAt(FIRST_INSTANT)
             .updatedAt(FIRST_INSTANT)
             .data(filing)
+            .internalData(internalData)
             .build();
         final var links = expectEntitySavedWithLinks();
         pscVerificationApi = PscVerificationApi.newBuilder()
@@ -133,6 +145,8 @@ class PscVerificationControllerImplTest {
         final boolean nullTransaction) {
         expectTransactionIsPresent(nullPassthrough, nullTransaction);
         final var links = expectEntitySavedWithLinks();
+        when(pscLookupService.getPscIndividualFullRecord(nullTransaction ? null : transaction, filing, PscType.INDIVIDUAL))
+                .thenReturn(pscIndividualFullRecordApi);
 
         final var response = testController.createPscVerification(TRANS_ID,
             nullTransaction ? null : transaction, filing, nullBindingResult ? null : result,
@@ -153,6 +167,25 @@ class PscVerificationControllerImplTest {
             .build();
 
         assertThat(response.getBody(), is(equalTo(expectedApi)));
+    }
+
+    @Test
+    void createPscVerifcationThrowsFilingExceptionWhenFullRecordNotFound() {
+        when(pscLookupService.getPscIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
+                .thenThrow(new PscLookupServiceException("msg", null));
+
+        assertThrows(FilingResourceNotFoundException.class,
+                () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));
+    }
+
+    @Test
+    void createPscVerifcationThrowsPscLookupExceptionWhenNoInternalId() {
+        pscIndividualFullRecordApi.setInternalId(null);
+        when(pscLookupService.getPscIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
+                .thenReturn(pscIndividualFullRecordApi);
+
+        assertThrows(PscLookupServiceException.class,
+                () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));
     }
 
     @Test

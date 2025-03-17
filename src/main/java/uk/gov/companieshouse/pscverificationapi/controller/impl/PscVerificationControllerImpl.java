@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
+import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
@@ -34,15 +36,18 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.patch.model.PatchResult;
 import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
+import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.error.RetrievalFailureReason;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.InvalidFilingException;
 import uk.gov.companieshouse.pscverificationapi.exception.InvalidPatchException;
+import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
+import uk.gov.companieshouse.pscverificationapi.service.impl.PscLookupServiceImpl;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @RestController
@@ -56,14 +61,17 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
     private final TransactionService transactionService;
     private final PscVerificationService pscVerificationService;
+    private final PscLookupServiceImpl pscLookupService;
     private final PscVerificationMapper filingMapper;
     private final Clock clock;
     private final Logger logger;
 
     public PscVerificationControllerImpl(final TransactionService transactionService,
-        final PscVerificationService pscVerificationService, PscVerificationMapper filingMapper, final Clock clock, final Logger logger) {
+        final PscVerificationService pscVerificationService, final PscLookupServiceImpl pscLookupService,
+        PscVerificationMapper filingMapper, final Clock clock, final Logger logger) {
             this.transactionService = transactionService;
             this.pscVerificationService = pscVerificationService;
+            this.pscLookupService = pscLookupService;
             this.filingMapper = filingMapper;
             this.clock = clock;
             this.logger = logger;
@@ -89,6 +97,21 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             getPassthroughHeader(request));
 
         final var entity = filingMapper.toEntity(data);
+
+        PscIndividualFullRecordApi pscIndividualFullRecordApi;
+        try {
+            pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(requestTransaction, data, PscType.INDIVIDUAL);
+        } catch (PscLookupServiceException e) {
+            throw new FilingResourceNotFoundException("PSC Notification Id not found, try again");
+        }
+
+        if (pscIndividualFullRecordApi.getInternalId() == null) {
+            throw new PscLookupServiceException("We can't find the Internal ID, can you file on paper?", new Exception("Internal Id"));
+        }
+
+        var internalData = InternalData.newBuilder().internalId(String.valueOf(pscIndividualFullRecordApi.getInternalId())).build();
+        entity.setInternalData(internalData);
+
         final var savedEntity = saveFilingWithLinks(entity, transId, request, logMap);
 
         if (transaction != null) {
