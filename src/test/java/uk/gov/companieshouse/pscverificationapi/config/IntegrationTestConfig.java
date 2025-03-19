@@ -10,6 +10,8 @@ import uk.gov.companieshouse.pscverificationapi.mapper.ErrorMapperImpl;
 
 import java.util.HashMap;
 import java.util.Map;
+import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
+import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapperImpl;
 
 @TestConfiguration
 @PropertySource(value = "classpath:api-enumerations/psc_verification.yml", factory = YamlPropertySourceFactory.class)
@@ -24,5 +26,11 @@ public class IntegrationTestConfig {
     @Bean
     public ErrorMapper errorMapper() {
         return new ErrorMapperImpl();
+    }
+
+    // Required for use as @MockitoSpyBean
+    @Bean
+    public PscVerificationMapper verificationMapper() {
+        return new PscVerificationMapperImpl();
     }
 }

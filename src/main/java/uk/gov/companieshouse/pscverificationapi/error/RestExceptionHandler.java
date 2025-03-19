@@ -110,7 +110,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
         final List<ApiError> errorList = fieldErrors.stream()
             .map(e -> buildRequestBodyError(getFieldErrorApiEnumerationMessage(e),
-                getJsonPath(e), e.getRejectedValue()))
+                getJsonPath(e), e.getRejectedValue(), e.getField()))
             .toList();
 
         logError(chLogger, request, "Invalid filing data", ex, errorList);
@@ -136,7 +136,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
         final var errorList = fieldErrors.stream()
             .map(e -> buildRequestBodyError(e.getDefaultMessage(), getJsonPath(e),
-                e.getRejectedValue()))
+                e.getRejectedValue(), e.getField()))
             .toList();
 
         logError(chLogger, request, "Conflicting filing data", ex, errorList);
@@ -302,7 +302,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             else {
                 message = redactErrorMessage(cause.getMessage());
             }
-            error = buildRequestBodyError(baseMessage + message, jsonPath, rejectedValue);
+            error = buildRequestBodyError(baseMessage + message, jsonPath, rejectedValue, null);
             addLocationInfo(error, location);
 
             if (cause instanceof UnrecognizedPropertyException unrecognized) {
@@ -311,7 +311,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         }
         else {
             message = redactErrorMessage(getMostSpecificCause(ex).getMessage());
-            error = buildRequestBodyError(baseMessage + message, "$", null);
+            error = buildRequestBodyError(baseMessage + message, "$", null, null);
 
         }
         logError(chLogger, request, String.format("Message not readable: %s", message), ex);
@@ -328,7 +328,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private static ApiError buildRequestBodyError(final String message, final String jsonPath,
-        final Object rejectedValue) {
+        final Object rejectedValue, final String fieldName) {
          final var error = new ApiError(message, jsonPath, LocationType.JSON_PATH.getValue(),
             ErrorType.VALIDATION.getType());
 
@@ -336,6 +336,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             .map(Object::toString)
             .filter(Predicate.not(String::isEmpty))
             .ifPresent(r -> error.addErrorValue("rejected-value", r));
+        Optional.ofNullable(fieldName)
+            .ifPresent(f -> error.addErrorValue("parameter-name", StringUtils.substringAfterLast(jsonPath, "$.")));
 
         return error;
     }
