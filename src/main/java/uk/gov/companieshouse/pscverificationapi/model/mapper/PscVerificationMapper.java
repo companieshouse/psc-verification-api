@@ -24,6 +24,7 @@ public interface PscVerificationMapper {
 
     @Mapping(target = "etag", ignore = true)
     @Mapping(target = "kind", ignore = true)
+    @Mapping(target = "internalData", ignore = true)
     PscVerificationApi toApi(final PscVerification verification);
 
     @Mapping(target = "verificationDetails.verificationStatements", source = "verificationDetails.statements")

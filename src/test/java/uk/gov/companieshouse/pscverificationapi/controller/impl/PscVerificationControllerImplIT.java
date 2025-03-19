@@ -3,6 +3,7 @@ package uk.gov.companieshouse.pscverificationapi.controller.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.INDIVIDUAL_VERIFIED;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -35,9 +37,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.PscApi;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.config.IntegrationTestConfig;
+import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.error.RestExceptionHandler;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
@@ -74,6 +78,8 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     private Map<String, String> validation;
     @MockitoBean
     private PscApi pscDetails;
+    @MockitoBean
+    private PscIndividualFullRecordApi pscIndividualFullRecordApi;
     @MockitoBean
     private MongoDatabaseFactory mongoDatabaseFactory;
     @MockitoSpyBean
@@ -123,6 +129,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
             .thenAnswer(i -> PscVerification.newBuilder(i.getArgument(0)).build()
                 // copy of first argument
             );
+        when(lookupService.getPscIndividualFullRecord(transaction, dto, PscType.INDIVIDUAL)).thenReturn(pscIndividualFullRecordApi);
         when(clock.instant()).thenReturn(FIRST_INSTANT);
 
         mockMvc.perform(post(URL_PSC, TRANS_ID).content(individualPayload)
@@ -169,12 +176,13 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
         verifyNoInteractions(transactionService, pscVerificationService, clock, filingMapper);
     }
 
-    // FIXME
+    //FIXME
     @Disabled("unexpected 403")
     @Test
     void getPscVerificationNotFoundThenResponse404() throws Exception {
         when(transactionService.getTransaction(TRANS_ID, PASSTHROUGH_HEADER)).thenReturn(transaction);
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.empty());
+        when(pscVerificationService.requestMatchesResourceSelf(any(HttpServletRequest.class), eq(entity))).thenReturn(true);
 
         mockMvc.perform(get(URL_PSC_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
                 .andDo(print())
