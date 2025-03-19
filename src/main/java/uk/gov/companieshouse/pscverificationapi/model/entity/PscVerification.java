@@ -28,6 +28,7 @@ public final class PscVerification implements Touchable {
     @JsonMerge
     @JsonProperty("data")
     private PscVerificationData data;
+    // No @JsonMerge: this property MUST NOT be modifiable by PATCH requests
     @JsonProperty("internal_data")
     private InternalData internalData;
 
