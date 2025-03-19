@@ -106,7 +106,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         }
 
         if (pscIndividualFullRecordApi.getInternalId() == null) {
-            throw new PscLookupServiceException("We are unable to process a filing for this PSC", new Exception("Internal Id"));
+            throw new PscLookupServiceException("We are currently unable to process a Verification filing for this PSC", new Exception("Internal Id"));
         }
 
         var internalData = InternalData.newBuilder().internalId(String.valueOf(pscIndividualFullRecordApi.getInternalId())).build();
