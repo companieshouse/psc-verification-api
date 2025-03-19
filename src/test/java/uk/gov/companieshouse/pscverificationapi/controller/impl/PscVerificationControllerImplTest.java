@@ -174,7 +174,7 @@ class PscVerificationControllerImplTest {
         when(pscLookupService.getPscIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
                 .thenThrow(new PscLookupServiceException("msg", null));
 
-        assertThrows(FilingResourceNotFoundException.class,
+        assertThrows(PscLookupServiceException.class,
                 () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));
     }
 
