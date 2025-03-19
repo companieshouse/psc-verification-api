@@ -53,9 +53,9 @@ import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceExcept
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapperImpl;
+import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
-import uk.gov.companieshouse.pscverificationapi.service.impl.PscLookupServiceImpl;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @ExtendWith(SpringExtension.class) // JUnit 5
@@ -80,7 +80,7 @@ class PscVerificationControllerImplTest {
     @Mock
     private PscVerificationService pscVerificationService;
     @Mock
-    private PscLookupServiceImpl pscLookupService;
+    private PscLookupService pscLookupService;
     @Autowired
     private PscVerificationMapper filingMapper;
     @Mock
@@ -492,7 +492,7 @@ class PscVerificationControllerImplTest {
             .updatedAt(FIRST_INSTANT)
             .build();
         final var savedEntity = PscVerification.newBuilder(timestampedEntity).id(FILING_ID).build();
-        final var self = URI.create(REQUEST_URI.toString() + "/" + FILING_ID);
+        final var self = URI.create(REQUEST_URI + "/" + FILING_ID);
 
         when(pscVerificationService.save(timestampedEntity)).thenReturn(savedEntity);
 

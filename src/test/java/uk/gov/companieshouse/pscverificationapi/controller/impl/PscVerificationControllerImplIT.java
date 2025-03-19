@@ -3,7 +3,6 @@ package uk.gov.companieshouse.pscverificationapi.controller.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -15,14 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.INDIVIDUAL_VERIFIED;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.time.Clock;
-import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +31,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.companieshouse.api.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
@@ -58,8 +55,7 @@ import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationSe
 class PscVerificationControllerImplIT extends BaseControllerIT {
     private static final URI SELF = URI.create(
         "/transactions/" + TRANS_ID + "/persons-with-significant-control-verification/" + FILING_ID);
-    private static final URI VALID = URI.create(SELF.toString() + "/validation_status");
-    private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1970, 1, 1);
+    private static final URI VALID = URI.create(SELF + "/validation_status");
 
     @MockitoBean
     private TransactionService transactionService;
@@ -84,6 +80,8 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     private MongoDatabaseFactory mongoDatabaseFactory;
     @MockitoSpyBean
     private PscVerificationMapper filingMapper;
+    @MockitoBean
+    protected OpenTransactionInterceptor openTransactionInterceptor;
     @MockitoBean
     private Clock clock;
     @MockitoBean
@@ -119,17 +117,19 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
             .links(links)
             .build();
         individualPayload = "{" + COMMON_FRAGMENT + INDIVIDUAL_FRAGMENT + "}";
+        when(openTransactionInterceptor.preHandle(any(), any(), any())).thenReturn(true);
     }
 
     @Test
     void createVerificationWhenPayloadOk() throws Exception {
         when(transactionService.getTransaction(TRANS_ID, PASSTHROUGH_HEADER)).thenReturn(transaction);
+        when(lookupService.getPscIndividualFullRecord(transaction, completeDto, PscType.INDIVIDUAL)).thenReturn(
+            pscIndividualFullRecordApi);
         when(pscVerificationService.save(any(PscVerification.class))).thenReturn(
                 PscVerification.newBuilder(entity).id(FILING_ID).build())
             .thenAnswer(i -> PscVerification.newBuilder(i.getArgument(0)).build()
                 // copy of first argument
             );
-        when(lookupService.getPscIndividualFullRecord(transaction, dto, PscType.INDIVIDUAL)).thenReturn(pscIndividualFullRecordApi);
         when(clock.instant()).thenReturn(FIRST_INSTANT);
 
         mockMvc.perform(post(URL_PSC, TRANS_ID).content(individualPayload)
@@ -176,18 +176,14 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
         verifyNoInteractions(transactionService, pscVerificationService, clock, filingMapper);
     }
 
-    //FIXME
-    @Disabled("unexpected 403")
     @Test
     void getPscVerificationNotFoundThenResponse404() throws Exception {
-        when(transactionService.getTransaction(TRANS_ID, PASSTHROUGH_HEADER)).thenReturn(transaction);
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.empty());
-        when(pscVerificationService.requestMatchesResourceSelf(any(HttpServletRequest.class), eq(entity))).thenReturn(true);
 
         mockMvc.perform(get(URL_PSC_RESOURCE, TRANS_ID, FILING_ID).headers(httpHeaders))
                 .andDo(print())
                 .andExpect(status().isNotFound());
-        verifyNoInteractions(filingMapper);
+        verifyNoInteractions(filingMapper, transactionService);
     }
 
 }

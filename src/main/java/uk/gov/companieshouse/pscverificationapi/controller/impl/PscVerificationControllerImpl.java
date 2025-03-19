@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
@@ -50,9 +49,9 @@ import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceExcept
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
+import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
-import uk.gov.companieshouse.pscverificationapi.service.impl.PscLookupServiceImpl;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
 @RestController
@@ -66,13 +65,13 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
     private final TransactionService transactionService;
     private final PscVerificationService pscVerificationService;
-    private final PscLookupServiceImpl pscLookupService;
+    private final PscLookupService pscLookupService;
     private final PscVerificationMapper filingMapper;
     private final Clock clock;
     private final Logger logger;
 
     public PscVerificationControllerImpl(final TransactionService transactionService,
-        final PscVerificationService pscVerificationService, final PscLookupServiceImpl pscLookupService,
+        final PscVerificationService pscVerificationService, final PscLookupService pscLookupService,
         PscVerificationMapper filingMapper, final Clock clock, final Logger logger) {
             this.transactionService = transactionService;
             this.pscVerificationService = pscVerificationService;
@@ -102,9 +101,8 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             getPassthroughHeader(request));
 
         final var entity = filingMapper.toEntity(data);
-
-        PscIndividualFullRecordApi pscIndividualFullRecordApi;
-        pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(requestTransaction, data, PscType.INDIVIDUAL);
+        final var pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
+            requestTransaction, data, PscType.INDIVIDUAL);
 
         if (pscIndividualFullRecordApi.getInternalId() == null) {
             logMap.put("psc_notification_id", data.pscNotificationId());
@@ -185,6 +183,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         VerificationDetails verificationDetails = pscVerification.getData().verificationDetails();
 
         if (verificationDetails != null) {
+            @SuppressWarnings("unchecked")
             final var mergeVerificationDetails = (Map<String, Object>) mergePatch.get("verification_details");
             final var mergeUvid = mergeVerificationDetails != null ? (String) mergeVerificationDetails.get("uvid") : null;
 
