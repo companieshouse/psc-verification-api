@@ -99,13 +99,11 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         final var entity = filingMapper.toEntity(data);
 
         PscIndividualFullRecordApi pscIndividualFullRecordApi;
-        try {
-            pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(requestTransaction, data, PscType.INDIVIDUAL);
-        } catch (PscLookupServiceException e) {
-            throw new FilingResourceNotFoundException("PSC Notification Id not found");
-        }
+        pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(requestTransaction, data, PscType.INDIVIDUAL);
 
         if (pscIndividualFullRecordApi.getInternalId() == null) {
+            logMap.put("psc_notification_id", data.pscNotificationId());
+            logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s", data.pscNotificationId(), data.companyNumber()), null, logMap);
             throw new PscLookupServiceException("We are currently unable to process a Verification filing for this PSC", new Exception("Internal Id"));
         }
 
