@@ -50,10 +50,10 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.error.RestExceptionHandler;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapperImpl;
-import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
 import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationService;
+import uk.gov.companieshouse.pscverificationapi.service.impl.PscLookupServiceImpl;
 
 @Tag("web")
 @WebMvcTest(controllers = PscVerificationControllerImpl.class)
@@ -71,7 +71,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     @MockBean
     private TransactionService transactionService;
     @MockBean
-    private PscLookupService lookupService;
+    private PscLookupServiceImpl lookupService;
     @MockBean
     private PscVerificationService pscVerificationService;
     @MockBean
