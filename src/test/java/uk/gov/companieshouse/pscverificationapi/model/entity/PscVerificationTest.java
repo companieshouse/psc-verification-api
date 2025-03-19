@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
+import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.NameMismatchReasonConstants;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
@@ -34,6 +35,7 @@ class PscVerificationTest {
     private PscVerification testVerification;
     private ResourceLinks links;
     private PscVerificationData data;
+    private InternalData internalData;
     private VerificationDetails verif;
     private RelevantOfficer relevantOfficer;
     private NameElementsApi nameElements;
@@ -67,12 +69,14 @@ class PscVerificationTest {
             .verificationDetails(verif)
             .relevantOfficer(relevantOfficer)
             .build();
+        internalData = InternalData.newBuilder().internalId("123").build();
         testVerification = PscVerification.newBuilder()
             .id("id")
             .createdAt(INSTANT)
             .updatedAt(INSTANT)
             .links(links)
             .data(data)
+            .internalData(internalData)
             .build();
     }
 
@@ -107,6 +111,7 @@ class PscVerificationTest {
                 + "surname='Surname'], "
                 + "dateOfBirth=1990-12-31, isEmployee=true, isDirector=true], "
                 + "verificationDetails=VerificationDetails[uvid='uvid', "
-                + "nameMismatchReason=PREFERRED_NAME, statements=[INDIVIDUAL_VERIFIED]]]]"));
+                + "nameMismatchReason=PREFERRED_NAME, statements=[INDIVIDUAL_VERIFIED]]], "
+                + "internalData=InternalData[internalId=123]]"));
     }
 }

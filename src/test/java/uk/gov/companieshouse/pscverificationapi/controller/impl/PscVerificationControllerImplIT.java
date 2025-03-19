@@ -44,16 +44,18 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.PscApi;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.logging.Logger;
+import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.error.RestExceptionHandler;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapperImpl;
-import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
 import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationService;
+import uk.gov.companieshouse.pscverificationapi.service.impl.PscLookupServiceImpl;
 
 @Tag("web")
 @WebMvcTest(controllers = PscVerificationControllerImpl.class)
@@ -71,7 +73,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     @MockBean
     private TransactionService transactionService;
     @MockBean
-    private PscLookupService lookupService;
+    private PscLookupServiceImpl lookupService;
     @MockBean
     private PscVerificationService pscVerificationService;
     @MockBean
@@ -80,6 +82,8 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     private RestExceptionHandler restExceptionHandler;
     @MockBean
     private PscApi pscDetails;
+    @MockBean
+    private PscIndividualFullRecordApi pscIndividualFullRecordApi;
     @MockBean
     private MongoDatabaseFactory mongoDatabaseFactory;
     @SpyBean
@@ -147,6 +151,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
             .thenAnswer(i -> PscVerification.newBuilder(i.getArgument(0)).build()
                 // copy of first argument
             );
+        when(lookupService.getPscIndividualFullRecord(transaction, dto, PscType.INDIVIDUAL)).thenReturn(pscIndividualFullRecordApi);
         when(clock.instant()).thenReturn(FIRST_INSTANT);
 
         final var expectedStatementNames = isRLE ? List.of(RO_IDENTIFIED.toString(),

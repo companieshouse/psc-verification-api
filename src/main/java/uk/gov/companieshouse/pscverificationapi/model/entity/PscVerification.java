@@ -9,6 +9,7 @@ import java.util.StringJoiner;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
+import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 
 @Document(collection = "psc_verification")
@@ -27,6 +28,9 @@ public final class PscVerification implements Touchable {
     @JsonMerge
     @JsonProperty("data")
     private PscVerificationData data;
+    // No @JsonMerge: this property MUST NOT be modifiable by PATCH requests
+    @JsonProperty("internal_data")
+    private InternalData internalData;
 
     public PscVerification() {
         // required by Spring Data
@@ -38,6 +42,7 @@ public final class PscVerification implements Touchable {
         setUpdatedAt(builder.updatedAt);
         setLinks(builder.links);
         setData(builder.data);
+        setInternalData(builder.internalData);
     }
 
     public static Builder newBuilder() {
@@ -51,6 +56,7 @@ public final class PscVerification implements Touchable {
         builder.updatedAt = copy.getUpdatedAt();
         builder.links = copy.getLinks();
         builder.data = copy.getData();
+        builder.internalData = copy.getInternalData();
         return builder;
     }
 
@@ -74,6 +80,10 @@ public final class PscVerification implements Touchable {
         return data;
     }
 
+    public InternalData getInternalData() {
+        return internalData;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -81,12 +91,12 @@ public final class PscVerification implements Touchable {
         return Objects.equals(getId(), that.getId()) && Objects.equals(getCreatedAt(),
             that.getCreatedAt()) && Objects.equals(getUpdatedAt(),
             that.getUpdatedAt()) && Objects.equals(getLinks(), that.getLinks()) && Objects.equals(
-            getData(), that.getData());
+            getData(), that.getData()) && Objects.equals(getInternalData(), that.getInternalData());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getCreatedAt(), getUpdatedAt(), getLinks(), getData());
+        return Objects.hash(getId(), getCreatedAt(), getUpdatedAt(), getLinks(), getData(), getInternalData());
     }
 
     @Override
@@ -97,6 +107,7 @@ public final class PscVerification implements Touchable {
             .add("updatedAt=" + getUpdatedAt())
             .add("links=" + getLinks())
             .add("data=" + getData())
+            .add("internalData=" + getInternalData())
             .toString();
     }
 
@@ -120,6 +131,10 @@ public final class PscVerification implements Touchable {
         this.data = data;
     }
 
+    public void setInternalData(final InternalData internalData) {
+        this.internalData = internalData;
+    }
+
     @Override
     public void touch(Instant instant) {
         this.updatedAt = instant;
@@ -134,6 +149,7 @@ public final class PscVerification implements Touchable {
         private Instant updatedAt;
         private ResourceLinks links;
         private PscVerificationData data;
+        private InternalData internalData;
 
         private Builder() {
         }
@@ -195,6 +211,18 @@ public final class PscVerification implements Touchable {
          */
         public Builder data(final PscVerificationData data) {
             this.data = data;
+            return this;
+        }
+
+        /**
+         * Sets the {@code internalData} and returns a reference to this Builder so that the methods can be
+         * chained together.
+         *
+         * @param internalData the {@code internalData} to set
+         * @return a reference to this Builder
+         */
+        public Builder internalData(final InternalData internalData) {
+            this.internalData = internalData;
             return this;
         }
 
