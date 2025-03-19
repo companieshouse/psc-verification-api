@@ -102,11 +102,11 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         try {
             pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(requestTransaction, data, PscType.INDIVIDUAL);
         } catch (PscLookupServiceException e) {
-            throw new FilingResourceNotFoundException("PSC Notification Id not found, try again");
+            throw new FilingResourceNotFoundException("PSC Notification Id not found");
         }
 
         if (pscIndividualFullRecordApi.getInternalId() == null) {
-            throw new PscLookupServiceException("We can't find the Internal ID, can you file on paper?", new Exception("Internal Id"));
+            throw new PscLookupServiceException("We are unable to process a filing for this PSC", new Exception("Internal Id"));
         }
 
         var internalData = InternalData.newBuilder().internalId(String.valueOf(pscIndividualFullRecordApi.getInternalId())).build();
