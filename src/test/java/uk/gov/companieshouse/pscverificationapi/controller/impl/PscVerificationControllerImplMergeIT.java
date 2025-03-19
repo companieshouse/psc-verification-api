@@ -28,12 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
@@ -57,15 +57,15 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1970, 1, 1);
     private static final String DOB_STRING = DATE_OF_BIRTH.toString();
 
-    @MockBean
+    @MockitoBean
     private TransactionService transactionService;
-    @MockBean
+    @MockitoBean
     private PscVerificationRepository repository;
-    @MockBean
+    @MockitoBean
     private PatchServiceProperties patchServiceProperties;
-    @SpyBean
+    @MockitoSpyBean
     private PscVerificationMapperImpl filingMapper;
-    @MockBean
+    @MockitoBean
     private MongoTransactionManager transactionManager;
 
     @TestConfiguration
