@@ -23,12 +23,14 @@ public class PscIsPastStartDateValidator extends BaseVerificationValidator imple
         PscIndividualFullRecordApi pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
                 validationContext.transaction(), validationContext.dto(), validationContext.pscType());
 
-        var startDate = pscIndividualFullRecordApi.getVerificationState().verificationStartDate();
+        final var startDate = pscIndividualFullRecordApi.getVerificationState().verificationStartDate();
+
         if (startDate != null && LocalDate.now().isBefore(startDate)) {
+            final var errorResponseText = validation.get("psc-cannot-verify-yet").replace("{start-date}",
+                    startDate.toString());
             validationContext.errors().add(
                     new FieldError("object", "psc_verification_start_date", startDate, false,
-                            new String[] { null, startDate.toString() }, null,
-                            validation.get("psc-cannot-verify-yet")));
+                            new String[] { null, startDate.toString() }, null, errorResponseText));
         }
 
         super.validate(validationContext);

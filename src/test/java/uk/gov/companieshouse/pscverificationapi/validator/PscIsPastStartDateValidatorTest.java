@@ -78,15 +78,18 @@ class PscIsPastStartDateValidatorTest {
         var verificationState = new VerificationState(VerificationStatus.UNVERIFIED,
                 startDate, startDate.plusDays(14));
         when(pscIndividualFullRecord.getVerificationState()).thenReturn(verificationState);
+        when(validation.get("psc-cannot-verify-yet"))
+                .thenReturn("This PSC cannot provide their identity verification details until {start-date}. They must provide their details within 14 days of this date");
+
+        var errorResponseText = validation.get("psc-cannot-verify-yet").replace("{start-date}",
+                startDate.toString());
 
         var fieldError = new FieldError("object", "psc_verification_start_date", startDate, false,
                 new String[] { null, startDate.toString() }, null,
-                "This PSC cannot provide their identity verification details yet");
+                errorResponseText);
 
         when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType))
                 .thenReturn(pscIndividualFullRecord);
-        when(validation.get("psc-cannot-verify-yet"))
-                .thenReturn("This PSC cannot provide their identity verification details yet");
 
         testValidator.validate(
                 new VerificationValidationContext(pscVerificationData, errors, transaction, pscType,
