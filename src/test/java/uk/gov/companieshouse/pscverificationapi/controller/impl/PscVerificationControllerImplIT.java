@@ -36,11 +36,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.PscApi;
@@ -70,27 +70,27 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     private static final URI VALID = URI.create(SELF.toString() + "/validation_status");
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1970, 1, 1);
 
-    @MockBean
+    @MockitoBean
     private TransactionService transactionService;
-    @MockBean
+    @MockitoBean
     private PscLookupServiceImpl lookupService;
-    @MockBean
+    @MockitoBean
     private PscVerificationService pscVerificationService;
-    @MockBean
+    @MockitoBean
     private VerificationValidationService validationService;
-    @MockBean
+    @MockitoBean
     private RestExceptionHandler restExceptionHandler;
-    @MockBean
+    @MockitoBean
     private PscApi pscDetails;
-    @MockBean
+    @MockitoBean
     private PscIndividualFullRecordApi pscIndividualFullRecordApi;
-    @MockBean
+    @MockitoBean
     private MongoDatabaseFactory mongoDatabaseFactory;
     @SpyBean
     private PscVerificationMapperImpl filingMapper;
-    @MockBean
+    @MockitoBean
     private Clock clock;
-    @MockBean
+    @MockitoBean
     private Logger logger;
 
     @Autowired

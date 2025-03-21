@@ -9,8 +9,8 @@ import static uk.gov.companieshouse.api.model.pscverification.VerificationStatem
 
 import java.time.Instant;
 import java.util.EnumSet;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.companieshouse.api.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
@@ -72,7 +72,7 @@ public class BaseControllerIT {
 
     protected HttpHeaders httpHeaders;
     protected Transaction transaction;
-    @MockBean
+    @MockitoBean
     protected TransactionInterceptor transactionInterceptor;
 
     void baseSetUp() {

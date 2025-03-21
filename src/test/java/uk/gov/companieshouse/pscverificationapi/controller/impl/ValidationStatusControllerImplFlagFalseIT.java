@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.config.enumerations.PscVerificationConfig;
@@ -33,23 +33,23 @@ import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationSe
 @Import(PscVerificationConfig.class)
 class ValidationStatusControllerImplFlagFalseIT extends BaseControllerIT {
 
-    @MockBean
+    @MockitoBean
     private TransactionService transactionService;
-    @MockBean
+    @MockitoBean
     private PscVerificationService pscVerificationService;
-    @MockBean
+    @MockitoBean
     private VerificationValidationService validationService;
-    @MockBean
+    @MockitoBean
     private PscVerificationMapper filingMapper;
-    @MockBean
+    @MockitoBean
     private ErrorMapper errorMapper;
-    @MockBean
+    @MockitoBean
     private Logger logger;
     @Autowired
     private MockMvc mockMvc;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         baseSetUp();
     }
 
