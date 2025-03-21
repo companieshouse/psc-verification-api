@@ -13,7 +13,7 @@ public interface PscVerificationMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "links", ignore = true)
-    @Mapping(target = "data", source = ".")
+    @Mapping(target = "data", source = "data")
     PscVerification toEntity(final PscVerificationData data);
 
     @Mapping(target="companyNumber", source = "data.companyNumber")
@@ -27,6 +27,7 @@ public interface PscVerificationMapper {
     @Mapping(target = "internalData", ignore = true)
     PscVerificationApi toApi(final PscVerification verification);
 
+    @Mapping(target = "verificationDetails.verificationStatements", source = "verificationDetails.statements")
     PscVerificationDataForUpdating toForUpdating(final PscVerificationData data);
 
     @Mapping(target = "relevantOfficer.title", ignore = true)

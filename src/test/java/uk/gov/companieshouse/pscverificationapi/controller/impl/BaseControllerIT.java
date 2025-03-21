@@ -3,14 +3,11 @@ package uk.gov.companieshouse.pscverificationapi.controller.impl;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.INDIVIDUAL_VERIFIED;
-import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.RO_DECLARATION;
-import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.RO_IDENTIFIED;
-import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.RO_VERIFIED;
 
 import java.time.Instant;
 import java.util.EnumSet;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.companieshouse.api.interceptor.TransactionInterceptor;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
@@ -32,29 +29,18 @@ public class BaseControllerIT {
     protected static final String URL_PSC_RESOURCE = URL_PSC + "/{filingResourceId}";
     protected static final String URL_PSC_VALIDATION_STATUS = URL_PSC_RESOURCE + "/validation_status";
     protected static final String APPLICATION_JSON_MERGE_PATCH = "application/merge-patch+json";
-    protected static final String COMMON_FRAGMENT = "\"company_number\": \""
-        + COMPANY_NUMBER
-        + "\","
-        + "\"psc_notification_id\": \""
-        + PSC_ID
-        + "\","
-        + "\"verification_details\": {"
-        + "\"uvid\": \""
-        + UVID
-        + "\","
-        + "\"verification_statements\": [";
-    protected static final String INDIVIDUAL_FRAGMENT = "\"INDIVIDUAL_VERIFIED\"" + "]}";
-    protected static final String RLE_FRAGMENT =
-        "\"RO_IDENTIFIED\"," + "\"RO_VERIFIED\"," + "\"RO_DECLARATION\"" + "]}";
-    protected static final String RO_FRAGMENT = ",\"relevant_officer\":{"
-        + "\"name_elements\":{"
-        + "\"title\": \"Sir\","
-        + "\"forename\": \"Forename\","
-        + "\"other_forenames\": \"Other Forenames\","
-        + "\"surname\": \"Surname\"},"
-        + "\"date_of_birth\": \"1970-01-01\","
-        + "\"is_employee\": true,"
-        + "\"is_director\": true}";
+    protected static final String COMMON_FRAGMENT = """
+        "company_number": "%s",
+        "psc_notification_id": "%s",
+        "verification_details": {
+            "uvid": "%s",
+            "verification_statements": [
+    """.formatted(COMPANY_NUMBER, PSC_ID, UVID);
+    protected static final String INDIVIDUAL_FRAGMENT = """
+        "INDIVIDUAL_VERIFIED"
+            ]
+        }
+    """;
     protected static final String EMPTY_QUOTED_JSON = "\"\"";
     protected static final String MALFORMED_JSON = "{";
     protected static final Instant FIRST_INSTANT = Instant.parse("2022-10-15T09:44:08.108Z");
@@ -63,16 +49,12 @@ public class BaseControllerIT {
         .uvid(UVID)
         .statements(EnumSet.of(INDIVIDUAL_VERIFIED))
         .build();
-    protected static final VerificationDetails RO_DETAILS = VerificationDetails.newBuilder()
-        .uvid(UVID)
-        .statements(EnumSet.of(RO_IDENTIFIED, RO_DECLARATION, RO_VERIFIED))
-        .build();
     protected static final NameElementsApi NAME_ELEMENTS = createNameElements("Sir", "Forename",
         "Other Forenames", "Surname");
 
     protected HttpHeaders httpHeaders;
     protected Transaction transaction;
-    @MockBean
+    @MockitoBean
     protected TransactionInterceptor transactionInterceptor;
 
     void baseSetUp() {
