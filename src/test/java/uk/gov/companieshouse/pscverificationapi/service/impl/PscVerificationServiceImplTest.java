@@ -61,7 +61,7 @@ class PscVerificationServiceImplTest {
 
     @Test
     void save() {
-        final var result = testService.save(filing, "TBC");
+        testService.save(filing, "TBC");
 
         verify(repository).save(filing);
     }

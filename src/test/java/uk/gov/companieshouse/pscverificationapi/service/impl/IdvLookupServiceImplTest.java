@@ -51,7 +51,7 @@ class IdvLookupServiceImplTest {
     private IdvLookupService uvidMatchService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         uvidMatchService = new IdvLookupServiceImpl(logger, internalApiClientService);
     }
 

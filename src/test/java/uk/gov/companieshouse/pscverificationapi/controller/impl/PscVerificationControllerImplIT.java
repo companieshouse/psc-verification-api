@@ -36,11 +36,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.PscApi;
@@ -86,7 +86,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     private PscIndividualFullRecordApi pscIndividualFullRecordApi;
     @MockitoBean
     private MongoDatabaseFactory mongoDatabaseFactory;
-    @SpyBean
+    @MockitoSpyBean
     private PscVerificationMapperImpl filingMapper;
     @MockitoBean
     private Clock clock;
