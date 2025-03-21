@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.pscverificationapi.validator;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -24,13 +25,13 @@ public class PscIsPastStartDateValidator extends BaseVerificationValidator imple
                 validationContext.transaction(), validationContext.dto(), validationContext.pscType());
 
         final var startDate = pscIndividualFullRecordApi.getVerificationState().verificationStartDate();
+        final var formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         if (startDate != null && LocalDate.now().isBefore(startDate)) {
-            final var errorResponseText = validation.get("psc-cannot-verify-yet").replace("{start-date}",
-                    startDate.toString());
+            final var errorResponseText = validation.get("psc-cannot-verify-yet").replace("{start-date}", formattedStartDate);
             validationContext.errors().add(
-                    new FieldError("object", "psc_verification_start_date", startDate, false,
-                            new String[] { null, startDate.toString() }, null, errorResponseText));
+                    new FieldError("object", "psc_verification_start_date", formattedStartDate, false,
+                            new String[] { null, formattedStartDate }, null, errorResponseText));
         }
 
         super.validate(validationContext);
