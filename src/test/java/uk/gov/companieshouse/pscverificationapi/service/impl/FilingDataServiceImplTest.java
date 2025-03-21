@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
+import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
@@ -38,6 +39,7 @@ class FilingDataServiceImplTest {
     private static final String COMPANY_NUMBER = "12345678";
     private static final String FILING_ID = "6332aa6ed28ad2333c3a520a";
     private static final String PSC_NOTIFICATION_ID = "abcdefgh";
+    private static final String APPOINTMENT_ID = "12345678";
     private static final String UVID = "999999999";
     private static final String TITLE = "MR";
     private static final String FORENAME = "JOE";
@@ -74,8 +76,12 @@ class FilingDataServiceImplTest {
                 .pscNotificationId(PSC_NOTIFICATION_ID)
                 .verificationDetails(verificationDetails)
                 .build();
+        final var internalData = InternalData.newBuilder()
+                .internalId(APPOINTMENT_ID)
+                .build();
         final var filingData = PscVerification.newBuilder()
                 .data(data)
+                .internalData(internalData)
                 .build();
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filingData));
@@ -87,7 +93,7 @@ class FilingDataServiceImplTest {
         final String expectedDescription;
 
         expectedMap = Map.of("company_number", COMPANY_NUMBER,
-                "psc_notification_id", PSC_NOTIFICATION_ID,
+                "appointment_id", APPOINTMENT_ID,
                 "verification_details", Map.of("name_mismatch_reason", "PREFERRED_NAME",
                                                     "verification_statements", List.of("INDIVIDUAL_VERIFIED"),
                                                     "uvid", UVID));
@@ -121,8 +127,12 @@ class FilingDataServiceImplTest {
                 .verificationDetails(verificationDetails)
                 .relevantOfficer(relevantOfficer)
                 .build();
+        final var internalData = InternalData.newBuilder()
+                .internalId(APPOINTMENT_ID)
+                .build();
         final var filingData = PscVerification.newBuilder()
                 .data(data)
+                .internalData(internalData)
                 .build();
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filingData));
@@ -134,7 +144,7 @@ class FilingDataServiceImplTest {
         final String expectedDescription;
 
         expectedMap = Map.of("company_number", COMPANY_NUMBER,
-                "psc_notification_id", PSC_NOTIFICATION_ID,
+                "appointment_id", APPOINTMENT_ID,
                 "verification_details", Map.of("name_mismatch_reason", "PREFERRED_NAME",
                         "verification_statements", List.of("RO_IDENTIFIED"),
                         "uvid", UVID),
