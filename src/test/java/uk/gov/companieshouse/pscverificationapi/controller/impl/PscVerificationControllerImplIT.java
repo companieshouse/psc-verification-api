@@ -169,7 +169,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.errors[0].error", is("Property {property-name} is required and must not be blank")))
-            .andExpect(jsonPath("$.errors[0].error_values.parameter-name", is("psc_notification_id")))
+            .andExpect(jsonPath("$.errors[0].error_values.property-name", is("psc_notification_id")))
             .andExpect(jsonPath("$.errors[0].location", is("$.psc_notification_id")))
             .andExpect(jsonPath("$.errors[0].location_type", is("json-path")))
             .andExpect(jsonPath("$.errors[0].type", is("ch:validation")));

@@ -337,7 +337,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             .filter(Predicate.not(String::isEmpty))
             .ifPresent(r -> error.addErrorValue("rejected-value", r));
         Optional.ofNullable(fieldName)
-            .ifPresent(f -> error.addErrorValue("parameter-name", StringUtils.substringAfterLast(jsonPath, "$.")));
+            .ifPresent(f -> error.addErrorValue("property-name", StringUtils.substringAfterLast(jsonPath, "$.")));
 
         return error;
     }
