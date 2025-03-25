@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
+import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
@@ -106,7 +107,8 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
         if (pscIndividualFullRecordApi.getInternalId() == null) {
             logMap.put("psc_notification_id", data.pscNotificationId());
-            logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s", data.pscNotificationId(), data.companyNumber()), null, logMap);
+            logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
+                    data.pscNotificationId(), data.companyNumber()), null, logMap);
             throw new PscLookupServiceException("We are currently unable to process a Verification filing for this PSC", new Exception("Internal Id"));
         }
 
@@ -136,6 +138,30 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
         final var logMap = LogMapHelper.createLogMap(transId);
         Optional<PscVerification> pscVerification = pscVerificationService.get(filingResource);
+
+        PscIndividualFullRecordApi pscIndividualFullRecordApi = null;
+        if (mergePatch.get("psc_notification_id") != null && pscVerification.isPresent()) {
+            final var transaction = getTransaction(transId, null, logMap,
+                    getPassthroughHeader(request));
+
+            String companyNumber = mergePatch.get("company_number") != null
+                    ? mergePatch.get("company_number").toString()
+                    : pscVerification.orElseThrow().getData().companyNumber();
+            final var dataToLookup = PscVerificationData.newBuilder(pscVerification.orElseThrow().getData())
+                    .pscNotificationId(mergePatch.get("psc_notification_id").toString())
+                    .companyNumber(companyNumber)
+                    .build();
+
+            pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
+                    transaction, dataToLookup, PscType.INDIVIDUAL);
+
+            if (pscIndividualFullRecordApi.getInternalId() == null) {
+                logMap.put("psc_notification_id", mergePatch.get("psc_notification_id"));
+                logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
+                        mergePatch.get("psc_notification_id"), pscVerification.orElseThrow().getData().companyNumber()),null, logMap);
+                throw new PscLookupServiceException("We are currently unable to process a Verification filing for this PSC", new Exception("Internal Id"));
+            }
+        }
 
         pscVerification.ifPresent(v -> clearNameMismatchReasonIfRequired(v, mergePatch));
 
@@ -169,6 +195,14 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             logger.debugContext(transId, PATCH_RESULT_MSG, logMap);
 
             final var optionalFiling = pscVerificationService.get(filingResource);
+
+            if (mergePatch.get("psc_notification_id") != null && pscIndividualFullRecordApi != null) {
+                var internalData = InternalData.newBuilder()
+                        .internalId(String.valueOf(pscIndividualFullRecordApi.getInternalId()))
+                        .build();
+                optionalFiling.ifPresent(v -> v.setInternalData(internalData));
+                pscVerificationService.save(optionalFiling.orElseThrow());
+            }
 
             return optionalFiling
                     .map(filingMapper::toApi)
