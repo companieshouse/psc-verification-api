@@ -3,10 +3,10 @@ package uk.gov.companieshouse.pscverificationapi.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.StringJoiner;
-import javax.validation.constraints.Past;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 
 public final class RelevantOfficerForUpdating {

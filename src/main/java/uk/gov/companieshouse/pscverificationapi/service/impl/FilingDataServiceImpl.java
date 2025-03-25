@@ -49,6 +49,8 @@ public class FilingDataServiceImpl implements FilingDataService {
         filingApi.setDescription(filingDataConfig.getPscVerificationDescription());
 
         final var dataMap = MapHelper.convertObject(pscVerification.getData(), PropertyNamingStrategies.SNAKE_CASE);
+        dataMap.remove("psc_notification_id");
+        dataMap.put("appointment_id", pscVerification.getInternalData().internalId());
         logMap.put("Filing data to submit", dataMap);
         logger.debugContext(transactionId, filingId, logMap);
         filingApi.setData(dataMap);
