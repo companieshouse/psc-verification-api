@@ -8,9 +8,6 @@ import uk.gov.companieshouse.pscverificationapi.validator.*;
 @Configuration
 public class ValidatorConfig {
 
-    // Currently configured to validate individual PSCs
-    // TODO add a 2nd validation chain for the RLE journey if required
-
     @Bean
     public ValidationChainEnable verificationValidationEnable(final PscIdProvidedValidator pscIdProvidedValidator,
             final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator,
