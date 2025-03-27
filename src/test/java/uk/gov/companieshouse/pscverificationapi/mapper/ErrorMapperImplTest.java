@@ -21,17 +21,19 @@ class ErrorMapperTest {
 
     private FieldError fieldError;
 
+    private static final String DEFAULT_MESSAGE="Default message";
+
     @BeforeEach
     void setUp() {
         testMapper = Mappers.getMapper(ErrorMapper.class);
-        fieldError = new FieldError("message", "field", "Default message");
+        fieldError = new FieldError("message", "field", DEFAULT_MESSAGE);
     }
 
     @Test
     void mapFieldError() {
         final var validationStatusError = testMapper.map(fieldError);
         final var expectedError =
-            new ValidationStatusError("Default message", "$.field", "json-path", "ch:validation");
+            new ValidationStatusError(DEFAULT_MESSAGE, "$.field", "json-path", "ch:validation");
 
         assertThat(validationStatusError, samePropertyValuesAs(expectedError));
     }
@@ -45,7 +47,7 @@ class ErrorMapperTest {
     void mapFieldErrorList() {
         final var validationStatusErrors = testMapper.map(Set.of(fieldError));
         final var expectedError =
-            new ValidationStatusError("Default message", "$.field", "json-path", "ch:validation");
+            new ValidationStatusError(DEFAULT_MESSAGE, "$.field", "json-path", "ch:validation");
 
         assertThat(validationStatusErrors,
             is(arrayContaining(samePropertyValuesAs(expectedError))));

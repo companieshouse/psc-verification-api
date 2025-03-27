@@ -62,6 +62,11 @@ class RestExceptionHandlerTest {
                 + "[ \"INDIVIDUAL_VERIFIED\"]"
             + "}"
         + "}";
+    public static final String PSC_NOTIFICATION_ID_VAL = "1kdaTltWeaP1EB70SSD9SLmiK5Z";
+    public static final String LOCATION_PROP = "location";
+    public static final String LOCATION_TYPE_PROP = "locationType";
+    public static final String TYPE_PROP = "type";
+    public static final String ERROR_PROP = "error";
 
     private RestExceptionHandler testExceptionHandler;
 
@@ -105,16 +110,16 @@ class RestExceptionHandlerTest {
         servletRequest.setRequestURI("/path/to/resource");
         String[] codes1 = new String[]{"code1", "object.company_number", "code3", "NotBlank"};
         String[] codes2 = new String[]{"code1", "object.psc_notification_id", "code3", "pscIsCeased"};
-        fieldError = new FieldError("object", "field1", null, false, codes1, null, "error");
+        fieldError = new FieldError("object", "field1", null, false, codes1, null, ERROR_PROP);
         fieldErrorWithRejectedValue =
-            new FieldError("object", "pscNotificationId", "1kdaTltWeaP1EB70SSD9SLmiK5Z", false, codes2, null,
+            new FieldError("object", "pscNotificationId", PSC_NOTIFICATION_ID_VAL, false, codes2, null,
                 "errorWithRejectedValue");
         mergePatchCause = new Throwable();
 
         expectedErrorWithRejectedValue =
             new ApiError("{rejected-value} is ceased", "$.psc_notification_id", "json-path", "ch:validation");
 
-        expectedErrorWithRejectedValue.addErrorValue("rejected-value", "1kdaTltWeaP1EB70SSD9SLmiK5Z");
+        expectedErrorWithRejectedValue.addErrorValue("rejected-value", PSC_NOTIFICATION_ID_VAL);
     }
 
     @Test
@@ -226,17 +231,17 @@ class RestExceptionHandlerTest {
 
         assertThat(apiErrors.getErrors(), containsInAnyOrder(
             allOf(
-                hasProperty("error", is("field is blank")),
-                hasProperty("location", is("$.company_number")),
-                hasProperty("locationType", is("json-path")),
-                hasProperty("type", is("ch:validation"))
+                hasProperty(ERROR_PROP, is("field is blank")),
+                hasProperty(LOCATION_PROP, is("$.company_number")),
+                hasProperty(LOCATION_TYPE_PROP, is("json-path")),
+                hasProperty(TYPE_PROP, is("ch:validation"))
             ),
             allOf(
-                hasProperty("error", is("{rejected-value} is ceased")),
-                hasProperty("location", is("$.psc_notification_id")),
-                hasProperty("locationType", is("json-path")),
-                hasProperty("type", is("ch:validation")),
-                hasProperty("errorValues", hasEntry("rejected-value", "1kdaTltWeaP1EB70SSD9SLmiK5Z"))
+                hasProperty(ERROR_PROP, is("{rejected-value} is ceased")),
+                hasProperty(LOCATION_PROP, is("$.psc_notification_id")),
+                hasProperty(LOCATION_TYPE_PROP, is("json-path")),
+                hasProperty(TYPE_PROP, is("ch:validation")),
+                hasProperty("errorValues", hasEntry("rejected-value", PSC_NOTIFICATION_ID_VAL))
             )
         ));
     }
@@ -283,17 +288,17 @@ class RestExceptionHandlerTest {
 
         assertThat(apiErrors.getErrors(), containsInAnyOrder(
             allOf(
-                hasProperty("error", is("field is blank")),
-                hasProperty("location", is("$.company_number")),
-                hasProperty("locationType", is("json-path")),
-                hasProperty("type", is("ch:validation"))
+                hasProperty(ERROR_PROP, is("field is blank")),
+                hasProperty(LOCATION_PROP, is("$.company_number")),
+                hasProperty(LOCATION_TYPE_PROP, is("json-path")),
+                hasProperty(TYPE_PROP, is("ch:validation"))
             ),
             allOf(
-                hasProperty("error", is("{rejected-value} is ceased")),
-                hasProperty("location", is("$.psc_notification_id")),
-                hasProperty("locationType", is("json-path")),
-                hasProperty("type", is("ch:validation")),
-                hasProperty("errorValues", hasEntry("rejected-value", "1kdaTltWeaP1EB70SSD9SLmiK5Z"))
+                hasProperty(ERROR_PROP, is("{rejected-value} is ceased")),
+                hasProperty(LOCATION_PROP, is("$.psc_notification_id")),
+                hasProperty(LOCATION_TYPE_PROP, is("json-path")),
+                hasProperty(TYPE_PROP, is("ch:validation")),
+                hasProperty("errorValues", hasEntry("rejected-value", PSC_NOTIFICATION_ID_VAL))
             )
         ));
     }
@@ -310,7 +315,7 @@ class RestExceptionHandlerTest {
         final var expectedError = new ApiError("Service Unavailable: {error}",
             null, "resource", "ch:service");
 
-        expectedError.addErrorValue("error",
+        expectedError.addErrorValue(ERROR_PROP,
             "Service exception");
 
         assertThat(apiErrors.getErrors(), contains(expectedError));
@@ -328,7 +333,7 @@ class RestExceptionHandlerTest {
         final var expectedError = new ApiError("Service Unavailable: {error}",
             null, "resource", "ch:service");
 
-        expectedError.addErrorValue("error",
+        expectedError.addErrorValue(ERROR_PROP,
             "Runtime exception");
 
         assertThat(apiErrors.getErrors(), contains(expectedError));

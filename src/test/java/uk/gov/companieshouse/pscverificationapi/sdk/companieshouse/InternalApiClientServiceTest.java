@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class InternalApiClientServiceTest {
 
+    public static final String INTERNAL_API_URL = "INTERNAL_API_URL";
     private InternalApiClientService service;
 
     @Mock
@@ -44,7 +45,7 @@ class InternalApiClientServiceTest {
 
                 // Given
                 final EnvironmentReader environmentReader = new EnvironmentReaderImpl();
-                when(environmentReader.getMandatoryString("INTERNAL_API_URL")).thenReturn("INTERNAL_API_URL");
+                when(environmentReader.getMandatoryString(INTERNAL_API_URL)).thenReturn(INTERNAL_API_URL);
 
                 // When
                 final InternalApiClient internalApiClientReturned = service.getInternalApiClient();
@@ -54,7 +55,7 @@ class InternalApiClientServiceTest {
                 verify(internalApiClient).setInternalBasePath("API_URL");
                 assertThat(internalApiClientReturned, is(internalApiClient));
                 assertThat(mocked.constructed(), hasSize(1));
-                assertThat(mocked.constructed().getFirst().getMandatoryString("INTERNAL_API_URL"), is("INTERNAL_API_URL") );
+                assertThat(mocked.constructed().getFirst().getMandatoryString(INTERNAL_API_URL), is(INTERNAL_API_URL) );
             }
         }
     }

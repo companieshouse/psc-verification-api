@@ -3,16 +3,7 @@ package uk.gov.companieshouse.pscverificationapi.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
-import uk.gov.companieshouse.pscverificationapi.validator.CompanyStatusValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.CompanyTypeValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.PscIsPastStartDateValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.PscIdProvidedValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.UvidExistsValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.ValidationChainEnable;
-import uk.gov.companieshouse.pscverificationapi.validator.VerificationValidationChain;
-import uk.gov.companieshouse.pscverificationapi.validator.PscExistsValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.PscIsActiveValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.PscIsUnverifiedValidator;
+import uk.gov.companieshouse.pscverificationapi.validator.*;
 
 @Configuration
 public class ValidatorConfig {
@@ -33,19 +24,11 @@ public class ValidatorConfig {
         return new VerificationValidationChain(PscType.INDIVIDUAL, pscIdProvidedValidator);
     }
 
-    private static void createValidationChain(final PscIdProvidedValidator pscIdProvidedValidator,
-            final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator,
-            final CompanyTypeValidator companyTypeValidator, final CompanyStatusValidator companyStatusValidator,
-            final UvidExistsValidator uvidExistsValidator, final PscIsUnverifiedValidator pscIsUnverifiedValidator,
-            final PscIsPastStartDateValidator pscIsPastStartDateValidator) {
-
-        pscIdProvidedValidator.setNext(pscExistsValidator);
-        pscExistsValidator.setNext(pscIsActiveValidator);
-        pscIsActiveValidator.setNext(companyTypeValidator);
-        companyTypeValidator.setNext(companyStatusValidator);
-        companyStatusValidator.setNext(uvidExistsValidator);
-        uvidExistsValidator.setNext(pscIsUnverifiedValidator);
-        pscIsUnverifiedValidator.setNext(pscIsPastStartDateValidator);
+    private static void createValidationChain(BaseVerificationValidator... validators) {
+        // Link all validators: a->b, b->c, c->d, etc
+        for (int i = 0; i < validators.length - 1; i++) {
+            validators[i].setNext(validators[i + 1]);
+        }
     }
 
 }

@@ -89,10 +89,10 @@ class UvidExistsValidatorTest {
             .companyNumber(COMPANY_NUMBER)
             .verificationDetails(VERIFICATION_DETAILS)
             .build();
-    private static final String[] FORENAMES = {"Forename1", "Forename2 Forename3"};
     private static final String SURNAME = "Surname";
     private static final String PSC_FORENAME = "Forename1";
     private static final String PSC_MIDDLE_NAME = "Forename2 Forename3";
+    private static final String[] FORENAMES = {PSC_FORENAME, PSC_MIDDLE_NAME};
     private static final String PSC_SURNAME = "Surname";
     private static final Date3Tuple DATE_OF_BIRTH = new Date3Tuple(27, 2, 1983);
 
