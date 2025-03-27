@@ -11,14 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.patch.model.EntityRetrievalResult;
 import uk.gov.companieshouse.pscverificationapi.error.RetrievalFailureReason;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.provider.PscVerificationFilingProvider;
 import uk.gov.companieshouse.pscverificationapi.repository.PscVerificationRepository;
-import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 
 @ExtendWith(MockitoExtension.class)
 class PscVerificationFilingProviderImplTest {

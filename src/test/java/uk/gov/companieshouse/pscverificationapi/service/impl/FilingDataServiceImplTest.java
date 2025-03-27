@@ -46,6 +46,7 @@ class FilingDataServiceImplTest {
     private static final String OTHER_FORENAMES = "TOM";
     private static final String SURNAME = "BLOGGS";
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(2022, 9, 13);
+    public static final String PSC_VERIFICATION = "PSC Verification";
 
     @Mock
     private PscVerificationService pscVerificationService;
@@ -85,7 +86,7 @@ class FilingDataServiceImplTest {
                 .build();
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filingData));
-        when(filingDataConfig.getPscVerificationDescription()).thenReturn("PSC Verification");
+        when(filingDataConfig.getPscVerificationDescription()).thenReturn(PSC_VERIFICATION);
 
         final var filingApi = testService.generateFilingApi(FILING_ID, transaction);
 
@@ -97,7 +98,7 @@ class FilingDataServiceImplTest {
                 "verification_details", Map.of("name_mismatch_reason", "PREFERRED_NAME",
                                                     "verification_statements", List.of("INDIVIDUAL_VERIFIED"),
                                                     "uvid", UVID));
-        expectedDescription = "PSC Verification";
+        expectedDescription = PSC_VERIFICATION;
         assertThat(filingApi.getData(), is(equalTo(expectedMap)));
         assertThat(filingApi.getKind(), is(FilingKind.PSC_VERIFICATION_INDIVIDUAL.getValue()));
         assertThat(filingApi.getDescription(), is(expectedDescription));
@@ -136,7 +137,7 @@ class FilingDataServiceImplTest {
                 .build();
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filingData));
-        when(filingDataConfig.getPscVerificationDescription()).thenReturn("PSC Verification");
+        when(filingDataConfig.getPscVerificationDescription()).thenReturn(PSC_VERIFICATION);
 
         final var filingApi = testService.generateFilingApi(FILING_ID, transaction);
 
@@ -155,7 +156,7 @@ class FilingDataServiceImplTest {
                         "is_employee", true,
                         "is_director", true)
         );
-        expectedDescription = "PSC Verification";
+        expectedDescription = PSC_VERIFICATION;
         assertThat(filingApi.getData(), is(equalTo(expectedMap)));
         assertThat(filingApi.getKind(), is(FilingKind.PSC_VERIFICATION_RLE_RO.getValue()));
         assertThat(filingApi.getDescription(), is(expectedDescription));

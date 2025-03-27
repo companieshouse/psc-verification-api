@@ -51,7 +51,7 @@ class IdvLookupServiceImplTest {
     private IdvLookupService uvidMatchService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         uvidMatchService = new IdvLookupServiceImpl(logger, internalApiClientService);
     }
 
@@ -88,9 +88,7 @@ class IdvLookupServiceImplTest {
 
         when(privateUvidMatchResourcePost.execute()).thenThrow(new URIValidationException("Invalid URI"));
 
-        assertThrows(TransactionServiceException.class, () -> {
-            uvidMatchService.matchUvid(uvidMatch);
-        });
+        assertThrows(TransactionServiceException.class, () -> uvidMatchService.matchUvid(uvidMatch));
     }
 
 }

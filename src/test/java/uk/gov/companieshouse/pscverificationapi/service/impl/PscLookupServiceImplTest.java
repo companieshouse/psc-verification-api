@@ -49,6 +49,9 @@ class PscLookupServiceImplTest extends TestBaseService {
             .verificationDetails(VERIFICATION_DETAILS)
             .build();
     private static final String CHS_INTERNAL_API_KEY = "key";
+    public static final String FULL_RECORD = "/full_record";
+    public static final String PERSONS_WITH_SIGNIFICANT_CONTROL = "/persons-with-significant-control/";
+    public static final String COMPANY = "/company/";
 
     @Mock
     private ApiClientService apiClientService;
@@ -81,13 +84,13 @@ class PscLookupServiceImplTest extends TestBaseService {
         when(apiClientService.getApiClient(CHS_INTERNAL_API_KEY)).thenReturn(apiClient);
         when(apiClient.pscs()).thenReturn(pscResourceHandler);
 
-        when(pscResourceHandler.getIndividualFullRecord("/company/"
+        when(pscResourceHandler.getIndividualFullRecord(COMPANY
             + COMPANY_NUMBER
-            + "/persons-with-significant-control/"
+            + PERSONS_WITH_SIGNIFICANT_CONTROL
             + INDIVIDUAL.getValue()
             + "/"
             + PSC_ID
-            + "/full_record")).thenReturn(pscIndividualFullRecordGet);
+            + FULL_RECORD)).thenReturn(pscIndividualFullRecordGet);
 
         when(pscIndividualFullRecordGet.execute()).thenReturn(apiResponse);
         when(apiResponse.getData()).thenReturn(new PscIndividualFullRecordApi());
@@ -109,13 +112,13 @@ class PscLookupServiceImplTest extends TestBaseService {
         when(apiClient.pscs()).thenReturn(pscResourceHandler);
 
         when(pscResourceHandler.getIndividualFullRecord(
-            "/company/"
+            COMPANY
                 + COMPANY_NUMBER
-                + "/persons-with-significant-control/"
+                + PERSONS_WITH_SIGNIFICANT_CONTROL
                 + INDIVIDUAL.getValue()
                 + "/"
                 + PSC_ID
-                + "/full_record"
+                + FULL_RECORD
         )).thenReturn(pscIndividualFullRecordGet);
 
         when(pscIndividualFullRecordGet.execute()).thenThrow(exception);
@@ -134,13 +137,13 @@ class PscLookupServiceImplTest extends TestBaseService {
         when(apiClient.pscs()).thenReturn(pscResourceHandler);
 
         when(pscResourceHandler.getIndividualFullRecord(
-            "/company/"
+            COMPANY
                 + COMPANY_NUMBER
-                + "/persons-with-significant-control/"
+                + PERSONS_WITH_SIGNIFICANT_CONTROL
                 + INDIVIDUAL.getValue()
                 + "/"
                 + PSC_ID
-                + "/full_record"
+                + FULL_RECORD
         )).thenReturn(pscIndividualFullRecordGet);
 
         when(pscIndividualFullRecordGet.execute()).thenThrow(exception);
@@ -162,13 +165,13 @@ class PscLookupServiceImplTest extends TestBaseService {
         when(apiClient.pscs()).thenReturn(pscResourceHandler);
 
         when(pscResourceHandler.getIndividualFullRecord(
-            "/company/"
+            COMPANY
                 + COMPANY_NUMBER
-                + "/persons-with-significant-control/"
+                + PERSONS_WITH_SIGNIFICANT_CONTROL
                 + INDIVIDUAL.getValue()
                 + "/"
                 + PSC_ID
-                + "/full_record"
+                + FULL_RECORD
         )).thenReturn(pscIndividualFullRecordGet);
 
         when(pscIndividualFullRecordGet.execute()).thenThrow(exception);

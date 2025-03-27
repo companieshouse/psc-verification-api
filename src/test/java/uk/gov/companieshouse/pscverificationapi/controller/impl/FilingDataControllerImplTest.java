@@ -31,7 +31,7 @@ class FilingDataControllerImplTest extends BaseControllerIT {
     private Transaction filingsTransaction;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         testController =
                 new FilingDataControllerImpl(filingDataService, logger);
         filingsTransaction = new Transaction();
