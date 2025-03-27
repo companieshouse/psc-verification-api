@@ -19,7 +19,7 @@ terraform {
 }
 
 module "ecs-service" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/ecs-service?ref=1.0.293"
+  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/ecs-service?ref=1.0.296"
 
   # Environmental configuration
   environment             = var.environment
@@ -55,6 +55,9 @@ module "ecs-service" {
   docker_repo       = local.docker_repo
   container_version = var.psc_verification_api_version
   container_port    = local.container_port
+  read_only_root_filesystem = true
+  volumes         = [ { "name": "tmp" } ]
+  mount_points    = [ {  "sourceVolume": "tmp",  "containerPath": "/tmp",  "readOnly": false  } ]
 
   # Service configuration
   service_name = local.service_name
@@ -97,7 +100,7 @@ module "ecs-service" {
 }
 
 module "secrets" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/secrets?ref=1.0.293"
+  source = "git@github.com:companieshouse/terraform-modules//aws/ecs/secrets?ref=1.0.296"
 
   name_prefix = "${local.service_name}-${var.environment}"
   environment = var.environment
