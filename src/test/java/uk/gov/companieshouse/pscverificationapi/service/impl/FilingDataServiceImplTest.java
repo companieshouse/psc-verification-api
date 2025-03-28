@@ -105,64 +105,6 @@ class FilingDataServiceImplTest {
     }
 
     @Test
-    void generatePscVerificationRleRoFilingWhenFound() {
-        final var verificationDetails = VerificationDetails.newBuilder()
-                .uvid(UVID)
-                .nameMismatchReason(PREFERRED_NAME)
-                .statements(EnumSet.of(RO_IDENTIFIED))
-                .build();
-        final var nameElements = new NameElementsApi();
-                nameElements.setTitle(TITLE);
-                nameElements.setForename(FORENAME);
-                nameElements.setOtherForenames(OTHER_FORENAMES);
-                nameElements.setSurname(SURNAME);
-        final var relevantOfficer = RelevantOfficer.newBuilder()
-                .nameElements(nameElements)
-                .dateOfBirth(DATE_OF_BIRTH)
-                .isDirector(true)
-                .isEmployee(true)
-                .build();
-        final var data = PscVerificationData.newBuilder()
-                .companyNumber(COMPANY_NUMBER)
-                .pscNotificationId(PSC_NOTIFICATION_ID)
-                .verificationDetails(verificationDetails)
-                .relevantOfficer(relevantOfficer)
-                .build();
-        final var internalData = InternalData.newBuilder()
-                .internalId(APPOINTMENT_ID)
-                .build();
-        final var filingData = PscVerification.newBuilder()
-                .data(data)
-                .internalData(internalData)
-                .build();
-
-        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filingData));
-        when(filingDataConfig.getPscVerificationDescription()).thenReturn(PSC_VERIFICATION);
-
-        final var filingApi = testService.generateFilingApi(FILING_ID, transaction);
-
-        final Map<String, Object> expectedMap;
-        final String expectedDescription;
-
-        expectedMap = Map.of("company_number", COMPANY_NUMBER,
-                "appointment_id", APPOINTMENT_ID,
-                "verification_details", Map.of("name_mismatch_reason", "PREFERRED_NAME",
-                        "verification_statements", List.of("RO_IDENTIFIED"),
-                        "uvid", UVID),
-                "relevant_officer", Map.of("name_elements",
-                                Map.of("title", TITLE, "forename", FORENAME,
-                                        "other_forenames", OTHER_FORENAMES, "surname", SURNAME),
-                        "date_of_birth", DATE_OF_BIRTH.toString(),
-                        "is_employee", true,
-                        "is_director", true)
-        );
-        expectedDescription = PSC_VERIFICATION;
-        assertThat(filingApi.getData(), is(equalTo(expectedMap)));
-        assertThat(filingApi.getKind(), is(FilingKind.PSC_VERIFICATION_RLE_RO.getValue()));
-        assertThat(filingApi.getDescription(), is(expectedDescription));
-    }
-
-    @Test
     void generatePscIndividualFilingWhenNotFound() {
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.empty());
 

@@ -5,8 +5,7 @@ import java.util.Optional;
 
 public enum FilingKind {
 
-    PSC_VERIFICATION_INDIVIDUAL("psc-verification#psc-verification-individual"),
-    PSC_VERIFICATION_RLE_RO("psc-verification#psc-verification-rle-ro");
+    PSC_VERIFICATION_INDIVIDUAL("psc-verification#psc-verification-individual");
 
     FilingKind(final String value) {
         this.value = value;
