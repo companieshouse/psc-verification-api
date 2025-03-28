@@ -20,15 +20,6 @@ class FilingKindTest {
     void nameOfPscVerificationIndividualWhenFound() {
         assertThat(FilingKind.nameOf("psc-verification#psc-verification-individual"), is(Optional.of(FilingKind.PSC_VERIFICATION_INDIVIDUAL)));
     }
-    @Test
-    void getValuePscVerificationRleRo() {
-        assertThat(FilingKind.PSC_VERIFICATION_RLE_RO.getValue(), is("psc-verification#psc-verification-rle-ro"));
-    }
-
-    @Test
-    void nameOfPscVerificationRleRoWhenFound() {
-        assertThat(FilingKind.nameOf("psc-verification#psc-verification-rle-ro"), is(Optional.of(FilingKind.PSC_VERIFICATION_RLE_RO)));
-    }
 
     @Test
     void nameOfWhenNotFound() {
