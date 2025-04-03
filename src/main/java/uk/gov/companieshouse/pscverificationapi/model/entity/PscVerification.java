@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.pscverificationapi.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,6 +15,7 @@ import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 
 @Document(collection = "psc_verification")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class PscVerification implements Touchable {
     @Id
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

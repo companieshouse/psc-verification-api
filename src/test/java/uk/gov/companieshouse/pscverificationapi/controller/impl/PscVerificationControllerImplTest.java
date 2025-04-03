@@ -63,6 +63,7 @@ import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 class PscVerificationControllerImplTest {
     public static final String TRANS_ID = "117524-754816-491724";
     private static final String PSC_ID = "1kdaTltWeaP1EB70SSD9SLmiK5Y";
+    private static final String PSC_ID_TO_PATCH = "123456789";
     private static final String COMPANY_NUMBER = "00006400";
     private static final String UVID = "0xDEADBEEF";
     private static final String PASSTHROUGH_HEADER = "passthrough";
@@ -226,6 +227,57 @@ class PscVerificationControllerImplTest {
             is(not(equalTo(response.getBody().getCreatedAt()))));
         assertThat(response.getHeaders().getLocation(), is(entityWithLinks.getLinks().self()));
 
+    }
+
+    @Test
+    void updatePscVerificationWithPscNotificationIdAndInternalId() {
+        final var success = new PatchResult();
+        final var updatedEntity = PscVerification.newBuilder(entityWithLinks)
+                .updatedAt(SECOND_INSTANT)
+                .build();
+        final var dataToLookup = PscVerificationData.newBuilder(filing).pscNotificationId(PSC_ID_TO_PATCH).build();
+        mergePatch.put("psc_notification_id", PSC_ID_TO_PATCH);
+
+        when(transactionService.getTransaction(TRANS_ID, null)).thenReturn(transaction);
+        when(pscLookupService.getPscIndividualFullRecord(transaction, dataToLookup, PscType.INDIVIDUAL))
+                .thenReturn(pscIndividualFullRecordApi);
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
+                .thenReturn(Optional.of(updatedEntity));
+        when(pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
+
+        final var response = testController.updatePscVerification(TRANS_ID, FILING_ID, mergePatch, request);
+        final var expectedBody = filingMapper.toApi(updatedEntity);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody(), is(notNullValue()));
+        assertThat(response.getBody(), is(expectedBody));
+        assertThat(response.getBody().getUpdatedAt(),
+                is(not(equalTo(response.getBody().getCreatedAt()))));
+        assertThat(response.getHeaders().getLocation(), is(entityWithLinks.getLinks().self()));
+    }
+
+    @Test
+    void updatePscVerificationWithPscNotificationIdThrowsPscLookupExceptionWhenNoInternalId() {
+        final var success = new PatchResult();
+        final var updatedEntity = PscVerification.newBuilder(entityWithLinks)
+                .updatedAt(SECOND_INSTANT)
+                .build();
+        mergePatch.put("psc_notification_id", PSC_ID_TO_PATCH);
+        PscVerificationData dataToLookup = PscVerificationData.newBuilder(filing).pscNotificationId(PSC_ID_TO_PATCH).build();
+        pscIndividualFullRecordApi.setInternalId(null);
+
+        when(transactionService.getTransaction(TRANS_ID, null)).thenReturn(transaction);
+        when(pscLookupService.getPscIndividualFullRecord(transaction, dataToLookup, PscType.INDIVIDUAL))
+                .thenReturn(pscIndividualFullRecordApi);
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
+                .thenReturn(Optional.of(updatedEntity));
+        when(pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(true);
+        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
+
+        assertThrows(PscLookupServiceException.class,
+                () ->testController.updatePscVerification(TRANS_ID, FILING_ID,
+                mergePatch, request));
     }
 
     @Test
