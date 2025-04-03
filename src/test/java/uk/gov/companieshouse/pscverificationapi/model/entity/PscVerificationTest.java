@@ -29,8 +29,6 @@ class PscVerificationTest {
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1990, 12, 31);
     private static final EnumSet<VerificationStatementConstants> STATEMENTS_INDIVIDUAL = EnumSet.of(
         VerificationStatementConstants.INDIVIDUAL_VERIFIED);
-    private static final EnumSet<VerificationStatementConstants> STATEMENTS_RO = EnumSet.of(
-        VerificationStatementConstants.RO_DECLARATION);
 
     private PscVerification testVerification;
     private ResourceLinks links;

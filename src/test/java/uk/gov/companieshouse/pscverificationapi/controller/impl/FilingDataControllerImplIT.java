@@ -57,7 +57,7 @@ class FilingDataControllerImplIT extends BaseControllerIT {
     private static final String FILINGS_SUFFIX = "/{filingId" + "}/filings";
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         baseSetUp();
     }
 

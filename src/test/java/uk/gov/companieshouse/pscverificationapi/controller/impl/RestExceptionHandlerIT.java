@@ -52,7 +52,7 @@ class RestExceptionHandlerIT extends BaseControllerIT {
     private ResourceHttpRequestHandler mockResourceHttpRequestHandler;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         baseSetUp();
     }
 

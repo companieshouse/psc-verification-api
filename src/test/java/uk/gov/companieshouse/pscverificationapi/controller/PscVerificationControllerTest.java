@@ -16,6 +16,7 @@ import uk.gov.companieshouse.pscverificationapi.exception.NotImplementedExceptio
 
 @ExtendWith(MockitoExtension.class)
 class PscVerificationControllerTest {
+    public static final String TRANSACTION_ID = "trans-id";
     private final PscVerificationController testController = new PscVerificationController() { };
 
     @Mock
@@ -30,7 +31,7 @@ class PscVerificationControllerTest {
     @Test
     void createPscVerification() {
         assertThrows(NotImplementedException.class,
-            () -> testController.createPscVerification("trans-id", transaction, data, bindingResult,
+            () -> testController.createPscVerification(TRANSACTION_ID, transaction, data, bindingResult,
                 request));
     }
 
@@ -39,7 +40,7 @@ class PscVerificationControllerTest {
         final Map<String, Object> mergePatch = Collections.emptyMap();
 
         assertThrows(NotImplementedException.class,
-            () -> testController.updatePscVerification("trans-id", "filing-resource-id", mergePatch,
+            () -> testController.updatePscVerification(TRANSACTION_ID, "filing-resource-id", mergePatch,
                 request));
     }
 
@@ -47,7 +48,7 @@ class PscVerificationControllerTest {
     @Test
     void getPscVerification() {
         assertThrows(NotImplementedException.class,
-                () -> testController.getPscVerification("trans-id", "filing-resource-id", request));
+                () -> testController.getPscVerification(TRANSACTION_ID, "filing-resource-id", request));
     }
 
 

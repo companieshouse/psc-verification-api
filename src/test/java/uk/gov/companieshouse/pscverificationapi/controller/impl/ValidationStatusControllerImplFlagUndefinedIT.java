@@ -49,7 +49,7 @@ class ValidationStatusControllerImplFlagUndefinedIT extends BaseControllerIT {
     private MockMvc mockMvc;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         baseSetUp();
     }
 

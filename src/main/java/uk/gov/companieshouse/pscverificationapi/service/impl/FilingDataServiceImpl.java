@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.pscverificationapi.service.impl;
 
 import static uk.gov.companieshouse.pscverificationapi.model.FilingKind.PSC_VERIFICATION_INDIVIDUAL;
-import static uk.gov.companieshouse.pscverificationapi.model.FilingKind.PSC_VERIFICATION_RLE_RO;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.springframework.stereotype.Service;
@@ -11,7 +10,6 @@ import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.config.FilingDataConfig;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
-import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.service.FilingDataService;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.utils.MapHelper;
@@ -45,7 +43,7 @@ public class FilingDataServiceImpl implements FilingDataService {
                 String.format("PSC verification not found when generating filing for %s", filingId)));
 
         final var filingApi = new FilingApi();
-        filingApi.setKind(determineFilingKind(pscVerification));
+        filingApi.setKind(PSC_VERIFICATION_INDIVIDUAL.getValue());
         filingApi.setDescription(filingDataConfig.getPscVerificationDescription());
 
         final var dataMap = MapHelper.convertObject(pscVerification.getData(), PropertyNamingStrategies.SNAKE_CASE);
@@ -58,12 +56,4 @@ public class FilingDataServiceImpl implements FilingDataService {
         return filingApi;
     }
 
-    private String determineFilingKind(PscVerification pscVerification) {
-        if (pscVerification.getData().relevantOfficer() == null) {
-            return PSC_VERIFICATION_INDIVIDUAL.getValue();
-        }
-        else {
-            return PSC_VERIFICATION_RLE_RO.getValue();
-        }
-    }
 }

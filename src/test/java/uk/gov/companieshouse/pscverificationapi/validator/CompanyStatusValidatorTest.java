@@ -1,7 +1,6 @@
 package uk.gov.companieshouse.pscverificationapi.validator;
 
 import org.hamcrest.collection.IsIterableContainingInOrder;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,10 +52,6 @@ class CompanyStatusValidatorTest {
         passthroughHeader = "passthroughHeader";
 
         testValidator = new CompanyStatusValidator(companyProfileService, validation, company);
-    }
-
-    @AfterEach
-    void tearDown() {
     }
 
     @Test

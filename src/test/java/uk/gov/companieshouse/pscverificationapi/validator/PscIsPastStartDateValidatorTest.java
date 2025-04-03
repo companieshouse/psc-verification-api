@@ -11,6 +11,7 @@ import uk.gov.companieshouse.api.model.psc.VerificationState;
 import uk.gov.companieshouse.api.model.psc.VerificationStatus;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
@@ -40,6 +41,8 @@ class PscIsPastStartDateValidatorTest {
     private Transaction transaction;
     @Mock
     private PscIndividualFullRecordApi pscIndividualFullRecord;
+    @Mock
+    private Logger logger;
 
     PscIsPastStartDateValidator testValidator;
     private PscType pscType;
@@ -53,9 +56,22 @@ class PscIsPastStartDateValidatorTest {
         pscType = PscType.INDIVIDUAL;
         passthroughHeader = "passthroughHeader";
 
-        testValidator = new PscIsPastStartDateValidator(validation, pscLookupService);
+        testValidator = new PscIsPastStartDateValidator(validation, pscLookupService, logger);
         when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType))
                 .thenReturn(pscIndividualFullRecord);
+    }
+
+    @Test
+    void validateWhenVerificationStateIsNull() {
+        when(pscIndividualFullRecord.getVerificationState()).thenReturn(null);
+
+        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType))
+                .thenReturn(pscIndividualFullRecord);
+            testValidator.validate(
+                    new VerificationValidationContext(pscVerificationData, errors, transaction, pscType,
+                                                      passthroughHeader));
+
+        assertThat(errors, is(empty()));
     }
 
     @Test

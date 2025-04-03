@@ -35,7 +35,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
@@ -55,7 +54,6 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
         "/transactions/" + TRANS_ID + "/persons-with-significant-control-verification/" + FILING_ID);
     private static final URI VALID = URI.create(SELF + "/validation_status");
     private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1970, 1, 1);
-    private static final String DOB_STRING = DATE_OF_BIRTH.toString();
 
     @MockitoBean
     private TransactionService transactionService;
@@ -84,7 +82,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
     private ResourceLinks links;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         baseSetUp();
         links = ResourceLinks.newBuilder().self(SELF).validationStatus(VALID).build();
         when(patchServiceProperties.getMaxRetries()).thenReturn(1);
@@ -400,17 +398,5 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
                 Matchers.containsInAnyOrder(INDIVIDUAL_VERIFIED.toString())))
             .andExpect(header().stringValues("Location", links.self().toString()));
     }
-
-    private ApiError createExpectedValidationError(final String msg, final String location,
-        final int line, final int column) {
-        final var expectedError = new ApiError(msg, location, "json-path", "ch:validation");
-
-        expectedError.addErrorValue("offset", String.format("line: %d, column: %d", line, column));
-        expectedError.addErrorValue("line", String.valueOf(line));
-        expectedError.addErrorValue("column", String.valueOf(column));
-
-        return expectedError;
-    }
-
 
 }
