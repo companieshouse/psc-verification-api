@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.time.LocalDate;
 import java.util.EnumSet;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,22 +16,16 @@ import uk.gov.companieshouse.pscverificationapi.controller.impl.BaseControllerIT
 
 @ExtendWith(MockitoExtension.class)
 class PscVerificationDataForUpdatingTest extends BaseControllerIT {
-    private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1990, 1, 4);
     private PscVerificationDataForUpdating testData;
-    private RelevantOfficerForUpdating relevantOfficer;
     private VerificationDetailsForUpdating verificationDetails;
 
     @BeforeEach
     void setUp() {
-        relevantOfficer = new RelevantOfficerForUpdating(
-            createNameElements("Sir", "Forename", "Other Forenames", "Surname"), DATE_OF_BIRTH,
-            true, true);
         verificationDetails = new VerificationDetailsForUpdating("uvid",
             NameMismatchReasonConstants.PREFERRED_NAME,
             EnumSet.of(VerificationStatementConstants.RO_DECLARATION,
                 VerificationStatementConstants.RO_IDENTIFIED));
-        testData = new PscVerificationDataForUpdating("companyNumber", "pscNotificationId",
-            relevantOfficer, verificationDetails);
+        testData = new PscVerificationDataForUpdating("companyNumber", "pscNotificationId", verificationDetails);
     }
 
 
@@ -44,11 +37,6 @@ class PscVerificationDataForUpdatingTest extends BaseControllerIT {
     @Test
     void getPscNotificationId() {
         assertThat(testData.getPscNotificationId(), is("pscNotificationId"));
-    }
-
-    @Test
-    void getRelevantOfficer() {
-        assertThat(testData.getRelevantOfficer(), is(equalTo(relevantOfficer)));
     }
 
     @Test
@@ -66,10 +54,6 @@ class PscVerificationDataForUpdatingTest extends BaseControllerIT {
         assertThat(testData.toString(),
             is("PscVerificationDataForUpdating[companyNumber=companyNumber, "
                 + "pscNotificationId=pscNotificationId, "
-                + "relevantOfficer=RelevantOfficerForUpdating[nameElements=NameElementsApi[title"
-                + "='Sir', forename='Forename', otherForenames='Other Forenames', "
-                + "middleName='null', surname='Surname'], dateOfBirth=1990-01-04, "
-                + "isEmployee=true, isDirector=true], "
                 + "verificationDetails=VerificationDetailsForUpdating[uvid=uvid, "
                 + "nameMismatchReason=PREFERRED_NAME, statements=[RO_IDENTIFIED, "
                 + "RO_DECLARATION]]]"));

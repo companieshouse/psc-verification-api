@@ -1,6 +1,6 @@
 # psc-verification-api
 
-The People with Significant Control (PSC) Verification API is a Spring Boot REST API which forms part of the Identification Verification (IDV) service and is responsible for handling and processing PSC Individual and Relevant Legal Entity (RLE) Relevant Officer (RO) verification requests.
+The People with Significant Control (PSC) Verification API is a Spring Boot REST API which forms part of the Identification Verification (IDV) service and is responsible for handling and processing PSC Individual verification requests.
 
 API users, including <code>[psc-verification-web](https://github.com/companieshouse/psc-verification-web)</code>, interact with the `psc-verification-api` by sending HTTP requests containing JSON data to the service endpoints. The service endpoints available in the `psc-verification-api` as well as their expected request and response models are outlined in the [Swagger specification file](spec/swagger.json).
 

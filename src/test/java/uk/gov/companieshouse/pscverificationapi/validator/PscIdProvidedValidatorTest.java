@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
-import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
@@ -26,8 +25,6 @@ import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 @ExtendWith(MockitoExtension.class)
 class PscIdProvidedValidatorTest {
 
-    @Mock
-    private RelevantOfficer relevantOfficer;
     @Mock
     VerificationDetails verificationDetails;
     @Mock
@@ -63,7 +60,6 @@ class PscIdProvidedValidatorTest {
         pscVerificationData = new PscVerificationData(
             "12345678",
             PSC_ID,
-            relevantOfficer,
             verificationDetails
         );
 

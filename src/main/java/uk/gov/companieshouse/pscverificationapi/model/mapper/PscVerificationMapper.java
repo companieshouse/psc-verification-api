@@ -18,7 +18,6 @@ public interface PscVerificationMapper {
 
     @Mapping(target="companyNumber", source = "data.companyNumber")
     @Mapping(target="pscNotificationId", source = "data.pscNotificationId")
-    @Mapping(target = "relevantOfficer", source = "data.relevantOfficer")
     @Mapping(target="verificationDetails", source = "data.verificationDetails")
     PscVerificationData toDto(final PscVerification verification);
 
@@ -30,11 +29,6 @@ public interface PscVerificationMapper {
     @Mapping(target = "verificationDetails.verificationStatements", source = "verificationDetails.statements")
     PscVerificationDataForUpdating toForUpdating(final PscVerificationData data);
 
-    @Mapping(target = "relevantOfficer.title", ignore = true)
-    @Mapping(target = "relevantOfficer.forename", ignore = true)
-    @Mapping(target = "relevantOfficer.otherForenames", ignore = true)
-    @Mapping(target = "relevantOfficer.middleName", ignore = true)
-    @Mapping(target = "relevantOfficer.surname", ignore = true)
     @Mapping(target = "verificationDetails.statements", source = "verificationDetails.verificationStatements")
     PscVerificationData fromForUpdating(final PscVerificationDataForUpdating pojo);
 
