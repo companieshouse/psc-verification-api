@@ -26,7 +26,7 @@ public class PscVerificationStatementPresentValidator extends BaseVerificationVa
         if (!validationContext.dto().verificationDetails().statements().contains(INDIVIDUAL_VERIFIED)) {
             validationContext.errors().add(
                 new FieldError("object", "verification_statement", validationContext.dto().verificationDetails().statements(), false,
-                    new String[]{null, validationContext.dto().verificationDetails().statements().toString()}, null, validation.get("incorrect-verification-statement")));
+                    new String[]{null, validationContext.dto().verificationDetails().statements().toString()}, null, validation.get("verification-details-not-provided")));
         }
 
         super.validate(validationContext);
