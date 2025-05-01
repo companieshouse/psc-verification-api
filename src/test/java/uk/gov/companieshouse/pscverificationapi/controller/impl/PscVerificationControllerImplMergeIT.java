@@ -88,9 +88,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .append("\"verification_details\":{")
             .append("\"name_mismatch_reason\":\"LEGAL_NAME_CHANGE\",")
             .append("\"verification_statements\":[")
-            .append("\"RO_IDENTIFIED\",")
-            .append("\"RO_VERIFIED\",")
-            .append("\"RO_DECLARATION\"]}")
+            .append("\"INDIVIDUAL_VERIFIED\"]}")
             .append("}")
             .toString();
         final var dto = PscVerificationData.newBuilder()

@@ -23,8 +23,7 @@ class PscVerificationDataForUpdatingTest extends BaseControllerIT {
     void setUp() {
         verificationDetails = new VerificationDetailsForUpdating("uvid",
             NameMismatchReasonConstants.PREFERRED_NAME,
-            EnumSet.of(VerificationStatementConstants.RO_DECLARATION,
-                VerificationStatementConstants.RO_IDENTIFIED));
+            EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED));
         testData = new PscVerificationDataForUpdating("companyNumber", "pscNotificationId", verificationDetails);
     }
 
@@ -55,7 +54,6 @@ class PscVerificationDataForUpdatingTest extends BaseControllerIT {
             is("PscVerificationDataForUpdating[companyNumber=companyNumber, "
                 + "pscNotificationId=pscNotificationId, "
                 + "verificationDetails=VerificationDetailsForUpdating[uvid=uvid, "
-                + "nameMismatchReason=PREFERRED_NAME, statements=[RO_IDENTIFIED, "
-                + "RO_DECLARATION]]]"));
+                + "nameMismatchReason=PREFERRED_NAME, statements=[INDIVIDUAL_VERIFIED]]]"));
     }
 }

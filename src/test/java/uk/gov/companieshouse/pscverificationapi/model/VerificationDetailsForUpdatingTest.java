@@ -20,8 +20,7 @@ class VerificationDetailsForUpdatingTest {
     void setUp() {
         testDetails = new VerificationDetailsForUpdating("uvid",
             NameMismatchReasonConstants.PREFERRED_NAME,
-            EnumSet.of(VerificationStatementConstants.RO_DECLARATION,
-                VerificationStatementConstants.RO_IDENTIFIED));
+            EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED));
     }
 
     @Test
@@ -38,8 +37,7 @@ class VerificationDetailsForUpdatingTest {
     @Test
     void getVerificationStatements() {
         assertThat(testDetails.getVerificationStatements(),
-            is(EnumSet.of(VerificationStatementConstants.RO_DECLARATION,
-                VerificationStatementConstants.RO_IDENTIFIED)));
+            is(EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED)));
     }
 
     @Test
@@ -51,6 +49,6 @@ class VerificationDetailsForUpdatingTest {
     void testToString() {
         assertThat(testDetails.toString(),
             is("VerificationDetailsForUpdating[uvid=uvid, nameMismatchReason=PREFERRED_NAME, "
-                + "statements=[RO_IDENTIFIED, RO_DECLARATION]]"));
+                + "statements=[INDIVIDUAL_VERIFIED]]"));
     }
 }
