@@ -16,7 +16,10 @@ import java.time.ZoneId;
 import java.util.EnumSet;
 import java.util.Optional;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -137,7 +140,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .andExpect(jsonPath("$.data.psc_notification_id", is(PSC_ID)))
             .andExpect(jsonPath("$.data.verification_details.uvid", is(UVID)))
             .andExpect(jsonPath("$.data.verification_details.verification_statements",
-                Matchers.containsInAnyOrder((INDIVIDUAL_VERIFIED.toString()))))
+                Matchers.contains((INDIVIDUAL_VERIFIED.toString()))))
             .andExpect(header().stringValues("Location", links.self().toString()));
     }
 
@@ -190,7 +193,7 @@ class PscVerificationControllerImplMergeIT extends BaseControllerIT {
             .andExpect(jsonPath("$.data.company_number", is("ADDED")))
             .andExpect(jsonPath("$.data.psc_notification_id", is(PSC_ID)))
             .andExpect(jsonPath("$.data.verification_details.verification_statements",
-                Matchers.containsInAnyOrder((INDIVIDUAL_VERIFIED.toString()))))
+                Matchers.contains((INDIVIDUAL_VERIFIED.toString()))))
             .andExpect(header().stringValues("Location", links.self().toString()));
     }
 
