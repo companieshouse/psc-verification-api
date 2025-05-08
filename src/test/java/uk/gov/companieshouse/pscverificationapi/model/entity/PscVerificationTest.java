@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.isA;
 
 import java.net.URI;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.EnumSet;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,14 +18,12 @@ import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.NameMismatchReasonConstants;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
-import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants;
 
 @ExtendWith(MockitoExtension.class)
 class PscVerificationTest {
     private static final Instant INSTANT = Instant.parse("2024-01-01T10:08:42Z");
-    private static final LocalDate DATE_OF_BIRTH = LocalDate.of(1990, 12, 31);
     private static final EnumSet<VerificationStatementConstants> STATEMENTS_INDIVIDUAL = EnumSet.of(
         VerificationStatementConstants.INDIVIDUAL_VERIFIED);
 
@@ -35,7 +32,6 @@ class PscVerificationTest {
     private PscVerificationData data;
     private InternalData internalData;
     private VerificationDetails verif;
-    private RelevantOfficer relevantOfficer;
     private NameElementsApi nameElements;
 
     @BeforeEach
@@ -55,17 +51,10 @@ class PscVerificationTest {
         nameElements.setOtherForenames("Other Forenames");
         nameElements.setMiddleName("Middlename");
         nameElements.setSurname("Surname");
-        relevantOfficer = RelevantOfficer.newBuilder()
-            .nameElements(nameElements)
-            .dateOfBirth(DATE_OF_BIRTH)
-            .isEmployee(true)
-            .isDirector(true)
-            .build();
         data = PscVerificationData.newBuilder()
             .companyNumber("company-number")
             .pscNotificationId("psc-notification-id")
             .verificationDetails(verif)
-            .relevantOfficer(relevantOfficer)
             .build();
         internalData = InternalData.newBuilder().internalId("123").build();
         testVerification = PscVerification.newBuilder()
@@ -103,11 +92,6 @@ class PscVerificationTest {
                 + "links=ResourceLinks[self=self, validationStatus=valid], "
                 + "data=PscVerificationData[companyNumber=company-number, "
                 + "pscNotificationId=psc-notification-id, "
-                + "relevantOfficer=RelevantOfficer["
-                + "nameElements=NameElementsApi[title='Sir', forename='Forename', "
-                + "otherForenames='Other Forenames', middleName='Middlename', "
-                + "surname='Surname'], "
-                + "dateOfBirth=1990-12-31, isEmployee=true, isDirector=true], "
                 + "verificationDetails=VerificationDetails[uvid='uvid', "
                 + "nameMismatchReason=PREFERRED_NAME, statements=[INDIVIDUAL_VERIFIED]]], "
                 + "internalData=InternalData[internalId=123]]"));

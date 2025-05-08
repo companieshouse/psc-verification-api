@@ -39,8 +39,8 @@ class PscVerificationFilingMergeProcessorTest {
         final Map<String, Object> patchMap = Map.of("company_number", "TWO");
         final var targetData = PscVerificationData.newBuilder().companyNumber("ONE").build();
         final var target = PscVerification.newBuilder().data(targetData).build();
-        final var one = new PscVerificationDataForUpdating("ONE", null, null, null);
-        final var two = new PscVerificationDataForUpdating("TWO", null, null, null);
+        final var one = new PscVerificationDataForUpdating("ONE", null, null);
+        final var two = new PscVerificationDataForUpdating("TWO", null, null);
 
         when(dataMapper.toForUpdating(targetData)).thenReturn(one);
         when(patchObjectMapper.updateValue(one, patchMap)).thenReturn(two);

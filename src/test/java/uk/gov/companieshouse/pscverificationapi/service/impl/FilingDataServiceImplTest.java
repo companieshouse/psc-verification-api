@@ -7,9 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.api.model.pscverification.NameMismatchReasonConstants.PREFERRED_NAME;
 import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.INDIVIDUAL_VERIFIED;
-import static uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants.RO_IDENTIFIED;
 
-import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.model.psc.NameElementsApi;
 import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
-import uk.gov.companieshouse.api.model.pscverification.RelevantOfficer;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.logging.Logger;
@@ -41,11 +37,6 @@ class FilingDataServiceImplTest {
     private static final String PSC_NOTIFICATION_ID = "abcdefgh";
     private static final String APPOINTMENT_ID = "12345678";
     private static final String UVID = "999999999";
-    private static final String TITLE = "MR";
-    private static final String FORENAME = "JOE";
-    private static final String OTHER_FORENAMES = "TOM";
-    private static final String SURNAME = "BLOGGS";
-    private static final LocalDate DATE_OF_BIRTH = LocalDate.of(2022, 9, 13);
     public static final String PSC_VERIFICATION = "PSC Verification";
 
     @Mock

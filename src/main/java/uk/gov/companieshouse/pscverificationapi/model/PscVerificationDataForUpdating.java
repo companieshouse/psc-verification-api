@@ -8,17 +8,13 @@ public final class PscVerificationDataForUpdating {
     private final String companyNumber;
     private final String pscNotificationId;
     @JsonMerge
-    private final RelevantOfficerForUpdating relevantOfficer;
-    @JsonMerge
     private final VerificationDetailsForUpdating verificationDetails;
 
     public PscVerificationDataForUpdating(@JsonProperty final String companyNumber,
         @JsonProperty final String pscNotificationId,
-        @JsonProperty final RelevantOfficerForUpdating relevantOfficer,
         @JsonProperty final VerificationDetailsForUpdating verificationDetails) {
         this.companyNumber = companyNumber;
         this.pscNotificationId = pscNotificationId;
-        this.relevantOfficer = relevantOfficer;
         this.verificationDetails = verificationDetails;
     }
 
@@ -28,10 +24,6 @@ public final class PscVerificationDataForUpdating {
 
     public String getPscNotificationId() {
         return pscNotificationId;
-    }
-
-    public RelevantOfficerForUpdating getRelevantOfficer() {
-        return relevantOfficer;
     }
 
     public VerificationDetailsForUpdating getVerificationDetails() {
@@ -44,20 +36,19 @@ public final class PscVerificationDataForUpdating {
         if (!(o instanceof PscVerificationDataForUpdating that)) return false;
         return Objects.equals(getCompanyNumber(), that.getCompanyNumber()) && Objects.equals(
             getPscNotificationId(), that.getPscNotificationId()) && Objects.equals(
-            getRelevantOfficer(), that.getRelevantOfficer()) && Objects.equals(
             getVerificationDetails(), that.getVerificationDetails());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCompanyNumber(), getPscNotificationId(), getRelevantOfficer(),
+        return Objects.hash(getCompanyNumber(), getPscNotificationId(),
             getVerificationDetails());
     }
 
     @Override
     public String toString() {
         return "PscVerificationDataForUpdating[" + "companyNumber=" + companyNumber + ", " +
-            "pscNotificationId=" + pscNotificationId + ", " + "relevantOfficer=" + relevantOfficer + ", " + "verificationDetails=" + verificationDetails + ']';
+            "pscNotificationId=" + pscNotificationId + ", " + "verificationDetails=" + verificationDetails + ']';
     }
 
 }
