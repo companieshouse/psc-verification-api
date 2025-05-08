@@ -11,14 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
-import uk.gov.companieshouse.pscverificationapi.validator.CompanyStatusValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.CompanyTypeValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.PscExistsValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.PscIdProvidedValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.PscIsActiveValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.PscIsPastStartDateValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.PscIsUnverifiedValidator;
-import uk.gov.companieshouse.pscverificationapi.validator.UvidExistsValidator;
+import uk.gov.companieshouse.pscverificationapi.validator.*;
 
 @ExtendWith(MockitoExtension.class)
 class ValidatorConfigTest {
@@ -41,6 +34,8 @@ class ValidatorConfigTest {
     private PscIsUnverifiedValidator pscIsUnverifiedValidator;
     @Mock
     private PscIsPastStartDateValidator pscIsPastStartDateValidator;
+    @Mock
+    private PscVerificationStatementPresentValidator pscVerificationStatementPresentValidator;
 
     @BeforeEach
     void setUp() {
@@ -51,7 +46,7 @@ class ValidatorConfigTest {
     void verificationValidationEnable() {
         final var valid = testConfig.verificationValidationEnable(pscIdProvidedValidator, pscExistsValidator,
                 pscIsActiveValidator, companyTypeValidator, companyStatusValidator, uvidExistsValidator,
-                pscIsUnverifiedValidator, pscIsPastStartDateValidator);
+                pscIsUnverifiedValidator, pscIsPastStartDateValidator, pscVerificationStatementPresentValidator);
 
         assertThat(valid.pscType(), is(PscType.INDIVIDUAL));
         assertThat(valid.first(), is(pscIdProvidedValidator));
@@ -61,6 +56,7 @@ class ValidatorConfigTest {
         verify(companyStatusValidator, times(1)).setNext(uvidExistsValidator);
         verify(uvidExistsValidator, times(1)).setNext(pscIsUnverifiedValidator);
         verify(pscIsUnverifiedValidator, times(1)).setNext(pscIsPastStartDateValidator);
+        verify(pscIsPastStartDateValidator, times(1)).setNext(pscVerificationStatementPresentValidator);
     }
 
 }

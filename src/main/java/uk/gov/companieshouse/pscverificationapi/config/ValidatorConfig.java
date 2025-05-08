@@ -13,10 +13,12 @@ public class ValidatorConfig {
             final PscExistsValidator pscExistsValidator, final PscIsActiveValidator pscIsActiveValidator,
             final CompanyTypeValidator companyTypeValidator, final CompanyStatusValidator companyStatusValidator,
             final UvidExistsValidator uvidExistsValidator, PscIsUnverifiedValidator pscIsUnverifiedValidator,
-            final PscIsPastStartDateValidator pscIsPastStartDateValidator) {
+            final PscIsPastStartDateValidator pscIsPastStartDateValidator,
+            final PscVerificationStatementPresentValidator pscVerificationStatementPresentValidator) {
 
         createValidationChain(pscIdProvidedValidator, pscExistsValidator, pscIsActiveValidator, companyTypeValidator,
-                companyStatusValidator, uvidExistsValidator, pscIsUnverifiedValidator, pscIsPastStartDateValidator);
+                companyStatusValidator, uvidExistsValidator, pscIsUnverifiedValidator, pscIsPastStartDateValidator,
+                pscVerificationStatementPresentValidator);
 
         return new VerificationValidationChain(PscType.INDIVIDUAL, pscIdProvidedValidator);
     }
