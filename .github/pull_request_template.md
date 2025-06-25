@@ -1,4 +1,4 @@
-**Jira ticket**: []()
+**Jira ticket**: 
 
 ## Brief description of the changes
 
