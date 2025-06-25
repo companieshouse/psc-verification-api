@@ -1,6 +1,6 @@
-**Jira ticket**: []()
+**Jira ticket**: 
 
-## Brief description of the changes
+## Brief description of the change(s)
 
 ## Working example
 >
@@ -15,6 +15,7 @@
 - [ ] Adhered to the [coding style guidelines](https://companieshouse.atlassian.net/wiki/spaces/DEV/pages/4290084946/Coding+Standards+and+Styleguides).
 - [ ] Added/updated logging appropriately.
 - [ ] Written tests.
+- [ ] Tested the new code in my local environment.
 - [ ] Updated Docker/ECS configs.
 - [ ] Added all new properties to chs-configs.
 - [ ] Updated release notes.
