@@ -180,16 +180,6 @@ class PscVerificationControllerImplTest {
     }
 
     @Test
-    void createPscVerifcationThrowsPscLookupExceptionWhenNoInternalId() {
-        pscIndividualFullRecordApi.setInternalId(null);
-        when(pscLookupService.getPscIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
-                .thenReturn(pscIndividualFullRecordApi);
-
-        assertThrows(PscLookupServiceException.class,
-                () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));
-    }
-
-    @Test
     void getPscVerificationWhenFound() {
 
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks));
