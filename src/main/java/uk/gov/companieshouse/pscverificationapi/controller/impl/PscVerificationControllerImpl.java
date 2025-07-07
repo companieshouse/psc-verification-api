@@ -102,10 +102,11 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             getPassthroughHeader(request));
 
         final var entity = filingMapper.toEntity(data);
-        final var pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
-            requestTransaction, data, PscType.INDIVIDUAL);
-
-        if (pscIndividualFullRecordApi.getInternalId() == null) {
+        final PscIndividualFullRecordApi pscIndividualFullRecordApi;
+        try {
+            pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
+                    requestTransaction, data, PscType.INDIVIDUAL);
+        } catch (PscLookupServiceException e) {
             logMap.put("psc_notification_id", data.pscNotificationId());
             logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
                     data.pscNotificationId(), data.companyNumber()), null, logMap);
