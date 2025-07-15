@@ -47,12 +47,12 @@ class VerificationValidationServiceImplTest {
 
     @Test
     void validateWhenPscTypeNotSupported() {
-        when(context.pscType()).thenReturn(PscType.CORPORATE_ENTITY);
+        when(context.pscType()).thenReturn(null);
 
         final var exception = assertThrows(UnsupportedOperationException.class,
             () -> testService.validate(context));
 
-        assertThat(exception.getMessage(), is("Validation not defined for PSC type 'CORPORATE_ENTITY'"));
+        assertThat(exception.getMessage(), is("Validation not defined for PSC type 'null'"));
 
     }
 

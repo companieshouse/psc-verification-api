@@ -5,10 +5,7 @@ import java.util.Optional;
 
 
 public enum PscType {
-    INDIVIDUAL("individual"),
-    CORPORATE_ENTITY("corporate-entity"),
-    //Not used
-    LEGAL_PERSON("legal-person");
+    INDIVIDUAL("individual");
 
     PscType(final String value) {
         this.value = value;
