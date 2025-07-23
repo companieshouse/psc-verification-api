@@ -62,7 +62,7 @@ Planned maintenance format: `d MMM yy HH:mm z|x` where
 
 1. Enable the `psc-verification-api` services
 
-1. Run `tilt up` and wait for all services to start
+2. Run `chs-dev up` and wait for all services to start
 
 ### To make local changes
 
