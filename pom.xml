@@ -34,7 +34,7 @@
         <equalsverifier.version>3.15.1</equalsverifier.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <!--- CH -->
-        <structured-logging.version>3.0.37</structured-logging.version>
+        <structured-logging.version>3.0.38</structured-logging.version>
         <api-security-java.version>2.0.10</api-security-java.version>
         <api-helper-java.version>3.0.1</api-helper-java.version>
         <api-sdk-java.version>6.4.1</api-sdk-java.version>
@@ -139,7 +139,6 @@
             <artifactId>api-security-java</artifactId>
             <version>${api-security-java.version}</version>
         </dependency>
-        <!-- TODO workaround for CVE-2025-48924 -->
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>api-helper-java</artifactId>
