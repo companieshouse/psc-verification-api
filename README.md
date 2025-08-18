@@ -14,7 +14,6 @@ To build the `psc-verification-api`, you will need:
 * [Java 21](https://www.oracle.com/uk/java/technologies/downloads/#java21)
 * [Maven](https://maven.apache.org/download.cgi)
 * [MongoDB](https://www.mongodb.com/) 
-* [Apache Kafka](https://kafka.apache.org/)
 * Internal Companies House core services
 
 You will also need a REST client (e.g. Postman or cURL) if you wish to interact with the `psc-verification-api` service endpoints.
@@ -34,22 +33,29 @@ Configuration
 -------------
 System properties for the `psc-verification-api` are defined in `application.properties`. These are normally configured per environment.
 
-Variable| Description                                                                           | Example                                    |
--------------------|---------------------------------------------------------------------------------------|--------------------------------------------|
-_TBC_| The name of the collection responsible for storing PSC verification filings           | verifications                              |
-MONGODB_URL| The URL of the MongoDB instance where documents and application data should be stored | mongodb://mongohost:27017/verifications    |
- PLANNED_MAINTENANCE_START_TIME               | Datetime for start of out-of-service period                                           | 14 July 24 00:30 +01 |optional; requires End time (see below)
- PLANNED_MAINTENANCE_END_TIME                 | Datetime for end of out-of-service period                                             | 2 Dec 23 02:30 GMT|optional; requires Start time (see above)
- PLANNED_MAINTENANCE_MESSAGE                  | Message output during the out-of-service period                                       | Service is undergoing planned maintenance  |optional; default value *UNAVAILABLE - PLANNED MAINTENANCE*
+| Variable                            | Description                                                                           | Example                                         | Notes                                                           |
+|-------------------------------------|---------------------------------------------------------------------------------------|-------------------------------------------------|-----------------------------------------------------------------|
+| MONGO_PSC_VERIFICATIONS_API_DB_NAME | The name of the collection responsible for storing PSC verification filings           | `transactions_verify`                           |                                                                 |
+| MONGODB_URL                         | The URL of the MongoDB instance where documents and application data should be stored | `mongodb://mongohost:27017/transactions_verify` |                                                                 |
+| PLANNED_MAINTENANCE_START_TIME      | Datetime for start of out-of-service period (see also Notes below)                    | `14 Jul 25 00:30 +01`                           | Optional; corresponding end datetime must be specified          |
+| PLANNED_MAINTENANCE_END_TIME        | Datetime for end of out-of-service period  (see also Notes below)                     | `2 Dec 25 02:30 GMT`                            | Optional; corresponding start datetime must be specified        |
+| PLANNED_MAINTENANCE_MESSAGE         | Message output during the out-of-service period                                       | `Service is undergoing planned maintenance`     | Optional; default value is: `UNAVAILABLE - PLANNED MAINTENANCE` |
 
 ### Notes
 
 Planned maintenance format: `d MMM yy HH:mm z|x` where
+
+- `d` is the day of the month (1-31)
 - `MMM` is the 3-letter month abbrev. (case sensitive: e.g. `Nov` not `NOV`)
+- `HH:mm` is the time in 24-hour format (e.g. `00:30`)
 - `z` is the zone short name e.g. `GMT`
 - `x` is the 2-digit zone offset from UTC e.g. `+01`  (= British Summer Time)
 
-> **CAUTION**: Use zone offset *+01* for Daylight Saving Time (British Summer Time). Zone short name *BST* denotes Bangladesh Standard Time (UTC+06) not British Summer Time (UTC+01).
+> [!CAUTION]
+> - Zone short name `GMT` always denotes Greenwich Mean Time (UTC+00).
+> - During daylight saving time
+>   - Use zone offset `+01` to specify British Summer Time (UTC+01).
+>   - Do not use zone short name `BST` that denotes Bangladesh Standard Time (UTC+06).
 
 
 ## Building the docker image
