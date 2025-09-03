@@ -63,6 +63,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
     private static final String STATUS_MSG = "status";
     private static final String PATCH_FAILED = "patch failed";
     private static final String ERROR_MSG = "error";
+    private static final String PSC_VERIFICATION_ID = "psc_notification_id";
 
     private final TransactionService transactionService;
     private final PscVerificationService pscVerificationService;
@@ -107,7 +108,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
                     requestTransaction, data, PscType.INDIVIDUAL);
         } catch (PscLookupServiceException e) {
-            logMap.put("psc_notification_id", data.pscNotificationId());
+            logMap.put(PSC_VERIFICATION_ID, data.pscNotificationId());
             logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
                     data.pscNotificationId(), data.companyNumber()), null, logMap);
             throw new PscLookupServiceException(
@@ -142,14 +143,14 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         Optional<PscVerification> pscVerification = pscVerificationService.get(filingResource);
 
         PscIndividualFullRecordApi pscIndividualFullRecordApi = null;
-        if (mergePatch.get("psc_notification_id") != null && pscVerification.isPresent()) {
+        if (mergePatch.get(PSC_VERIFICATION_ID) != null && pscVerification.isPresent()) {
             final var transaction = getTransaction(transId, null, logMap, getPassthroughHeader(request));
 
             String companyNumber = mergePatch.get("company_number") != null
                     ? mergePatch.get("company_number").toString()
                     : pscVerification.orElseThrow().getData().companyNumber();
             final var dataToLookup = PscVerificationData.newBuilder(pscVerification.orElseThrow().getData())
-                    .pscNotificationId(mergePatch.get("psc_notification_id").toString())
+                    .pscNotificationId(mergePatch.get(PSC_VERIFICATION_ID).toString())
                     .companyNumber(companyNumber)
                     .build();
 
@@ -157,9 +158,9 @@ public class PscVerificationControllerImpl implements PscVerificationController 
                     transaction, dataToLookup, PscType.INDIVIDUAL);
 
             if (pscIndividualFullRecordApi.getInternalId() == null) {
-                logMap.put("psc_notification_id", mergePatch.get("psc_notification_id"));
+                logMap.put(PSC_VERIFICATION_ID, mergePatch.get(PSC_VERIFICATION_ID));
                 logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
-                        mergePatch.get("psc_notification_id"), companyNumber),null, logMap);
+                        mergePatch.get(PSC_VERIFICATION_ID), companyNumber),null, logMap);
                 throw new PscLookupServiceException(
                         "We are currently unable to process a Verification filing for this PSC", new Exception("Internal Id"));
             }
@@ -198,7 +199,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
             final var optionalFiling = pscVerificationService.get(filingResource);
 
-            if (mergePatch.get("psc_notification_id") != null && pscIndividualFullRecordApi != null) {
+            if (mergePatch.get(PSC_VERIFICATION_ID) != null && pscIndividualFullRecordApi != null) {
                 var internalData = InternalData.newBuilder()
                         .internalId(String.valueOf(pscIndividualFullRecordApi.getInternalId()))
                         .build();
