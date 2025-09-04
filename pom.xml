@@ -35,12 +35,12 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <!--- CH -->
         <structured-logging.version>3.0.39</structured-logging.version>
-        <api-security-java.version>2.0.10</api-security-java.version>
+        <api-security-java.version>2.0.13</api-security-java.version>
         <api-helper-java.version>3.0.2</api-helper-java.version>
         <api-sdk-java.version>6.4.4</api-sdk-java.version>
         <sdk-manager-java.version>3.0.11</sdk-manager-java.version>
         <api-sdk-manager-java-library.version>3.0.11</api-sdk-manager-java-library.version>
-        <private-api-sdk-java.version>4.0.331</private-api-sdk-java.version>
+        <private-api-sdk-java.version>4.0.350</private-api-sdk-java.version>
         <!--sonar configuration-->
         <sonar-maven-plugin.version>5.2.0.4988</sonar-maven-plugin.version>
         <sonar.java.binaries>${project.basedir}/target,${project.basedir}/target/*</sonar.java.binaries>
