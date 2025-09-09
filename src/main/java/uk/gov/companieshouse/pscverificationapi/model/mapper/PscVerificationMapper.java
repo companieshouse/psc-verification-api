@@ -14,6 +14,7 @@ public interface PscVerificationMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "links", ignore = true)
     @Mapping(target = "data", source = "data")
+    @Mapping(target = "internalData", ignore = true)
     PscVerification toEntity(final PscVerificationData data);
 
     @Mapping(target="companyNumber", source = "data.companyNumber")
