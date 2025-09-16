@@ -25,7 +25,7 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
     public void validate(final VerificationValidationContext validationContext) {
 
         try {
-            pscLookupService.getPscIndividualFullRecord(validationContext.transaction(), validationContext.dto(), validationContext.pscType());
+            pscLookupService.getIndividualFullRecord(validationContext.transaction(), validationContext.dto(), validationContext.pscType());
             super.validate(validationContext);
         }
         catch (FilingResourceNotFoundException e) {

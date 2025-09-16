@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
 
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
@@ -44,17 +44,17 @@ public class PscIsPastStartDateValidator extends BaseVerificationValidator imple
      * */
     @Override
     public void validate(VerificationValidationContext validationContext) {
-        PscIndividualFullRecordApi pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
+        IndividualFullRecord individualFullRecord = pscLookupService.getIndividualFullRecord(
                 validationContext.transaction(), validationContext.dto(), validationContext.pscType());
 
-        final var identityVerificationDetails = pscIndividualFullRecordApi.getIdentityVerificationDetails();
+        final var identityVerificationDetails = individualFullRecord.getIdentityVerificationDetails();
 
         if (identityVerificationDetails == null) {
             logger.info(String.format(
                 "Validation for PSC start date skipped due to null identity verification details. [Company number: %s, PSC notification ID: %s]",
                 validationContext.dto().companyNumber(), validationContext.dto().pscNotificationId()));
         } else {
-            final var startDate = identityVerificationDetails.appointmentVerificationStatementDate();
+            final var startDate = identityVerificationDetails.getAppointmentVerificationStatementDate();
 
             if (startDate != null && startDate.isAfter(LocalDate.now())) {
                 final var formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
