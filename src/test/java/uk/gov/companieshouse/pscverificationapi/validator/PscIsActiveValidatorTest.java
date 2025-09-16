@@ -16,9 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.FieldError;
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
@@ -34,7 +34,7 @@ class PscIsActiveValidatorTest {
     @Mock
     private Transaction transaction;
     @Mock
-    private PscIndividualFullRecordApi pscIndividualFullRecord;
+    private IndividualFullRecord individualFullRecord;
 
     PscIsActiveValidator testValidator;
     private PscType pscType;
@@ -52,13 +52,13 @@ class PscIsActiveValidatorTest {
         passthroughHeader = "passthroughHeader";
 
         testValidator = new PscIsActiveValidator(validation, pscLookupService);
-        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(pscIndividualFullRecord);
+        when(pscLookupService.getIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
     }
 
     @Test
     void validateWhenPscIsActive() {
 
-        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(pscIndividualFullRecord);
+        when(pscLookupService.getIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
         testValidator.validate(
             new VerificationValidationContext(pscVerificationData, errors, transaction, pscType, passthroughHeader));
 
@@ -69,12 +69,12 @@ class PscIsActiveValidatorTest {
     void validateWhenPscIsCeased() {
 
         when(pscVerificationData.pscNotificationId()).thenReturn(PSC_ID);
-        when(pscIndividualFullRecord.getCeasedOn()).thenReturn(TEST_DATE);
+        when(individualFullRecord.getCeasedOn()).thenReturn(TEST_DATE);
 
         var fieldError = new FieldError("object", "psc_notification_id", pscVerificationData.pscNotificationId(), false,
             new String[]{null, PSC_ID}, null, "is ceased default message");
 
-        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(pscIndividualFullRecord);
+        when(pscLookupService.getIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
         when(validation.get("psc-is-ceased")).thenReturn("is ceased default message");
 
         testValidator.validate(

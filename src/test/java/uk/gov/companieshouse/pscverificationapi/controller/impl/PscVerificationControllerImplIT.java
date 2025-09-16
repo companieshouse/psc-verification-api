@@ -34,8 +34,8 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.companieshouse.api.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.PscApi;
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.config.IntegrationTestConfig;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
@@ -75,7 +75,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     @MockitoBean
     private PscApi pscDetails;
     @MockitoBean
-    private PscIndividualFullRecordApi pscIndividualFullRecordApi;
+    private IndividualFullRecord individualFullRecord;
     @MockitoBean
     private MongoDatabaseFactory mongoDatabaseFactory;
     @MockitoSpyBean
@@ -123,8 +123,8 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     @Test
     void createVerificationWhenPayloadOk() throws Exception {
         when(transactionService.getTransaction(TRANS_ID, PASSTHROUGH_HEADER)).thenReturn(transaction);
-        when(lookupService.getPscIndividualFullRecord(transaction, completeDto, PscType.INDIVIDUAL)).thenReturn(
-            pscIndividualFullRecordApi);
+        when(lookupService.getIndividualFullRecord(transaction, completeDto, PscType.INDIVIDUAL)).thenReturn(
+            individualFullRecord);
         when(pscVerificationService.save(any(PscVerification.class))).thenReturn(
                 PscVerification.newBuilder(entity).id(FILING_ID).build())
             .thenAnswer(i -> PscVerification.newBuilder(i.getArgument(0)).build()

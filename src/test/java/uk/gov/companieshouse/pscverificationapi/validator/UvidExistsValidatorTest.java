@@ -17,11 +17,11 @@ import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse;
 import uk.gov.companieshouse.api.model.common.Date3Tuple;
 import uk.gov.companieshouse.api.model.psc.NameElementsApi;
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.NameMismatchReasonConstants;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.IdvLookupServiceException;
 import uk.gov.companieshouse.pscverificationapi.service.IdvLookupService;
@@ -120,7 +120,7 @@ class UvidExistsValidatorTest {
 
         final var pscData = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
 
-        when(pscLookupService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, pscType)).thenReturn(pscData);
+        when(pscLookupService.getIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, pscType)).thenReturn(pscData);
         when(idvLookupService.matchUvid(expected)).thenThrow(new ApiErrorResponseException(
                 new HttpResponseException.Builder(400, "test error", new HttpHeaders())));
 
@@ -146,7 +146,7 @@ class UvidExistsValidatorTest {
 
         final var pscIndividualFullRecord = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
 
-        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(pscIndividualFullRecord);
+        when(pscLookupService.getIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(pscIndividualFullRecord);
         when(pscVerificationData.verificationDetails()).thenReturn(verificationDetails);
         when(idvLookupService.matchUvid(expected)).thenReturn(uvidMatchResponse);
         when(uvidMatchResponse.getAccuracyStatement()).thenReturn(Collections.singletonList(FORENAMES_MISMATCH));
@@ -165,7 +165,7 @@ class UvidExistsValidatorTest {
         expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
 
         final var individualFullRecord = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
-        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
+        when(pscLookupService.getIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
 
         when(pscVerificationData.verificationDetails()).thenReturn(VERIFICATION_DETAILS);
         when(idvLookupService.matchUvid(expected)).thenReturn(uvidMatchResponse);
@@ -189,7 +189,7 @@ class UvidExistsValidatorTest {
         expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
 
         final var individualFullRecord = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
-        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
+        when(pscLookupService.getIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
         when(pscVerificationData.verificationDetails()).thenReturn(VERIFICATION_DETAILS);
         when(idvLookupService.matchUvid(expected)).thenReturn(uvidMatchResponse);
         when(uvidMatchResponse.getAccuracyStatement()).thenReturn(accuracyStatementList);
@@ -216,7 +216,7 @@ class UvidExistsValidatorTest {
 
         final var pscData = createPscData(null, null, PSC_SURNAME, DATE_OF_BIRTH);
 
-        when(pscLookupService.getPscIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, pscType)).thenReturn(pscData);
+        when(pscLookupService.getIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, pscType)).thenReturn(pscData);
 
         var testUvid = testValidator.getUvidMatchWithPscData(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL);
 
@@ -244,7 +244,7 @@ class UvidExistsValidatorTest {
         expected.setDateOfBirth(LocalDate.parse(stringDateOfBirth, formatter));
 
         final var individualFullRecord = createPscData(PSC_FORENAME, PSC_MIDDLE_NAME, PSC_SURNAME, DATE_OF_BIRTH);
-        when(pscLookupService.getPscIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
+        when(pscLookupService.getIndividualFullRecord(transaction, pscVerificationData, pscType)).thenReturn(individualFullRecord);
 
         when(pscVerificationData.verificationDetails()).thenReturn(VERIFICATION_DETAILS);
         when(idvLookupService.matchUvid(expected)).thenReturn(uvidMatchResponse);
@@ -295,8 +295,8 @@ class UvidExistsValidatorTest {
         uvidMatch.setSurname(surname);
     }
 
-    private static PscIndividualFullRecordApi createPscData(String forename, String middleName, String surname, Date3Tuple dateOfBirth) {
-        PscIndividualFullRecordApi individualFullRecord = new PscIndividualFullRecordApi();
+    private static IndividualFullRecord createPscData(String forename, String middleName, String surname, Date3Tuple dateOfBirth) {
+        IndividualFullRecord individualFullRecord = new IndividualFullRecord();
         NameElementsApi nameElements = new NameElementsApi();
         nameElements.setForename(forename);
         nameElements.setMiddleName(middleName);
