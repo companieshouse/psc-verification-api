@@ -9,7 +9,6 @@ import uk.gov.companieshouse.api.handler.exception.URIValidationException;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.psc.IndividualFullRecord;
-import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
@@ -24,12 +23,10 @@ public class PscLookupServiceImpl implements PscLookupService {
 
     private final InternalApiClientService apiClientService;
     private final Logger logger;
-    private final EnvironmentReader environmentReader;
 
-    public PscLookupServiceImpl(InternalApiClientService apiClientService, Logger logger, EnvironmentReader environmentReader) {
+    public PscLookupServiceImpl(InternalApiClientService apiClientService, Logger logger) {
         this.apiClientService = apiClientService;
         this.logger = logger;
-        this.environmentReader = environmentReader;
     }
 
     /**
@@ -48,7 +45,6 @@ public class PscLookupServiceImpl implements PscLookupService {
 
         final var logMap = LogHelper.createLogMap(transaction.getId());
         String pscNotificationId = data.pscNotificationId();
-        String chsInternalApiKey = environmentReader.getMandatoryString("CHS_INTERNAL_API_KEY");
 
         try {
             final var uri = "/company/"

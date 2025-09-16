@@ -17,24 +17,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.companieshouse.api.ApiClient;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.handler.delta.PrivateDeltaResourceHandler;
 import uk.gov.companieshouse.api.handler.delta.pscfullrecord.request.PscFullRecordGet;
 import uk.gov.companieshouse.api.handler.exception.URIValidationException;
-import uk.gov.companieshouse.api.handler.psc.PscsResourceHandler;
-import uk.gov.companieshouse.api.handler.psc.request.PscIndividualFullRecordGet;
 import uk.gov.companieshouse.api.model.ApiResponse;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.psc.IndividualFullRecord;
-import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
-import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.ApiClientService;
 import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.InternalApiClientService;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
@@ -52,7 +47,6 @@ class PscLookupServiceImplTest extends TestBaseService {
             .companyNumber(COMPANY_NUMBER)
             .verificationDetails(VERIFICATION_DETAILS)
             .build();
-    private static final String CHS_INTERNAL_API_KEY = "key";
     public static final String FULL_RECORD = "/full_record";
     public static final String PERSONS_WITH_SIGNIFICANT_CONTROL = "/persons-with-significant-control/";
     public static final String COMPANY = "/company/";
@@ -71,15 +65,12 @@ class PscLookupServiceImplTest extends TestBaseService {
     private Transaction transaction;
     @Mock
     private Logger logger;
-    @Mock
-    private EnvironmentReader environmentReader;
 
     private PscLookupService testService;
 
     @BeforeEach
     void setUp() {
-        when(environmentReader.getMandatoryString("CHS_INTERNAL_API_KEY")).thenReturn("key");
-        testService = new PscLookupServiceImpl(apiClientService, logger, environmentReader);
+        testService = new PscLookupServiceImpl(apiClientService, logger);
     }
 
     @Test
