@@ -6,6 +6,12 @@ import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
+/**
+ * Validator for checking if a PSC entity exists and is active.
+ * <p>
+ * Uses the {@link PscLookupService} to verify existence and adds errors if not found.
+ * </p>
+ */
 @Component
 public class PscExistsValidator extends BaseVerificationValidator implements VerificationValidator {
 

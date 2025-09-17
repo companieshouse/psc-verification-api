@@ -41,7 +41,8 @@ public class PscIsPastStartDateValidator extends BaseVerificationValidator imple
      * <p>
      * If the identity verification details are null, logs the event and skips validation.
      * If the start date is in the future, adds a validation error.
-     * */
+     * </p>
+     */
     @Override
     public void validate(VerificationValidationContext validationContext) {
         PscIndividualFullRecordApi pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(

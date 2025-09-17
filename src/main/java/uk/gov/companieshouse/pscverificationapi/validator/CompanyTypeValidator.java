@@ -9,6 +9,12 @@ import uk.gov.companieshouse.pscverificationapi.service.CompanyProfileService;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Validator for checking if a company's type is allowed for PSC verification.
+ * <p>
+ * Uses company profile and configuration to validate type and add errors if not valid.
+ * </p>
+ */
 @Component
 public class CompanyTypeValidator extends BaseVerificationValidator implements
     VerificationValidator {

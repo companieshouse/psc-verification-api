@@ -31,6 +31,13 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Validator for checking if a UVID exists and matches PSC data.
+ * <p>
+ * Uses {@link IdvLookupService} and {@link PscLookupService} to validate UVID accuracy and adds 
+ * errors for mismatches or missing reasons.
+ * </p>
+ */
 @Component
 public class UvidExistsValidator extends BaseVerificationValidator implements
     VerificationValidator {
