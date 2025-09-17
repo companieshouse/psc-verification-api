@@ -52,14 +52,17 @@ import uk.gov.companieshouse.pscverificationapi.exception.TransactionServiceExce
  * Handle exceptions caused by client REST requests, propagated from Spring or the service
  * controllers.
  * <ul>
- *     <li>JSON payload not readable/malformed</li>
+ *     <li>{@link HttpMessageNotReadableException}</li>
  *     <li>{@link InvalidFilingException}</li>
  *     <li>{@link FilingResourceNotFoundException}</li>
  *     <li>{@link FilingResourceInvalidException}</li>
  *     <li>{@link MergePatchException}</li>
  *     <li>{@link TransactionServiceException}</li>
  *     <li>{@link PscLookupServiceException}</li>
- *     <li>other {@link RuntimeException}</li>
+ *     <li>{@link ConflictingFilingException}</li>
+ *     <li>{@link NoResourceFoundException}</li>
+ *     <li>{@link HttpMediaTypeNotSupportedException}</li>
+ *     <li>{@link RuntimeException}</li>
  *     <li>other internal exceptions</li>
  * </ul>
  */
