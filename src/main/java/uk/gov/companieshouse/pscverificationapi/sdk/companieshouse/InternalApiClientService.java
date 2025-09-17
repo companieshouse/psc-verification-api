@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.InternalApiClient;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
+/**
+ * Service for retrieving CH internal API clients.
+ */
 @Service
 public class InternalApiClientService {
 
