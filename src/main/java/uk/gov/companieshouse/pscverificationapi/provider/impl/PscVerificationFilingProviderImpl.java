@@ -9,6 +9,9 @@ import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.provider.PscVerificationFilingProvider;
 import uk.gov.companieshouse.pscverificationapi.repository.PscVerificationRepository;
 
+/**
+ * Provider implementation for the {@link PscVerificationFilingProvider} interface.
+ */
 @Component
 public class PscVerificationFilingProviderImpl implements PscVerificationFilingProvider {
     private final Logger logger;
