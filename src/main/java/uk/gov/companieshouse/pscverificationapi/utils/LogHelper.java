@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
+/**
+ * Helper class for creating log property maps for structured logging.
+ */
 @Component
 public final class LogHelper {
 

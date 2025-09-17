@@ -7,6 +7,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
+/**
+ * Helper class for converting objects to property maps.
+ */
 public final class MapHelper {
 
     private MapHelper() {
