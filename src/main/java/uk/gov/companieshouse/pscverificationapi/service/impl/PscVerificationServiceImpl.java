@@ -18,7 +18,7 @@ import uk.gov.companieshouse.pscverificationapi.service.PscVerificationPatchVali
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 
 /**
- * Service interface for managing PSC verification filings.
+ * Service implementation for managing PSC verification filings.
  * <p>
  * Provides methods for storing, retrieving, updating, and matching {@link PscVerification} entities.
  * Implements {@link PscVerificationService}.

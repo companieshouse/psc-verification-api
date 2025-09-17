@@ -23,7 +23,7 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
     }
 
     /**
-     * Validates that the PSC entity has a notification ID.
+     * Checks if the PSC entity exists using the provided validation context.
      *
      * @param validationContext the validation context
      */
