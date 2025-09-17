@@ -8,6 +8,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import uk.gov.companieshouse.pscverificationapi.enumerations.YamlPropertySourceFactory;
 
+/**
+ * Configuration class for loading constants from YAML files.
+ * <p>
+ * This class is responsible for loading and providing access to constants defined in
+ * the `api-enumerations/constants.yml` via Spring's {@link ConfigurationProperties}.
+ * </p>
+ */
 @Configuration
 @PropertySource(value = "classpath:api-enumerations/constants.yml", factory = YamlPropertySourceFactory.class)
 public class ConstantsConfig {

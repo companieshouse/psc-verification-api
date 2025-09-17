@@ -8,6 +8,12 @@ import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
+/**
+ * Validator for checking if a PSC is in an active state.
+ * <p>
+ * Uses the {@link PscLookupService} to verify status and adds errors if ceased.
+ * </p>
+ */
 @Component
 public class PscIsActiveValidator extends BaseVerificationValidator implements
     VerificationValidator {

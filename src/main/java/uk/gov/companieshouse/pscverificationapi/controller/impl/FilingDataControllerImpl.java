@@ -14,6 +14,9 @@ import uk.gov.companieshouse.pscverificationapi.controller.FilingDataController;
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
 import uk.gov.companieshouse.pscverificationapi.service.FilingDataService;
 
+/**
+ * Implementation of the {@link FilingDataController} interface.
+ */
 @RestController
 @RequestMapping("/private/transactions/{transactionId}/persons-with-significant-control-verification/")
 public class FilingDataControllerImpl implements FilingDataController {
@@ -26,7 +29,9 @@ public class FilingDataControllerImpl implements FilingDataController {
     }
 
     /**
-     * Controller endpoint: retrieve Filing Data. Returns a list containing a single resource;
+     * {@inheritDoc}
+     * 
+     * Returns a list containing a single resource;
      * Future capability to return multiple resources if a Transaction contains multiple PSC
      * Filings.
      *

@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+/**
+ * Configuration properties for the patch prefix.
+ */
 @Component
 @ConfigurationProperties(prefix = "patch")
 public class PatchServiceProperties {

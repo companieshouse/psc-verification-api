@@ -11,6 +11,7 @@ import uk.gov.companieshouse.pscverificationapi.exception.IdvLookupServiceExcept
 public interface IdvLookupService {
     /**
      * Retrieves the matched UVID
+     * 
      * @param uvidMatch the provided uvidMatch
      * @return uvidMatchResponse, if found
      * @throws IdvLookupServiceException if an error occurs within this service

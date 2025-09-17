@@ -7,6 +7,12 @@ import java.util.Set;
 import uk.gov.companieshouse.api.model.pscverification.NameMismatchReasonConstants;
 import uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants;
 
+/**
+ * Data class for updating verification details.
+ * <p>
+ * Holds UVID, name mismatch reason, and verification statements for update operations.
+ * </p>
+ */
 public final class VerificationDetailsForUpdating {
     private final String uvid;
     private final NameMismatchReasonConstants nameMismatchReason;

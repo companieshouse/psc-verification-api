@@ -9,6 +9,8 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 public interface FilingDataService {
 
     /**
+     * Generate the FilingApi object for the given filing id and transaction.
+     * 
      * @param filingId    the PSC Filing id
      * @param transaction the transaction for the filing
      * @return the filing data details

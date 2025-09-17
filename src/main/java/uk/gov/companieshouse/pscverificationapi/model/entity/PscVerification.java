@@ -13,6 +13,13 @@ import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 
+/**
+ * Entity representing a PSC verification filing.
+ * <p>
+ * Stores PSC verification data, internal data, resource links, and timestamps for persistence.
+ * Includes a builder for constructing immutable instances.
+ * </p>
+ */
 @Document(collection = "psc_verification")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)

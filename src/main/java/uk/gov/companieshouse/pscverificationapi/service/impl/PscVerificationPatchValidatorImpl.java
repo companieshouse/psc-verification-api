@@ -14,6 +14,12 @@ import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationPatchValidator;
 
+/** 
+ * Validator to ensure the Psc Verification patch contains valid data.
+ * <p>
+ * Implements {@link PscVerificationPatchValidator}
+ * </p>
+ */
 @Component
 public class PscVerificationPatchValidatorImpl implements PscVerificationPatchValidator {
 

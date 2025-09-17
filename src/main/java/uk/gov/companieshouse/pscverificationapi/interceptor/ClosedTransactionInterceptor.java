@@ -11,6 +11,13 @@ import uk.gov.companieshouse.api.model.transaction.TransactionStatus;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.logging.LoggerFactory;
 
+/**
+ * Interceptor that allows filings-based requests only for closed transactions.
+ * <p>
+ * Checks the transaction status and blocks requests if the transaction is not closed,
+ * returning a 403 status code and logging the event.
+ * </p>
+ */
 public class ClosedTransactionInterceptor implements HandlerInterceptor {
     private final Logger logger;
 

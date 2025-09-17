@@ -28,6 +28,9 @@ import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationSe
 import uk.gov.companieshouse.pscverificationapi.validator.VerificationValidationContext;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
+/**
+ * Implementation of the {@link ValidationStatusController} interface.
+ */
 @RestController
 @RequestMapping("/transactions/{transactionId}/persons-with-significant-control-verification")
 public class ValidationStatusControllerImpl implements ValidationStatusController {
@@ -73,6 +76,14 @@ public class ValidationStatusControllerImpl implements ValidationStatusControlle
                 .orElseThrow(() -> new FilingResourceNotFoundException(filingResource));
     }
 
+    /**
+     * Checks if the PSC verification is valid and returns the validation status response.
+     *
+     * @param pscVerification the PSC verification entity
+     * @param passthroughHeader the passthrough header
+     * @param transaction the transaction
+     * @return ValidationStatusResponse object
+     */
     private ValidationStatusResponse isValid(final PscVerification pscVerification, final String passthroughHeader,
                                              final Transaction transaction) {
 
@@ -91,6 +102,14 @@ public class ValidationStatusControllerImpl implements ValidationStatusControlle
         return validationStatus;
     }
 
+    /**
+     * Calculates validation errors for the PSC verification.
+     *
+     * @param pscVerification the PSC verification entity
+     * @param passthroughHeader the passthrough header
+     * @param transaction the transaction
+     * @return array of ValidationStatusError
+     */
     private ValidationStatusError[] calculateIsValid(final PscVerification pscVerification,
                                                      final String passthroughHeader, final Transaction transaction) {
 

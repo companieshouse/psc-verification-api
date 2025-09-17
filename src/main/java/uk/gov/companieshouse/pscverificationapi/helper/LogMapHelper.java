@@ -4,6 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
+/**
+ * Helper class for creating log property maps for structured logging.
+ * <p>
+ * Provides utility methods to generate standard property maps containing transaction and filing IDs.
+ * </p>
+ */
 @Component
 public final class LogMapHelper {
 

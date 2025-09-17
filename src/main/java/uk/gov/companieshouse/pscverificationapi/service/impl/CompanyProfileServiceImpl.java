@@ -13,6 +13,13 @@ import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
 
 import java.io.IOException;
 
+/**
+ * The company profile service layer responsible for retrieving company 
+ * profile data from Company Profile API.
+ * <p>
+ * Implements {@link CompanyProfileService}
+ * </p>
+ */
 @Service
 public class CompanyProfileServiceImpl implements CompanyProfileService {
 

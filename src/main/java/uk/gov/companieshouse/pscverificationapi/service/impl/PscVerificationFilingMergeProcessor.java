@@ -10,6 +10,9 @@ import uk.gov.companieshouse.patch.service.MergeProcessor;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.model.mapper.PscVerificationMapper;
 
+/**
+ * Merges changes from a patch map into a {@link PscVerification} entity.
+ */
 @Component
 public class PscVerificationFilingMergeProcessor implements MergeProcessor<PscVerification> {
 

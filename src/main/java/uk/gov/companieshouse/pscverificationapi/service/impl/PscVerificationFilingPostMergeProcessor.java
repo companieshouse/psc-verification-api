@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.patch.service.PostMergeProcessor;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 
+/**
+ * Post-merge processor for {@link PscVerification} filings.
+ */
 @Component
 public class PscVerificationFilingPostMergeProcessor implements PostMergeProcessor<PscVerification> {
     private final Clock clock;

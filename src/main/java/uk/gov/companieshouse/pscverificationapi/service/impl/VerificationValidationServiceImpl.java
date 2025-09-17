@@ -13,6 +13,13 @@ import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationSe
 import uk.gov.companieshouse.pscverificationapi.validator.ValidationChainEnable;
 import uk.gov.companieshouse.pscverificationapi.validator.VerificationValidationContext;
 
+/**
+ * The verification validation service layer that passes to the chain of validators
+ * as defined in ValidatorConfig.
+ * <p>
+ * Implements {@link VerificationValidationService}
+ * </p>
+ */
 @Service
 public class VerificationValidationServiceImpl implements VerificationValidationService {
 
@@ -24,11 +31,6 @@ public class VerificationValidationServiceImpl implements VerificationValidation
             .collect(Collectors.toMap(ValidationChainEnable::pscType, Function.identity()));
     }
 
-    /**
-     * Apply the chain of validation steps appropriate for the given verification.
-     *
-     * @param context the filing data to be validated, with supporting context
-     */
     @Override
     public void validate(final VerificationValidationContext context) {
         Optional.ofNullable(filingValidByPscType.get(context.pscType()))
