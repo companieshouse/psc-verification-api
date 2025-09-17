@@ -7,7 +7,7 @@ import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFound
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
 /**
- * Validator for checking if a PSC entity exists and is active.
+ * Validator for checking if a PSC entity exists.
  * <p>
  * Uses the {@link PscLookupService} to verify existence and adds errors if not found.
  * </p>
@@ -23,7 +23,7 @@ public class PscExistsValidator extends BaseVerificationValidator implements Ver
     }
 
     /**
-     * Validates that the PSC entity is in an active state.
+     * Validates that the PSC entity has a notification ID.
      *
      * @param validationContext the validation context
      */
