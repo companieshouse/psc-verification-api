@@ -4,6 +4,12 @@ import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
+/**
+ * Data class for updating PSC verification details.
+ * <p>
+ * Holds company number, PSC notification ID, and verification details for update operations.
+ * </p>
+ */
 public final class PscVerificationDataForUpdating {
     private final String companyNumber;
     private final String pscNotificationId;
