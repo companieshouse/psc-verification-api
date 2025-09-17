@@ -3,7 +3,9 @@ package uk.gov.companieshouse.pscverificationapi.enumerations;
 import java.util.EnumSet;
 import java.util.Optional;
 
-
+/**
+ * Enum for PSC types.
+ */
 public enum PscType {
     INDIVIDUAL("individual");
 
