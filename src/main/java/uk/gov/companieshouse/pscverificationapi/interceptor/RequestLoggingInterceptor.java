@@ -10,6 +10,12 @@ import uk.gov.companieshouse.logging.LoggerFactory;
 import uk.gov.companieshouse.logging.util.RequestLogger;
 import uk.gov.companieshouse.pscverificationapi.PscVerificationApiApplication;
 
+/**
+ * Interceptor for logging the start and end of HTTP request processing.
+ * <p>
+ * Uses CH structured logging to log request lifecycle events for monitoring and debugging.
+ * </p>
+ */
 public class RequestLoggingInterceptor implements HandlerInterceptor, RequestLogger {
 
     private final Logger logger;
