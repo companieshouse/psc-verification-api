@@ -19,7 +19,7 @@ import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
 
 /**
- * Interacts with the external CHS PSC API service to retrieve PSCs.
+ * Interacts with the PSC Data API to retrieve PSCs.
  * <p>
  * Implements {@link PscLookupService}
  * </p>
