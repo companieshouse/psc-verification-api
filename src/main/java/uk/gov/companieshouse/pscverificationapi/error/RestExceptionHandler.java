@@ -218,6 +218,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ApiErrors(errorList);
     }
 
+    /**
+     * Creates a generic API error for service-level exceptions, including error location and type.
+     * Adds extra logging for certain IllegalArgumentExceptions.
+     *
+     * @param ex the exception
+     * @param request the web request
+     * @param chLogger the logger
+     * @return an ApiError representing the service error
+     */
     private static ApiError createApiServiceError(final Exception ex,
         final WebRequest request,
         final Logger chLogger) {
@@ -242,12 +251,24 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return error;
     }
 
+    /**
+     * Adds JSON location information (offset, line, column) to the given ApiError.
+     *
+     * @param error the ApiError to update
+     * @param location the JSON location from a parsing exception
+     */
     private static void addLocationInfo(final ApiError error, final JsonLocation location) {
         error.addErrorValue("offset", location.offsetDescription());
         error.addErrorValue("line", String.valueOf(location.getLineNr()));
         error.addErrorValue("column", String.valueOf(location.getColumnNr()));
     }
 
+    /**
+     * Derives a JSON path string from a FieldError's codes, for use in error reporting.
+     *
+     * @param e the FieldError
+     * @return the JSON path string (e.g., $.fieldName)
+     */
     private static String getJsonPath(final FieldError e) {
         return Optional.ofNullable(e.getCodes())
             .stream()
@@ -259,6 +280,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             .orElse("$");
     }
 
+    /**
+     * Returns a user-friendly error message for mismatched input exceptions, such as unknown properties or parse errors.
+     *
+     * @param mismatchedInputException the exception
+     * @return the error message string
+     */
     private String getMismatchErrorMessage(
         final MismatchedInputException mismatchedInputException) {
         if (mismatchedInputException instanceof UnrecognizedPropertyException) {
@@ -273,10 +300,26 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     }
 
+    /**
+     * Redacts sensitive or verbose error message content by truncating at the first colon.
+     *
+     * @param s the original error message
+     * @return the redacted error message
+     */
     private String redactErrorMessage(final String s) {
         return StringUtils.substringBefore(s, ":");
     }
 
+    /**
+     * Creates a ResponseEntity for a bad request, redacting sensitive error details and including JSON location info if available.
+     * Handles both JSON parse errors and generic exceptions.
+     *
+     * @param ex the original exception
+     * @param request the web request
+     * @param cause the underlying cause (may be a JSON exception)
+     * @param baseMessage the base error message prefix
+     * @return a ResponseEntity with an ApiErrors body
+     */
     private ResponseEntity<Object> createRedactedErrorResponseEntity(final RuntimeException ex,
         final WebRequest request, final Throwable cause, final String baseMessage) {
         final ApiError error;
@@ -322,6 +365,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             .body(new ApiErrors(List.of(error)));
     }
 
+    /**
+     * Extracts the request URI from the WebRequest, or returns null if unavailable.
+     *
+     * @param request the web request
+     * @return the request URI string, or null
+     */
     private static String getRequestURI(final WebRequest request) {
         // resolveReference("request") preferred over getRequest() because the latter method is
         // final and cannot be stubbed with Mockito
@@ -330,6 +379,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             .orElse(null);
     }
 
+    /**
+     * Builds an ApiError for a request body validation error, including rejected value and property name if available.
+     *
+     * @param message the error message
+     * @param jsonPath the JSON path to the error
+     * @param rejectedValue the value that was rejected (may be null)
+     * @param fieldName the field name (may be null)
+     * @return an ApiError for the validation error
+     */
     private static ApiError buildRequestBodyError(final String message, final String jsonPath,
         final Object rejectedValue, final String fieldName) {
          final var error = new ApiError(message, jsonPath, LocationType.JSON_PATH.getValue(),
@@ -345,11 +403,28 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return error;
     }
 
+    /**
+     * Logs an error with the given message and exception, using the provided logger and request context.
+     *
+     * @param chLogger the logger
+     * @param request the web request
+     * @param msg the log message
+     * @param ex the exception
+     */
     private static void logError(final Logger chLogger, final WebRequest request, final String msg,
         final Exception ex) {
         logError(chLogger, request, msg, ex, null);
     }
 
+    /**
+     * Logs an error with optional ApiError details, using the provided logger and request context.
+     *
+     * @param chLogger the logger
+     * @param request the web request
+     * @param msg the log message
+     * @param ex the exception
+     * @param apiErrorList optional list of ApiError objects for context
+     */
     private static void logError(final Logger chLogger, final WebRequest request, final String msg,
         final Exception ex,
         @Nullable final List<ApiError> apiErrorList) {
@@ -361,12 +436,24 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         chLogger.error(msg, ex, logMap);
     }
 
+    /**
+     * Returns the most specific (root) cause of a throwable, or the original if no root cause exists.
+     *
+     * @param original the original throwable
+     * @return the root cause or the original throwable
+     */
     public static Throwable getMostSpecificCause(final Throwable original) {
         final Throwable rootCause = ExceptionUtils.getRootCause(original);
 
         return rootCause != null ? rootCause : original;
     }
 
+    /**
+     * Looks up the API error message for a FieldError using the validation map and error codes.
+     *
+     * @param e the FieldError
+     * @return the API error message string
+     */
     private String getFieldErrorApiEnumerationMessage(final FieldError e) {
         final var codes = Objects.requireNonNull(e.getCodes());
         return validation.get(codes[codes.length - 1]);
