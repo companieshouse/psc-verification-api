@@ -7,6 +7,12 @@ import uk.gov.companieshouse.patch.model.PatchResult;
 import uk.gov.companieshouse.patch.service.PatchService;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 
+/**
+ * Service interface for managing PSC verification filings.
+ * <p>
+ * Provides methods for storing, retrieving, updating, and matching {@link PscVerification} entities.
+ * </p>
+ */
 public interface PscVerificationService extends PatchService<PscVerification> {
     /**
      * Store a PscVerification entity in persistence layer.

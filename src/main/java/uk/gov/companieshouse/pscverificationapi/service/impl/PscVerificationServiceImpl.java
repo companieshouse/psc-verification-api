@@ -17,6 +17,13 @@ import uk.gov.companieshouse.pscverificationapi.repository.PscVerificationReposi
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationPatchValidator;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 
+/**
+ * Service interface for managing PSC verification filings.
+ * <p>
+ * Provides methods for storing, retrieving, updating, and matching {@link PscVerification} entities.
+ * Implements {@link PscVerificationService}.
+ * </p>
+ */
 @Service
 public class PscVerificationServiceImpl implements PscVerificationService {
     private final PscVerificationRepository repository;
@@ -41,23 +48,11 @@ public class PscVerificationServiceImpl implements PscVerificationService {
         this.pscVerificationPatchValidator = pscVerificationPatchValidator;
     }
 
-    /**
-     * Store a PscVerification entity in persistence layer.
-     *
-     * @param filing the PscVerification entity to store
-     * @return the stored entity
-     */
     @Override
     public PscVerification save(final PscVerification filing) {
         return repository.save(filing);
     }
 
-    /**
-     * Retrieve a stored PSCFiling entity by Filing ID.
-     *
-     * @param filingId the Filing ID
-     * @return the stored entity if found
-     */
     @Override
     public Optional<PscVerification> get(final String filingId) {
         return repository.findById(filingId);
@@ -76,6 +71,7 @@ public class PscVerificationServiceImpl implements PscVerificationService {
 
         return patchResult;
     }
+
     @Override
     public boolean requestMatchesResourceSelf(final HttpServletRequest request,
         final PscVerification filing) {

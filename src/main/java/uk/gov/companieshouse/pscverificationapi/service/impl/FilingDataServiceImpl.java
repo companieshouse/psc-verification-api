@@ -16,6 +16,9 @@ import uk.gov.companieshouse.pscverificationapi.utils.MapHelper;
 
 /**
  * Produces Filing Data format for consumption as JSON by filing-resource-handler external service.
+ * <p>
+ * Implements {@link FilingDataService}
+ * </p>
  */
 @Service
 public class FilingDataServiceImpl implements FilingDataService {

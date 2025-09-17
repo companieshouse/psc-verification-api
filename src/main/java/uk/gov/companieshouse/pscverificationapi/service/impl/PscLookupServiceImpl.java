@@ -18,6 +18,12 @@ import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.ApiClientServ
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 import uk.gov.companieshouse.pscverificationapi.utils.LogHelper;
 
+/**
+ * Interacts with the external CHS PSC API service to retrieve PSCs.
+ * <p>
+ * Implements {@link PscLookupService}
+ * </p>
+ */
 @Service
 public class PscLookupServiceImpl implements PscLookupService {
     private static final String UNEXPECTED_STATUS_CODE = "Unexpected Status Code received";
@@ -32,15 +38,6 @@ public class PscLookupServiceImpl implements PscLookupService {
         this.environmentReader = environmentReader;
     }
 
-    /**
-     * Retrieve a PSC by PscVerificationData.
-     *
-     * @param transaction           the Transaction
-     * @param data                  the PSC verification data
-     * @param pscType               the PSC Type
-     * @return the PSC Full Record details, if found
-     * @throws PscLookupServiceException if the PSC was not found or an error occurred
-     */
     @Override
     public PscIndividualFullRecordApi getPscIndividualFullRecord(final Transaction transaction, final PscVerificationData data,
                                                                  final PscType pscType)
