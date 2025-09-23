@@ -5,8 +5,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- *  * Abstract base class for the verification service validators.
- *  * This class provides a mechanism to chain multiple validators together.
+ * Abstract base class for the verification service validators.
+ * <p>
+ * This class provides a mechanism to chain multiple validators together.
+ * </p>
  */
 public abstract class BaseVerificationValidator implements VerificationValidator {
 

@@ -55,6 +55,9 @@ import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
+/**
+ * Implementation of the {@link PscVerificationController} interface.
+ */
 @RestController
 @RequestMapping("/transactions/{transactionId}/persons-with-significant-control-verification")
 public class PscVerificationControllerImpl implements PscVerificationController {
@@ -215,6 +218,13 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         }
     }
 
+    /**
+     * Clears the name mismatch reason in verification details if the UVID has changed and no new reason is provided.
+     * Ensures that the name mismatch reason is reset when the UVID is updated in a patch.
+     *
+     * @param pscVerification the PSC verification entity
+     * @param mergePatch the patch map containing updated verification details
+     */
     private static void clearNameMismatchReasonIfRequired(PscVerification pscVerification, Map<String, Object> mergePatch) {
 
         VerificationDetails verificationDetails = pscVerification.getData().verificationDetails();
@@ -233,12 +243,6 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         }
     }
 
-    /**
-     * Retrieve PSC Verification submission.
-     *
-     * @param transId           the Transaction ID
-     * @param filingResourceId  the PSC Filing ID
-     */
     @Override
     @GetMapping(value = "/{filingResourceId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PscVerificationApi> getPscVerification(
@@ -256,12 +260,13 @@ public class PscVerificationControllerImpl implements PscVerificationController 
     }
 
     /**
-     * Retrieves the transaction resource
+     * Retrieves the transaction resource if not provided
      *
      * @param transId           the transaction ID.
      * @param transaction       the transaction resource.
      * @param logMap            a list of parameters to include in a log message
      * @param passthroughHeader the passthroughHeader, includes authorisation for transaction fetch
+     * @return the Transaction object
      */
     private Transaction getTransaction(final String transId, Transaction transaction,
         final Map<String, Object> logMap, final String passthroughHeader) {
@@ -277,6 +282,12 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         return request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader());
     }
 
+    /**
+     * Checks for binding (validation) errors in the request and throws an exception if any are found.
+     *
+     * @param bindingResult the result of request validation
+     * @throws InvalidFilingException if validation errors are present
+     */
     protected static void checkBindingErrors(final BindingResult bindingResult) {
         final var validationErrors = Optional.ofNullable(bindingResult)
             .map(Errors::getFieldErrors)
@@ -288,6 +299,15 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         }
     }
 
+    /**
+     * Saves a PSC Verification entity with metadata.
+     *
+     * @param entity   the PSC Verification entity to save
+     * @param transId  the transaction ID
+     * @param request  the servlet request
+     * @param logMap   parameters for logging
+     * @return the saved PSC Verification entity with links
+     */
     private PscVerification saveFilingWithLinks(final PscVerification entity, final String transId,
         final HttpServletRequest request, final Map<String, Object> logMap) {
 
@@ -309,6 +329,13 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         return resaved;
     }
 
+    /**
+     * Builds resource links for a PSC Verification entity, including self and validation status URIs.
+     *
+     * @param request      the servlet request
+     * @param savedFiling  the saved PSC Verification entity
+     * @return ResourceLinks containing self and validation status URIs
+     */
     private ResourceLinks buildLinks(final HttpServletRequest request,
         final PscVerification savedFiling) {
         final var objectId = new ObjectId(Objects.requireNonNull(savedFiling.getId()));

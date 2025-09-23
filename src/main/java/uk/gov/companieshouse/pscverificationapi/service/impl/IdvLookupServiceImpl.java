@@ -15,6 +15,12 @@ import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
 import uk.gov.companieshouse.pscverificationapi.sdk.companieshouse.InternalApiClientService;
 import uk.gov.companieshouse.pscverificationapi.service.IdvLookupService;
 
+/**
+ * Interacts with the external CHS IDV API service to confirm a UVID match
+ * <p>
+ * Implements {@link IdvLookupService} 
+ * </p>
+ */
 @Service
 public class IdvLookupServiceImpl implements IdvLookupService {
 
@@ -26,21 +32,11 @@ public class IdvLookupServiceImpl implements IdvLookupService {
     private final Logger logger;
     private final InternalApiClientService internalApiClientService;
 
-    /**
-     * Interacts with the external CHS IDV API service to confirm a UVID match
-     */
     public IdvLookupServiceImpl(final Logger logger, InternalApiClientService internalApiClientService) {
         this.logger = logger;
         this.internalApiClientService = internalApiClientService;
     }
 
-    /**
-     * Retrieves the matched UVID
-     * @param uvidMatch the provided uvidMatch
-     * @return uvidMatchResponse, if found
-     * @throws IdvLookupServiceException if an error occurs within this service
-     * @throws ApiErrorResponseException if the API responds with an error
-     */
     @Override
     public UvidMatchResponse matchUvid(UvidMatch uvidMatch)
         throws IdvLookupServiceException, ApiErrorResponseException {

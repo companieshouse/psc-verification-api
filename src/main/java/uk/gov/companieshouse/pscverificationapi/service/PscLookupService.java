@@ -7,7 +7,7 @@ import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.PscLookupServiceException;
 
 /**
- * Interacts with the external CHS PSC API service to retrieve PSCs.
+ * Interacts with the PSC Data API to retrieve PSCs.
  */
 public interface PscLookupService {
 

@@ -23,6 +23,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.environment.impl.EnvironmentReaderImpl;
 
+/**
+ * Configuration class for application-wide beans and settings.
+ */
 @Configuration
 @EnableTransactionManagement
 public class AppConfig {

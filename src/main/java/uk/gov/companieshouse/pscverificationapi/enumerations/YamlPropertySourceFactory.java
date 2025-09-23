@@ -8,6 +8,9 @@ import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertySourceFactory;
 import org.springframework.lang.NonNull;
 
+/**
+ * PropertySourceFactory for loading YAML files as property sources.
+ */
 public class YamlPropertySourceFactory implements PropertySourceFactory {
 
     @Override

@@ -16,6 +16,12 @@ import uk.gov.companieshouse.api.model.common.MaintenanceCheck;
 import uk.gov.companieshouse.api.model.common.ServiceStatus;
 import uk.gov.companieshouse.logging.Logger;
 
+/**
+ * Actuator endpoint for reporting planned maintenance status.
+ * <p>
+ * Checks configuration for planned maintenance periods and reports service status accordingly.
+ * </p>
+ */
 @Component
 @Endpoint(id = "maintenance")
 public class MaintenanceActuatorEndpoint {

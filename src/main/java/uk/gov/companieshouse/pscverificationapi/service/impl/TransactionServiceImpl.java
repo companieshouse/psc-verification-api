@@ -15,6 +15,12 @@ import uk.gov.companieshouse.pscverificationapi.exception.TransactionServiceExce
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
 
+/**
+ * Interacts with the external Transactions service to retrieve and update Transactions.
+ * <p>
+ * Implements {@link TransactionService}
+ * </p>
+ */
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
@@ -27,15 +33,6 @@ public class TransactionServiceImpl implements TransactionService {
         this.logger = logger;
     }
 
-    /**
-     * Query the transaction service for a given transaction.
-     *
-     * @param transactionId         the Transaction ID
-     * @param ericPassThroughHeader includes authorisation for the transaction query
-     * @return the transaction if found
-     *
-     * @throws TransactionServiceException if not found or an error occurred
-     */
     @Override
     public Transaction getTransaction(final String transactionId,
             final String ericPassThroughHeader) throws TransactionServiceException {
@@ -64,12 +61,6 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
-    /**
-     * Update a given transaction via the transaction service.
-     *
-     * @param transaction           the Transaction ID
-     * @throws TransactionServiceException if the transaction update failed
-     */
     @Override
     public void updateTransaction(final Transaction transaction)
             throws TransactionServiceException {

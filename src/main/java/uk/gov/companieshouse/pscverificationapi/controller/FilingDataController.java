@@ -10,7 +10,11 @@ import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.exception.NotImplementedException;
 
 /**
- * Filing data controller that handles filing data.
+ * Interface for handling filing data operations.
+ * <p>
+ * This controller is responsible for retrieving filing data associated with
+ * a specific transaction and PSC filing resource. 
+ * </p>
  */
 public interface FilingDataController {
 

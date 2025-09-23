@@ -9,7 +9,11 @@ import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse
 import uk.gov.companieshouse.pscverificationapi.exception.NotImplementedException;
 
 /**
- * Validation status controller that handles validation of the filing resource.
+ * Interface for getting the validation status of a PSC filing resource.
+ * <p>
+ * This controller manages HTTP requests for creating, updating, and retrieving
+ * PSC verification filings.
+ * </p>
  */
 public interface ValidationStatusController {
 

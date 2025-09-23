@@ -7,6 +7,9 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
 
+/**
+ * Validator for checking if the PSC verification statement is present.
+ */
 @Component
 public class PscVerificationStatementPresentValidator extends BaseVerificationValidator implements
     VerificationValidator {

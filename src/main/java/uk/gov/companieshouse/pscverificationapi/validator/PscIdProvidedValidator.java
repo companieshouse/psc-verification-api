@@ -5,6 +5,9 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
 
+/**
+ * Validator for checking if a PSC notification ID is provided in the request.
+ */
 @Component
 public class PscIdProvidedValidator extends BaseVerificationValidator implements
     VerificationValidator {

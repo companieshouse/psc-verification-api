@@ -16,6 +16,13 @@ import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.exception.NotImplementedException;
 
+/**
+ * Interface for handling PSC verification operations.
+ * <p>
+ * This controller manages HTTP requests for creating, updating, and retrieving
+ * PSC verification filings.
+ * </p>
+ */
 public interface PscVerificationController {
 
     /**
@@ -36,10 +43,11 @@ public interface PscVerificationController {
     }
 
     /**
-     * Retrieve PSC verification submission.
+     * Retrieve a PSC Verification submission by filing resource ID.
      *
      * @param transId        the Transaction ID
      * @param filingResourceId the PSC Filing ID
+     * @param request           the servlet request
      * @throws NotImplementedException implementing classes must perform work
      */
     @GetMapping
@@ -50,15 +58,16 @@ public interface PscVerificationController {
         throw new NotImplementedException();
     }
 
-     /* Update a PSC Verification Statement filing resource by applying a JSON merge-patch.
-     *
-     * @param transId        the transaction ID
-     * @param filingResource the PSC Verification Filing Resource ID
-     * @param mergePatch     details of the merge-patch to apply (RFC 7396)
-     * @param request        the servlet request
-     * @throws NotImplementedException implementing classes must perform work
-     * @see <a href="https://www.rfc-editor.org/rfc/rfc7396">RFC7396</a>
-     */
+    /** 
+    * Update a PSC Verification Statement filing resource by applying a JSON merge-patch.
+    *
+    * @param transId        the transaction ID
+    * @param filingResource the PSC Verification Filing Resource ID
+    * @param mergePatch     details of the merge-patch to apply (RFC 7396)
+    * @param request        the servlet request
+    * @throws NotImplementedException implementing classes must perform work
+    * @see <a href="https://www.rfc-editor.org/rfc/rfc7396">RFC7396</a>
+    */
     @PatchMapping
     default ResponseEntity<PscVerificationApi> updatePscVerification(
             @PathVariable("transactionId") final String transId,

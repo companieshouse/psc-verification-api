@@ -4,6 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.text.SimpleDateFormat;
+
+/**
+ * Helper class for JSON conversion and mapping.
+ * <p>
+ * Provides utility methods to convert objects using a configured {@link ObjectMapper}
+ * with custom naming strategies and date formats.
+ * </p>
+ */
 public final class JsonHelper {
 
     private JsonHelper() {

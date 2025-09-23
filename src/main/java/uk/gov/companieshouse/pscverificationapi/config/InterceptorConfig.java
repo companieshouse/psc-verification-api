@@ -17,7 +17,7 @@ import uk.gov.companieshouse.pscverificationapi.interceptor.ClosedTransactionInt
 import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterceptor;
 
 /**
- * Configuration class for interceptor logging.
+ * Configuration class for setting up interceptors in the application.
  */
 @Configuration
 @ComponentScan("uk.gov.companieshouse.api")

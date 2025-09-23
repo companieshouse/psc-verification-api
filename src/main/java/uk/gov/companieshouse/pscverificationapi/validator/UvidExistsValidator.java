@@ -31,6 +31,13 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Validator for checking if a UVID exists and matches PSC data.
+ * <p>
+ * Uses {@link IdvLookupService} and {@link PscLookupService} to validate UVID accuracy and adds 
+ * errors for mismatches or missing reasons.
+ * </p>
+ */
 @Component
 public class UvidExistsValidator extends BaseVerificationValidator implements
     VerificationValidator {
@@ -78,6 +85,14 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
         super.validate(validationContext);
     }
 
+    /**
+     * Checks the list of UVID accuracy statements for mismatches and adds validation errors as needed.
+     * Adds a specific error if a name mismatch is found and no reason is provided, otherwise adds errors for other mismatches.
+     *
+     * @param accuracyStatementList list of accuracy statements from the UVID match response
+     * @param dto the PSC verification data
+     * @param validationContext the validation context to which errors are added
+     */
     public void checkForValidationErrors(List<UvidMatchResponse.AccuracyStatementEnum> accuracyStatementList,
                                         PscVerificationData dto, VerificationValidationContext validationContext) {
 
@@ -100,6 +115,16 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
         }
     }
 
+    /**
+     * Builds a UvidMatch object using PSC data and the provided transaction and type.
+     * Fetches the PSC record and populates the UvidMatch with UVID, name, and date of birth.
+     *
+     * @param transaction the transaction context
+     * @param data the PSC verification data
+     * @param pscType the PSC type
+     * @return a populated UvidMatch object
+     * @throws PscLookupServiceException if the PSC record cannot be retrieved
+     */
     public UvidMatch getUvidMatchWithPscData(final Transaction transaction,
                                              final PscVerificationData data, final PscType pscType)
         throws PscLookupServiceException {
@@ -114,8 +139,14 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
         return uvidMatch;
     }
 
+    /**
+     * Populates the UvidMatch object with name and date of birth data from the PSC record.
+     * Converts name elements and date of birth to the required formats for UVID matching.
+     *
+     * @param uvidMatch the UvidMatch object to populate
+     * @param pscData the PSC record containing name and date of birth
+     */
     private void setUvidDataFromPsc(UvidMatch uvidMatch, IndividualFullRecord pscData) {
-
         NameElements convertedNameElements = JsonHelper.convertLinkedHashmap(pscData.getNameElements(), PropertyNamingStrategies.SNAKE_CASE, NameElements.class);
         List<String> forenames = new ArrayList<>();
 
