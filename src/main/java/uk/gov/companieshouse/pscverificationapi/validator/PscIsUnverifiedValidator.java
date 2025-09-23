@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
@@ -43,10 +43,10 @@ public class PscIsUnverifiedValidator extends BaseVerificationValidator implemen
      */
     @Override
     public void validate(VerificationValidationContext validationContext) {
-        PscIndividualFullRecordApi pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
+        IndividualFullRecord individualFullRecord = pscLookupService.getIndividualFullRecord(
                 validationContext.transaction(), validationContext.dto(), validationContext.pscType());
 
-        var identityVerificationDetails = pscIndividualFullRecordApi.getIdentityVerificationDetails();
+        var identityVerificationDetails = individualFullRecord.getIdentityVerificationDetails();
 
         if (identityVerificationDetails == null) {
             logger.info(String.format(
@@ -54,11 +54,11 @@ public class PscIsUnverifiedValidator extends BaseVerificationValidator implemen
                     validationContext.dto().companyNumber(), validationContext.dto().pscNotificationId()));
 
         } else {
-            final var verificationDate = identityVerificationDetails.appointmentVerificationStartOn();
+            final var verificationDate = identityVerificationDetails.getAppointmentVerificationStartOn();
 
             //if the appointmentVerificationEndOn is in the future, then the PSC is already verified
             //revoked verifications will have an end date in the past
-            if((identityVerificationDetails.appointmentVerificationEndOn() != null && identityVerificationDetails.appointmentVerificationEndOn().isAfter(LocalDate.now()))
+            if((identityVerificationDetails.getAppointmentVerificationEndOn() != null && identityVerificationDetails.getAppointmentVerificationEndOn().isAfter(LocalDate.now()))
                     //or if there is an active verification date
                     || (verificationDate != null && !LocalDate.now().isAfter(verificationDate))
             ) {

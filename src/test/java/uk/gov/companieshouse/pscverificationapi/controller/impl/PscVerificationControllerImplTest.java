@@ -35,13 +35,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.patch.model.PatchResult;
 import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
@@ -94,7 +94,7 @@ class PscVerificationControllerImplTest {
     private HttpServletRequest request;
     @Mock
     private Transaction transaction;
-    private PscIndividualFullRecordApi pscIndividualFullRecordApi;
+    private IndividualFullRecord individualFullRecord;
     private PscVerificationApi pscVerificationApi;
     private InternalData internalData;
     private PscVerificationData filing;
@@ -114,7 +114,7 @@ class PscVerificationControllerImplTest {
             .uvid(UVID)
             .statements(EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED))
             .build();
-        pscIndividualFullRecordApi = new PscIndividualFullRecordApi().internalId(123L);
+        individualFullRecord = new IndividualFullRecord().internalId(123L);
         filing = PscVerificationData.newBuilder()
             .verificationDetails(verification)
             .companyNumber(COMPANY_NUMBER)
@@ -146,8 +146,8 @@ class PscVerificationControllerImplTest {
         final boolean nullTransaction) {
         expectTransactionIsPresent(nullPassthrough, nullTransaction);
         final var links = expectEntitySavedWithLinks();
-        when(pscLookupService.getPscIndividualFullRecord(nullTransaction ? null : transaction, filing, PscType.INDIVIDUAL))
-                .thenReturn(pscIndividualFullRecordApi);
+        when(pscLookupService.getIndividualFullRecord(nullTransaction ? null : transaction, filing, PscType.INDIVIDUAL))
+                .thenReturn(individualFullRecord);
 
         final var response = testController.createPscVerification(TRANS_ID,
             nullTransaction ? null : transaction, filing, nullBindingResult ? null : result,
@@ -172,7 +172,7 @@ class PscVerificationControllerImplTest {
 
     @Test
     void createPscVerifcationThrowsFilingExceptionWhenFullRecordNotFound() {
-        when(pscLookupService.getPscIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
+        when(pscLookupService.getIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
                 .thenThrow(new PscLookupServiceException("msg", null));
 
         assertThrows(PscLookupServiceException.class,
@@ -229,8 +229,8 @@ class PscVerificationControllerImplTest {
         mergePatch.put("psc_notification_id", PSC_ID_TO_PATCH);
 
         when(transactionService.getTransaction(TRANS_ID, null)).thenReturn(transaction);
-        when(pscLookupService.getPscIndividualFullRecord(transaction, dataToLookup, PscType.INDIVIDUAL))
-                .thenReturn(pscIndividualFullRecordApi);
+        when(pscLookupService.getIndividualFullRecord(transaction, dataToLookup, PscType.INDIVIDUAL))
+                .thenReturn(individualFullRecord);
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
                 .thenReturn(Optional.of(updatedEntity));
         when(pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(true);
@@ -255,11 +255,11 @@ class PscVerificationControllerImplTest {
                 .build();
         mergePatch.put("psc_notification_id", PSC_ID_TO_PATCH);
         PscVerificationData dataToLookup = PscVerificationData.newBuilder(filing).pscNotificationId(PSC_ID_TO_PATCH).build();
-        pscIndividualFullRecordApi.setInternalId(null);
+        individualFullRecord.setInternalId(null);
 
         when(transactionService.getTransaction(TRANS_ID, null)).thenReturn(transaction);
-        when(pscLookupService.getPscIndividualFullRecord(transaction, dataToLookup, PscType.INDIVIDUAL))
-                .thenReturn(pscIndividualFullRecordApi);
+        when(pscLookupService.getIndividualFullRecord(transaction, dataToLookup, PscType.INDIVIDUAL))
+                .thenReturn(individualFullRecord);
         when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
                 .thenReturn(Optional.of(updatedEntity));
         when(pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(true);

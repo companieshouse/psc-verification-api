@@ -9,10 +9,10 @@ import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatch;
 import uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse;
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.psc.DateOfBirth;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.api.psc.NameElements;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.exception.IdvLookupServiceException;
@@ -133,8 +133,8 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
         Optional<String> uvid = Optional.ofNullable(data.verificationDetails().uvid());
         uvidMatch.setUvid(uvid.orElse(""));
 
-        PscIndividualFullRecordApi pscIndividualFullRecord = pscLookupService.getPscIndividualFullRecord(transaction, data, pscType);
-        setUvidDataFromPsc(uvidMatch, pscIndividualFullRecord);
+        IndividualFullRecord individualFullRecord = pscLookupService.getIndividualFullRecord(transaction, data, pscType);
+        setUvidDataFromPsc(uvidMatch, individualFullRecord);
 
         return uvidMatch;
     }
@@ -146,8 +146,7 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
      * @param uvidMatch the UvidMatch object to populate
      * @param pscData the PSC record containing name and date of birth
      */
-    private void setUvidDataFromPsc(UvidMatch uvidMatch, PscIndividualFullRecordApi pscData) {
-
+    private void setUvidDataFromPsc(UvidMatch uvidMatch, IndividualFullRecord pscData) {
         NameElements convertedNameElements = JsonHelper.convertLinkedHashmap(pscData.getNameElements(), PropertyNamingStrategies.SNAKE_CASE, NameElements.class);
         List<String> forenames = new ArrayList<>();
 

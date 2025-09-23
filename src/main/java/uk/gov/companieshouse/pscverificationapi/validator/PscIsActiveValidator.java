@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.pscverificationapi.service.PscLookupService;
 
 /**
@@ -33,9 +33,9 @@ public class PscIsActiveValidator extends BaseVerificationValidator implements
     @Override
     public void validate(final VerificationValidationContext validationContext) {
 
-        PscIndividualFullRecordApi pscIndividualFullRecord = pscLookupService.getPscIndividualFullRecord(validationContext.transaction(), validationContext.dto(), validationContext.pscType());
+        IndividualFullRecord individualFullRecord = pscLookupService.getIndividualFullRecord(validationContext.transaction(), validationContext.dto(), validationContext.pscType());
 
-        if (Optional.ofNullable(pscIndividualFullRecord.getCeasedOn()).isPresent()) {
+        if (Optional.ofNullable(individualFullRecord.getCeasedOn()).isPresent()) {
             validationContext.errors().add(
                 new FieldError("object", "psc_notification_id", validationContext.dto().pscNotificationId(), false,
                     new String[]{null, validationContext.dto().pscNotificationId()}, null, validation.get("psc-is-ceased")));

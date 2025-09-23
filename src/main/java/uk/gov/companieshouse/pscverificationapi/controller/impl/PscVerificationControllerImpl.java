@@ -31,13 +31,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
-import uk.gov.companieshouse.api.model.psc.PscIndividualFullRecordApi;
 import uk.gov.companieshouse.api.model.pscverification.InternalData;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.transaction.Resource;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.patch.model.PatchResult;
 import uk.gov.companieshouse.pscverificationapi.controller.PscVerificationController;
@@ -106,9 +106,9 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             getPassthroughHeader(request));
 
         final var entity = filingMapper.toEntity(data);
-        final PscIndividualFullRecordApi pscIndividualFullRecordApi;
+        final IndividualFullRecord individualFullRecord;
         try {
-            pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
+            individualFullRecord = pscLookupService.getIndividualFullRecord(
                     requestTransaction, data, PscType.INDIVIDUAL);
         } catch (PscLookupServiceException e) {
             logMap.put(PSC_VERIFICATION_ID, data.pscNotificationId());
@@ -118,7 +118,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
                     "We are currently unable to process a Verification filing for this PSC", new Exception("Internal Id"));
         }
 
-        var internalData = InternalData.newBuilder().internalId(String.valueOf(pscIndividualFullRecordApi.getInternalId())).build();
+        var internalData = InternalData.newBuilder().internalId(String.valueOf(individualFullRecord.getInternalId())).build();
         entity.setInternalData(internalData);
 
         final var savedEntity = saveFilingWithLinks(entity, transId, request, logMap);
@@ -145,7 +145,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         final var logMap = LogMapHelper.createLogMap(transId);
         Optional<PscVerification> pscVerification = pscVerificationService.get(filingResource);
 
-        PscIndividualFullRecordApi pscIndividualFullRecordApi = null;
+        IndividualFullRecord individualFullRecord = null;
         if (mergePatch.get(PSC_VERIFICATION_ID) != null && pscVerification.isPresent()) {
             final var transaction = getTransaction(transId, null, logMap, getPassthroughHeader(request));
 
@@ -157,10 +157,10 @@ public class PscVerificationControllerImpl implements PscVerificationController 
                     .companyNumber(companyNumber)
                     .build();
 
-            pscIndividualFullRecordApi = pscLookupService.getPscIndividualFullRecord(
+            individualFullRecord = pscLookupService.getIndividualFullRecord(
                     transaction, dataToLookup, PscType.INDIVIDUAL);
 
-            if (pscIndividualFullRecordApi.getInternalId() == null) {
+            if (individualFullRecord.getInternalId() == null) {
                 logMap.put(PSC_VERIFICATION_ID, mergePatch.get(PSC_VERIFICATION_ID));
                 logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
                         mergePatch.get(PSC_VERIFICATION_ID), companyNumber),null, logMap);
@@ -202,9 +202,9 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
             final var optionalFiling = pscVerificationService.get(filingResource);
 
-            if (mergePatch.get(PSC_VERIFICATION_ID) != null && pscIndividualFullRecordApi != null) {
+            if (mergePatch.get(PSC_VERIFICATION_ID) != null && individualFullRecord != null) {
                 var internalData = InternalData.newBuilder()
-                        .internalId(String.valueOf(pscIndividualFullRecordApi.getInternalId()))
+                        .internalId(String.valueOf(individualFullRecord.getInternalId()))
                         .build();
                 optionalFiling.ifPresent(v -> v.setInternalData(internalData));
                 pscVerificationService.save(optionalFiling.orElseThrow());
