@@ -67,6 +67,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
     private static final String PATCH_FAILED = "patch failed";
     private static final String ERROR_MSG = "error";
     private static final String PSC_VERIFICATION_ID = "psc_notification_id";
+    public static final String UNABLE_TO_PROCESS_A_VERIFICATION_FILING = "We are currently unable to process a Verification filing for this PSC";
 
     private final TransactionService transactionService;
     private final PscVerificationService pscVerificationService;
@@ -112,10 +113,16 @@ public class PscVerificationControllerImpl implements PscVerificationController 
                     requestTransaction, data, PscType.INDIVIDUAL);
         } catch (PscLookupServiceException e) {
             logMap.put(PSC_VERIFICATION_ID, data.pscNotificationId());
+            logger.errorContext(String.format("Error getting full record for PSC Id %s, for company number %s",
+                    data.pscNotificationId(), data.companyNumber()), null, logMap);
+            throw new PscLookupServiceException(UNABLE_TO_PROCESS_A_VERIFICATION_FILING, new Exception());
+        }
+
+        if (individualFullRecord.getInternalId() == null) {
+            logMap.put(PSC_VERIFICATION_ID, data.pscNotificationId());
             logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
                     data.pscNotificationId(), data.companyNumber()), null, logMap);
-            throw new PscLookupServiceException(
-                    "We are currently unable to process a Verification filing for this PSC", new Exception("Internal Id"));
+            throw new PscLookupServiceException(UNABLE_TO_PROCESS_A_VERIFICATION_FILING, new Exception("Internal Id"));
         }
 
         var internalData = InternalData.newBuilder().internalId(String.valueOf(individualFullRecord.getInternalId())).build();
@@ -164,8 +171,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
                 logMap.put(PSC_VERIFICATION_ID, mergePatch.get(PSC_VERIFICATION_ID));
                 logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
                         mergePatch.get(PSC_VERIFICATION_ID), companyNumber),null, logMap);
-                throw new PscLookupServiceException(
-                        "We are currently unable to process a Verification filing for this PSC", new Exception("Internal Id"));
+                throw new PscLookupServiceException(UNABLE_TO_PROCESS_A_VERIFICATION_FILING, new Exception("Internal Id"));
             }
         }
 
