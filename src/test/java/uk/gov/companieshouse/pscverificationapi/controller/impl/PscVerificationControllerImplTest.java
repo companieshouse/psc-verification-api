@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.pscverificationapi.controller.impl.BaseControllerIT.SECOND_INSTANT;
 
@@ -18,7 +19,12 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -168,6 +174,10 @@ class PscVerificationControllerImplTest {
             .build();
 
         assertThat(response.getBody(), is(equalTo(expectedApi)));
+        if (!nullTransaction) {
+            verify(transactionService).updateTransaction(transaction, nullPassthrough ? null : PASSTHROUGH_HEADER);
+        }
+
     }
 
     @Test
