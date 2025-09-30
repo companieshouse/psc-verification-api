@@ -150,6 +150,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
                 is(INDIVIDUAL_VERIFIED.toString())));
         verify(filingMapper).toEntity(completeDto);
         verify(filingMapper).toApi(argThat((PscVerification v) -> FILING_ID.equals(v.getId())));
+        verify(transactionService).updateTransaction(transaction, PASSTHROUGH_HEADER);
     }
 
     @Test

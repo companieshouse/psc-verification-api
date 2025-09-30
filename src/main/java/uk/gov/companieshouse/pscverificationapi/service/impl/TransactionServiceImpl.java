@@ -62,14 +62,14 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void updateTransaction(final Transaction transaction)
+    public void updateTransaction(final Transaction transaction, final String ericPassThroughHeader)
             throws TransactionServiceException {
         final var logMap = LogMapHelper.createLogMap(transaction.getId());
         try {
             logger.debugContext(transaction.getId(), "Updating transaction", logMap);
             final var uri = "/private/transactions/" + transaction.getId();
             final var resp =
-                    apiClientService.getInternalApiClient()
+                    apiClientService.getInternalApiClient(ericPassThroughHeader)
                             .privateTransaction()
                             .patch(uri, transaction)
                             .execute();
@@ -87,7 +87,7 @@ public class TransactionServiceImpl implements TransactionService {
                             transaction.getId(), e.getStatusCode(), e.getStatusMessage()), e);
 
         }
-        catch (final URIValidationException e) {
+        catch (final URIValidationException | IOException e) {
             logger.errorContext(transaction.getId(), UNEXPECTED_STATUS_CODE, e, logMap);
             throw new TransactionServiceException(
                     MessageFormat.format("Error Updating Transaction {0}: {1}", transaction.getId(),

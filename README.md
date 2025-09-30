@@ -81,7 +81,6 @@ System properties for **psc-verification-api** are defined in `application.prope
 | MANAGEMENT_ENDPOINTS_WEB_PATH_MAPPING_HEALTH | Path mapping for the healthcheck endpoint. |
 | MONGO_PSC_VERIFICATIONS_API_DB_NAME | Name of the MongoDB database used for storing PSC verification filings. |
 | MONGODB_URL | Connection URL for the MongoDB instance. |
-| ORACLE_QUERY_API_URL | URL for the **oracle-query-api**. |
 | *PLANNED_MAINTENANCE_START_TIME*[^1] | Start time for a planned maintenance period. |
 | *PLANNED_MAINTENANCE_END_TIME*[^1] | End time for a planned maintenance period. |
 | *PLANNED_MAINTENANCE_MESSAGE* | Message displayed during a planned maintenance period. |

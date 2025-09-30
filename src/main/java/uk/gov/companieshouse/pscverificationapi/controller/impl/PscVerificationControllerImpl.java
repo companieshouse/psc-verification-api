@@ -131,7 +131,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         final var savedEntity = saveFilingWithLinks(entity, transId, request, logMap);
 
         if (transaction != null) {
-            updateTransactionResources(requestTransaction, savedEntity.getLinks());
+            updateTransactionResources(requestTransaction, getPassthroughHeader(request), savedEntity.getLinks());
         }
 
         final var response = filingMapper.toApi(savedEntity);
@@ -359,12 +359,12 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             .build();
     }
 
-    private void updateTransactionResources(final Transaction transaction,
+    private void updateTransactionResources(final Transaction transaction, final String ericPassThroughHeader,
         final ResourceLinks links) {
         final var resourceMap = buildResourceMap(links);
 
         transaction.setResources(resourceMap);
-        transactionService.updateTransaction(transaction);
+        transactionService.updateTransaction(transaction, ericPassThroughHeader);
     }
 
     private Map<String, Resource> buildResourceMap(final ResourceLinks links) {

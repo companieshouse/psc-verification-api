@@ -23,9 +23,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -275,7 +273,6 @@ class RestExceptionHandlerTest {
         assertThat(apiErrors.getErrors(), contains(expectedError));
     }
 
-    @Disabled("Similar tests pass but this fails - looking into issue")
     @Test
     void handleConflictingFilingException() {
 
@@ -288,13 +285,13 @@ class RestExceptionHandlerTest {
 
         assertThat(apiErrors.getErrors(), containsInAnyOrder(
             allOf(
-                hasProperty(ERROR_PROP, is("field is blank")),
+                hasProperty(ERROR_PROP, is("error")),
                 hasProperty(LOCATION_PROP, is("$.company_number")),
                 hasProperty(LOCATION_TYPE_PROP, is("json-path")),
                 hasProperty(TYPE_PROP, is("ch:validation"))
             ),
             allOf(
-                hasProperty(ERROR_PROP, is("{rejected-value} is ceased")),
+                hasProperty(ERROR_PROP, is("errorWithRejectedValue")),
                 hasProperty(LOCATION_PROP, is("$.psc_notification_id")),
                 hasProperty(LOCATION_TYPE_PROP, is("json-path")),
                 hasProperty(TYPE_PROP, is("ch:validation")),
