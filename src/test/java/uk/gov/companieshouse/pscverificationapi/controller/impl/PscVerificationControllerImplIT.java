@@ -16,6 +16,7 @@ import static uk.gov.companieshouse.api.model.pscverification.VerificationStatem
 
 import java.net.URI;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +36,7 @@ import uk.gov.companieshouse.api.interceptor.OpenTransactionInterceptor;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
 import uk.gov.companieshouse.api.model.psc.PscApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
+import uk.gov.companieshouse.api.psc.IdentityVerificationDetails;
 import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.config.IntegrationTestConfig;
@@ -99,6 +101,7 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
     private PscVerificationData completeDto;
     private String individualPayload;
     private PscVerification entity;
+    private IdentityVerificationDetails idvDetails;
 
     @BeforeEach
     void setUp() {
@@ -117,12 +120,17 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
             .links(links)
             .build();
         individualPayload = "{" + COMMON_FRAGMENT + INDIVIDUAL_FRAGMENT + "}";
+        idvDetails = new IdentityVerificationDetails()
+                .appointmentVerificationStatementDate(LocalDate.now().minusDays(7))
+                .appointmentVerificationStatementDueOn(LocalDate.now().plusDays(7));
         when(openTransactionInterceptor.preHandle(any(), any(), any())).thenReturn(true);
     }
 
     @Test
     void createVerificationWhenPayloadOk() throws Exception {
         when(transactionService.getTransaction(TRANS_ID, PASSTHROUGH_HEADER)).thenReturn(transaction);
+        when(individualFullRecord.getInternalId()).thenReturn(Long.valueOf("123"));
+        when(individualFullRecord.getIdentityVerificationDetails()).thenReturn(idvDetails);
         when(lookupService.getIndividualFullRecord(transaction, completeDto, PscType.INDIVIDUAL)).thenReturn(
             individualFullRecord);
         when(pscVerificationService.save(any(PscVerification.class))).thenReturn(

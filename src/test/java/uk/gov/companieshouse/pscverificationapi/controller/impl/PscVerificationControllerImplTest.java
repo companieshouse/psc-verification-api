@@ -47,6 +47,7 @@ import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.pscverification.VerificationDetails;
 import uk.gov.companieshouse.api.model.pscverification.VerificationStatementConstants;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
+import uk.gov.companieshouse.api.psc.IdentityVerificationDetails;
 import uk.gov.companieshouse.api.psc.IndividualFullRecord;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.patch.model.PatchResult;
@@ -79,6 +80,9 @@ class PscVerificationControllerImplTest {
         "/transactions/" + TRANS_ID + "/persons-with-significant-control-verification");
 
     private static final LocalDate TEST_DATE = LocalDate.of(2024, 5, 5);
+    public static final LocalDate APPOINTMENT_VERIFICATION_STATEMENT_DATE = LocalDate.now().minusDays(7);
+    public static final LocalDate APPOINTMENT_VERIFICATION_STATEMENT_DUE_ON = LocalDate.now().plusDays(7);
+    public static final long INTERNAL_ID = 123L;
 
     private PscVerificationController testController;
 
@@ -102,7 +106,6 @@ class PscVerificationControllerImplTest {
     private Transaction transaction;
     private IndividualFullRecord individualFullRecord;
     private PscVerificationApi pscVerificationApi;
-    private InternalData internalData;
     private PscVerificationData filing;
     private PscVerification entity;
     private PscVerification entityWithLinks;
@@ -116,17 +119,21 @@ class PscVerificationControllerImplTest {
     void setUp() {
         testController = new PscVerificationControllerImpl(transactionService,
             pscVerificationService, pscLookupService, filingMapper, clock, logger);
-        VerificationDetails verification = VerificationDetails.newBuilder()
+        final var verification = VerificationDetails.newBuilder()
             .uvid(UVID)
             .statements(EnumSet.of(VerificationStatementConstants.INDIVIDUAL_VERIFIED))
             .build();
-        individualFullRecord = new IndividualFullRecord().internalId(123L);
+        final var identityVerificationDetails = new IdentityVerificationDetails()
+                .appointmentVerificationStatementDate(APPOINTMENT_VERIFICATION_STATEMENT_DATE)
+                .appointmentVerificationStatementDueOn(APPOINTMENT_VERIFICATION_STATEMENT_DUE_ON);
+        individualFullRecord = new IndividualFullRecord().internalId(INTERNAL_ID)
+                .identityVerificationDetails(identityVerificationDetails);
         filing = PscVerificationData.newBuilder()
             .verificationDetails(verification)
             .companyNumber(COMPANY_NUMBER)
             .pscNotificationId(PSC_ID)
             .build();
-        internalData = InternalData.newBuilder().internalId("123").build();
+        InternalData internalData = InternalData.newBuilder().internalId("123").build();
         entity = PscVerification.newBuilder()
             .createdAt(FIRST_INSTANT)
             .updatedAt(FIRST_INSTANT)
@@ -140,7 +147,7 @@ class PscVerificationControllerImplTest {
                 .data(filing).links(links)
                 .build();
         entityWithLinks = PscVerification.newBuilder(entity).links(links).build();
-        var mergeVerificationDetails = new HashMap<>(Map.of());
+        final var mergeVerificationDetails = new HashMap<>(Map.of());
         mergePatch = new HashMap<>();
         mergePatch.put("verification_details", mergeVerificationDetails);
     }
@@ -189,10 +196,67 @@ class PscVerificationControllerImplTest {
                 () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));
     }
 
+    //Missing mandatory internalId and statement dates
     @Test
-    void createPscVerificationThrowsPscLookupExceptionWhenNoInternalId() {
+    void createPscVerificationThrowsPscLookupExceptionWhenMissingMandatoryData() {
+
         when(pscLookupService.getIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
                 .thenReturn(new IndividualFullRecord());
+
+        assertThrows(PscLookupServiceException.class,
+                () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));
+    }
+
+    @Test
+    void createPscVerificationThrowsPscLookupExceptionWhenNoInternalId() {
+        var idvDetailsNoInternalId = new IdentityVerificationDetails()
+                .appointmentVerificationStatementDate(APPOINTMENT_VERIFICATION_STATEMENT_DATE)
+                .appointmentVerificationStatementDueOn(APPOINTMENT_VERIFICATION_STATEMENT_DUE_ON);
+
+        var individualFullRecordNoInternalId = new IndividualFullRecord()
+                .identityVerificationDetails(idvDetailsNoInternalId);
+
+        when(pscLookupService.getIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
+                .thenReturn(individualFullRecordNoInternalId);
+
+        assertThrows(PscLookupServiceException.class,
+                () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));
+    }
+
+    @Test
+    void createPscVerificationThrowsPscLookupExceptionWhenNoStatementDates() {
+        var individualFullRecordNoStmtDates = new IndividualFullRecord().internalId(INTERNAL_ID);
+
+        when(pscLookupService.getIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
+                .thenReturn(individualFullRecordNoStmtDates);
+
+        assertThrows(PscLookupServiceException.class,
+                () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));
+    }
+
+    @Test
+    void createPscVerificationThrowsPscLookupExceptionWhenNoStatementDate() {
+        var idvDetailsNoStmtDate = new IdentityVerificationDetails()
+                .appointmentVerificationStatementDueOn(APPOINTMENT_VERIFICATION_STATEMENT_DUE_ON);
+        var individualFullRecordNoStmtDate = new IndividualFullRecord().internalId(INTERNAL_ID)
+                .identityVerificationDetails(idvDetailsNoStmtDate);
+
+        when(pscLookupService.getIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
+                .thenReturn(individualFullRecordNoStmtDate);
+
+        assertThrows(PscLookupServiceException.class,
+                () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));
+    }
+
+    @Test
+    void createPscVerificationThrowsPscLookupExceptionWhenNoStatementDueOnDate() {
+        var idvDetailsNoStmtDueDate = new IdentityVerificationDetails()
+                .appointmentVerificationStatementDate(APPOINTMENT_VERIFICATION_STATEMENT_DATE);
+        var individualFullRecordNoStmtDueOnDate = new IndividualFullRecord().internalId(INTERNAL_ID)
+                .identityVerificationDetails(idvDetailsNoStmtDueDate);
+
+        when(pscLookupService.getIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
+                .thenReturn(individualFullRecordNoStmtDueOnDate);
 
         assertThrows(PscLookupServiceException.class,
                 () ->testController.createPscVerification(TRANS_ID, transaction, filing, result, request));

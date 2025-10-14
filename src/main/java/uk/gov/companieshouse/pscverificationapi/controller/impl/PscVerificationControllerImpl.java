@@ -118,6 +118,18 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             throw new PscLookupServiceException(UNABLE_TO_PROCESS_A_VERIFICATION_FILING, new Exception());
         }
 
+        var identityDetails = individualFullRecord.getIdentityVerificationDetails();
+        if (identityDetails == null ||
+                identityDetails.getAppointmentVerificationStatementDate() == null ||
+                identityDetails.getAppointmentVerificationStatementDueOn() == null) {
+            logMap.put(PSC_VERIFICATION_ID, data.pscNotificationId());
+            logger.errorContext(String.format(
+                    "PSC Id %s does not have required statement dates, appointment_verification_statement_date and/or " +
+                            "appointment_verification_statement_due_on, in PSC Data API for company number %s",
+                    data.pscNotificationId(), data.companyNumber()), null, logMap);
+            throw new PscLookupServiceException(UNABLE_TO_PROCESS_A_VERIFICATION_FILING, new Exception("Missing statement dates"));
+        }
+
         if (individualFullRecord.getInternalId() == null) {
             logMap.put(PSC_VERIFICATION_ID, data.pscNotificationId());
             logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
