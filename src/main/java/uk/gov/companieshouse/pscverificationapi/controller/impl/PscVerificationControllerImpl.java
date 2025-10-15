@@ -87,6 +87,11 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             this.logger = logger;
     }
 
+    /**
+     * Creates a new PSC Verification filing.
+     * Checks for validation errors and retrieves the full PSC record from the PSC Data API. Request must include
+     * appointment verification statement dates. If the full record is successfully retrieved, the filing is saved.
+     */
     @Override
     @Transactional
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
