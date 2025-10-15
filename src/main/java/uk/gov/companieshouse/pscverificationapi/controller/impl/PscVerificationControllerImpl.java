@@ -123,7 +123,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             throw new PscLookupServiceException(UNABLE_TO_PROCESS_A_VERIFICATION_FILING, new Exception());
         }
 
-        var identityDetails = individualFullRecord.getIdentityVerificationDetails();
+        final var identityDetails = individualFullRecord.getIdentityVerificationDetails();
         if (identityDetails == null ||
                 identityDetails.getAppointmentVerificationStatementDate() == null ||
                 identityDetails.getAppointmentVerificationStatementDueOn() == null) {
