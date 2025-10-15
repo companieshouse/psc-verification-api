@@ -118,7 +118,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             throw new PscLookupServiceException(UNABLE_TO_PROCESS_A_VERIFICATION_FILING, new Exception());
         }
 
-        if (individualFullRecord.getInternalId() == null) {
+        if (Optional.ofNullable(individualFullRecord.getInternalId()).isEmpty()) {
             logMap.put(PSC_VERIFICATION_ID, data.pscNotificationId());
             logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
                     data.pscNotificationId(), data.companyNumber()), null, logMap);
@@ -167,7 +167,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
             individualFullRecord = pscLookupService.getIndividualFullRecord(
                     transaction, dataToLookup, PscType.INDIVIDUAL);
 
-            if (individualFullRecord.getInternalId() == null) {
+            if (Optional.ofNullable(individualFullRecord.getInternalId()).isEmpty()) {
                 logMap.put(PSC_VERIFICATION_ID, mergePatch.get(PSC_VERIFICATION_ID));
                 logger.errorContext(String.format("PSC Id %s does not have an Internal ID in PSC Data API for company number %s",
                         mergePatch.get(PSC_VERIFICATION_ID), companyNumber),null, logMap);
