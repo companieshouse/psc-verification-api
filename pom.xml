@@ -37,7 +37,7 @@
         <structured-logging.version>3.0.39</structured-logging.version>
         <api-security-java.version>2.0.13</api-security-java.version>
         <api-helper-java.version>3.0.2</api-helper-java.version>
-        <api-sdk-java.version>unversioned</api-sdk-java.version>
+        <api-sdk-java.version>6.4.12</api-sdk-java.version>
         <sdk-manager-java.version>3.0.11</sdk-manager-java.version>
         <api-sdk-manager-java-library.version>3.0.11</api-sdk-manager-java-library.version>
         <private-api-sdk-java.version>4.0.380</private-api-sdk-java.version>
