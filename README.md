@@ -64,28 +64,27 @@ System properties for **psc-verification-api** are defined in `application.prope
 
 *If a variable appears in italics, it's optional.*
 
-| Variable | Description |
-|----------|-------------|
-| ACCOUNT_COOKIE_DOMAIN | Domain for account-related cookies. |
-| API_URL | URL for API calls. |
-| CHS_INTERNAL_API_KEY | API key for internal CHS services. |
-| COOKIE_DOMAIN | Domain for cookies. |
-| COOKIE_NAME | Name of the cookie used for session management. |
-| COOKIE_SECRET | Secret key used to sign and verify cookies. |
-| COOKIE_SECURE_ONLY | Flag indicating whether cookies should only be sent over secure (HTTPS) connections. |
-| *FEATURE_FLAG_TRANSACTIONS_CLOSABLE_250124* | Feature flag to enable or disable the ability to close transactions. |
-| *HUMAN_LOG* | Flag to enable human-readable logging (0 or 1). |
-| INTERNAL_API_URL | URL for internal API calls. |
-| MANAGEMENT_ENDPOINT_HEALTH_ENABLED | Flag to enable or disable the health management endpoint. |
-| MANAGEMENT_ENDPOINTS_WEB_BASE_PATH | Base path for web management endpoints. |
-| MANAGEMENT_ENDPOINTS_WEB_PATH_MAPPING_HEALTH | Path mapping for the healthcheck endpoint. |
-| MONGO_PSC_VERIFICATIONS_API_DB_NAME | Name of the MongoDB database used for storing PSC verification filings. |
-| MONGODB_URL | Connection URL for the MongoDB instance. |
-| *PLANNED_MAINTENANCE_START_TIME*[^1] | Start time for a planned maintenance period. |
-| *PLANNED_MAINTENANCE_END_TIME*[^1] | End time for a planned maintenance period. |
-| *PLANNED_MAINTENANCE_MESSAGE* | Message displayed during a planned maintenance period. |
-| PSC_VERIFICATION_DESCRIPTION | Description of the PSC verification service. |
-| *WEB_LOGGING_LEVEL* | Logging level for Spring Web. |
+| Variable | Description                                                                           |
+|----------|---------------------------------------------------------------------------------------|
+| ACCOUNT_COOKIE_DOMAIN | Domain for account-related cookies.                                                   |
+| API_URL | URL for API calls.                                                                    |
+| CHS_INTERNAL_API_KEY | API key for internal CHS services.                                                    |
+| COOKIE_DOMAIN | Domain for cookies.                                                                   |
+| COOKIE_NAME | Name of the cookie used for session management.                                       |
+| COOKIE_SECRET | Secret key used to sign and verify cookies.                                           |
+| COOKIE_SECURE_ONLY | Flag indicating whether cookies should only be sent over secure (HTTPS) connections.  |
+| *HUMAN_LOG* | Flag to enable human-readable logging (0 or 1).                                       |
+| INTERNAL_API_URL | URL for internal API calls.                                                           |
+| MANAGEMENT_ENDPOINT_HEALTH_ENABLED | Flag to enable or disable the health management endpoint.                             |
+| MANAGEMENT_ENDPOINTS_WEB_BASE_PATH | Base path for web management endpoints.                                               |
+| MANAGEMENT_ENDPOINTS_WEB_PATH_MAPPING_HEALTH | Path mapping for the healthcheck endpoint.                                            |
+| MONGO_PSC_VERIFICATIONS_API_DB_NAME | Name of the MongoDB database used for storing PSC verification filings.               |
+| MONGODB_URL | Connection URL for the MongoDB instance.                                              |
+| *PLANNED_MAINTENANCE_START_TIME*[^1] | Start time for a planned maintenance period.                                          |
+| *PLANNED_MAINTENANCE_END_TIME*[^1] | End time for a planned maintenance period.                                            |
+| *PLANNED_MAINTENANCE_MESSAGE* | Message displayed during a planned maintenance period.                                |
+| PSC_VERIFICATION_DESCRIPTION | Description of the PSC verification service.                                          |
+| *WEB_LOGGING_LEVEL* | Logging level for Spring Web.                                                         |
 
 [^1]: When setting planned maintenance times, ensure both the start and end times are specified.
 
