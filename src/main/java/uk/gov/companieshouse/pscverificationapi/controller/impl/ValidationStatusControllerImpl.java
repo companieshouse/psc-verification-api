@@ -1,9 +1,16 @@
 package uk.gov.companieshouse.pscverificationapi.controller.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashSet;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusError;
 import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse;
@@ -18,8 +25,6 @@ import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationService;
 import uk.gov.companieshouse.pscverificationapi.validator.VerificationValidationContext;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
-
-import java.util.HashSet;
 
 /**
  * Implementation of the {@link ValidationStatusController} interface.
