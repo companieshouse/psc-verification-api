@@ -3,7 +3,6 @@ package uk.gov.companieshouse.pscverificationapi.controller.impl;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +17,6 @@ import uk.gov.companieshouse.api.model.validationstatus.ValidationStatusResponse
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.controller.ValidationStatusController;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
-import uk.gov.companieshouse.pscverificationapi.error.ErrorType;
 import uk.gov.companieshouse.pscverificationapi.exception.FilingResourceNotFoundException;
 import uk.gov.companieshouse.pscverificationapi.helper.LogMapHelper;
 import uk.gov.companieshouse.pscverificationapi.mapper.ErrorMapper;
@@ -34,26 +32,19 @@ import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 @RestController
 @RequestMapping("/transactions/{transactionId}/persons-with-significant-control-verification")
 public class ValidationStatusControllerImpl implements ValidationStatusController {
-    public static final String TRANSACTION_NOT_SUPPORTED_ERROR =
-            "Transaction not supported: FEATURE_FLAG_TRANSACTIONS_CLOSABLE_250124=false";
     private final PscVerificationService pscVerificationService;
     private final VerificationValidationService validatorService;
     private final ErrorMapper errorMapper;
     private final Logger logger;
-    private final boolean isTransactionsCloseableEnabled;
 
-    public ValidationStatusControllerImpl(final PscVerificationService pscVerificationService, VerificationValidationService validatorService,
-                                          final ErrorMapper errorMapper,
-                                          @Value("#{new Boolean('${feature.flag.transactions.closable}')}")
-                                          final boolean isTransactionsClosableEnabled, final Logger logger) {
+    public ValidationStatusControllerImpl(final PscVerificationService pscVerificationService,
+                                          VerificationValidationService validatorService, final ErrorMapper errorMapper,
+                                          final Logger logger) {
         this.pscVerificationService = pscVerificationService;
         this.validatorService = validatorService;
         this.errorMapper = errorMapper;
-        this.isTransactionsCloseableEnabled = isTransactionsClosableEnabled;
         this.logger = logger;
 
-        logger.info(
-                String.format("Setting \"feature.flag.transactions.closable\" to: %s", isTransactionsClosableEnabled));
     }
 
     @Override
@@ -88,17 +79,10 @@ public class ValidationStatusControllerImpl implements ValidationStatusControlle
                                              final Transaction transaction) {
 
         final var validationStatus = new ValidationStatusResponse();
-        if (isTransactionsCloseableEnabled) {
             final var validationErrors = calculateIsValid(pscVerification, passthroughHeader, transaction);
 
             validationStatus.setValid(validationErrors.length == 0);
             validationStatus.setValidationStatusError(validationErrors);
-        }
-        else {
-            validationStatus.setValidationStatusError(new ValidationStatusError[]{
-                    new ValidationStatusError(TRANSACTION_NOT_SUPPORTED_ERROR, null, null,
-                            ErrorType.SERVICE.getType())});
-        }
         return validationStatus;
     }
 

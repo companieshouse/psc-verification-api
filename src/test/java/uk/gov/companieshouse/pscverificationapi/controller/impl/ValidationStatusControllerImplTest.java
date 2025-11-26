@@ -4,11 +4,9 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyArray;
-import static org.hamcrest.collection.IsArrayWithSize.arrayWithSize;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
-import static uk.gov.companieshouse.pscverificationapi.controller.impl.ValidationStatusControllerImpl.TRANSACTION_NOT_SUPPORTED_ERROR;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
@@ -53,21 +51,8 @@ class ValidationStatusControllerImplTest {
 
     @BeforeEach
     void setUp() {
-        testController = new ValidationStatusControllerImpl(pscVerificationService, validatorService, errorMapper, true, logger);
+        testController = new ValidationStatusControllerImpl(pscVerificationService, validatorService, errorMapper, logger);
         when(request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader())).thenReturn(PASSTHROUGH_HEADER);
-    }
-
-    @Test
-    void validateWhenClosableFlagFalse() {
-        testController = new ValidationStatusControllerImpl(pscVerificationService, validatorService, errorMapper, false, logger);
-        final var filing = PscVerification.newBuilder().build();
-        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(filing));
-
-        final var response = testController.validate(TRANS_ID, FILING_ID, transaction, request);
-
-        assertThat(response.isValid(), is(false));
-        assertThat(response.getValidationStatusError(), is(arrayWithSize(1)));
-        assertThat(response.getValidationStatusError()[0].getError(), is(TRANSACTION_NOT_SUPPORTED_ERROR));
     }
 
     @Test

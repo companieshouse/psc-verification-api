@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,6 +194,16 @@ class PscVerificationControllerImplIT extends BaseControllerIT {
                 .andDo(print())
                 .andExpect(status().isNotFound());
         verifyNoInteractions(filingMapper, transactionService);
+    }
+
+    @Test
+    @DisplayName("Test related to bug PSC-118")
+    void expectNotFoundResponseWhenPathInvalid() throws Exception {
+        mockMvc.perform(
+                        get("/transactions/{transactionId}/persons-with-significant-control/" +
+                                        "{filingResourceId}/validation",
+                                TRANS_ID, FILING_ID).requestAttr("transaction", transaction).headers(httpHeaders))
+                .andDo(print()).andExpect(status().isNotFound()).andExpect(jsonPath("$").doesNotExist());
     }
 
 }
