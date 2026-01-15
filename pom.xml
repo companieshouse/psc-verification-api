@@ -63,13 +63,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- CVE-2025-48924 workaround in structured-logging@3.0.37 transitive dependency commons-lang3-3.17.0 -->
+            <!-- PINNED: CVE-2025-48924 workaround in structured-logging@3.0.46 transitive dependency commons-lang@3-3.17.0 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3-version}</version>
             </dependency>
-            <!-- CVE-2025-68161 workaround in spring-boot-starter-actuator@3.5.9 transitive dependency log4j-api2.24.3 -->
+            <!-- PINNED: CVE-2025-68161 workaround in spring-boot-starter-actuator@3.5.9 transitive dependency log4j-api@2.24.3 -->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
