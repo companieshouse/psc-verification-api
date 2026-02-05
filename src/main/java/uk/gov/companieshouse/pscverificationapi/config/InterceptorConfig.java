@@ -22,13 +22,17 @@ import uk.gov.companieshouse.pscverificationapi.interceptor.RequestLoggingInterc
 @Configuration
 @ComponentScan("uk.gov.companieshouse.api")
 public class InterceptorConfig implements WebMvcConfigurer {
+
+    @SuppressWarnings("java:S1075")
+    public static final String BASE_PATH = "/persons-with-significant-control-verification";
     public static final String COMMON_INTERCEPTOR_PATH =
-            "/transactions/{transaction_id}/persons-with-significant-control-verification";
+            "/transactions/{transaction_id}" + BASE_PATH;
     public static final String COMMON_INTERCEPTOR_RESOURCE_PATH =
         COMMON_INTERCEPTOR_PATH + "/{filing_resource_id}";
     public static final String FILINGS_RESOURCE_PATH =
         "/private" + COMMON_INTERCEPTOR_RESOURCE_PATH + "/filings";
     private static final String PSC_VERIFICATION_API = "psc-verification-api";
+    public static final String HEALTHCHECK_PATH = BASE_PATH + "/healthcheck";
 
     /**
      * Set up the interceptors to run against endpoints when the endpoints are called
@@ -73,6 +77,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     private void addLoggingInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(requestLoggingInterceptor())
+            .excludePathPatterns(HEALTHCHECK_PATH)
             .order(6);
     }
 
