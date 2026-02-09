@@ -34,13 +34,13 @@
         <equalsverifier.version>3.15.1</equalsverifier.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <!--- CH -->
-        <structured-logging.version>3.0.46</structured-logging.version>
+        <structured-logging.version>3.0.48</structured-logging.version>
         <api-security-java.version>2.0.18</api-security-java.version>
         <api-helper-java.version>3.0.3</api-helper-java.version>
-        <api-sdk-java.version>6.6.1</api-sdk-java.version>
+        <api-sdk-java.version>6.6.3</api-sdk-java.version>
         <sdk-manager-java.version>3.0.14</sdk-manager-java.version>
-        <api-sdk-manager-java-library.version>3.0.14</api-sdk-manager-java-library.version>
-        <private-api-sdk-java.version>4.0.438</private-api-sdk-java.version>
+        <api-sdk-manager-java-library.version>3.0.15</api-sdk-manager-java-library.version>
+        <private-api-sdk-java.version>4.0.450</private-api-sdk-java.version>
         <!--sonar configuration-->
         <sonar-maven-plugin.version>5.2.0.4988</sonar-maven-plugin.version>
         <sonar.java.binaries>${project.basedir}/target,${project.basedir}/target/*</sonar.java.binaries>
@@ -50,6 +50,7 @@
         <sonar.password/>
         <sonar.projectKey>uk.gov.companieshouse:psc-verification-api</sonar.projectKey>
         <sonar.projectName>psc-verification-api</sonar.projectName>
+        <sonar.jacoco.reports>${project.basedir}/target/site</sonar.jacoco.reports>
         <sonar.dependencyCheck.htmlReportPath>
             ${project.basedir}/target/dependency-check-report.html
         </sonar.dependencyCheck.htmlReportPath>
@@ -103,6 +104,12 @@
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>structured-logging</artifactId>
             <version>${structured-logging.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- CH SDKs -->
         <dependency>
@@ -120,6 +127,12 @@
             <groupId>uk.gov.companieshouse</groupId>
             <artifactId>private-api-sdk-java</artifactId>
             <version>${private-api-sdk-java.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>uk.gov.companieshouse</groupId>
