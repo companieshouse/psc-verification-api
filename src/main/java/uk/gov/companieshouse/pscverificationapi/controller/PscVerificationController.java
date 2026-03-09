@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,7 @@ import uk.gov.companieshouse.api.model.pscverification.PscVerificationApi;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;
 import uk.gov.companieshouse.pscverificationapi.exception.NotImplementedException;
+import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 
 /**
  * Interface for handling PSC verification operations.
@@ -55,6 +58,13 @@ public interface PscVerificationController {
             @PathVariable("transactionId") final String transId,
             @PathVariable("filingResourceId") final String filingResourceId,
             final HttpServletRequest request) {
+        throw new NotImplementedException();
+    }
+
+    @GetMapping
+    default Optional<PscVerification> getPscVerificationByNotificationId(
+        @PathVariable("notificationId") final String notificationId,
+        final HttpServletRequest request) {
         throw new NotImplementedException();
     }
 

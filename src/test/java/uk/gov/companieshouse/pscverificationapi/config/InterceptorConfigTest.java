@@ -51,7 +51,8 @@ class InterceptorConfigTest {
     @Test
     void addInterceptors() {
 
-        verify(interceptorRegistry.addInterceptor(any(TransactionInterceptor.class))).order(1);
+        verify(interceptorRegistry.addInterceptor(any(TransactionInterceptor.class))
+            .excludePathPatterns("/persons-with-significant-control-verification/{notificationId}")).order(1);
         verify(interceptorRegistry.addInterceptor(any(OpenTransactionInterceptor.class))
             .addPathPatterns(
                 "/transactions/{transaction_id}/persons-with-significant-control-verification",

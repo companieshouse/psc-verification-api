@@ -1,6 +1,8 @@
 package uk.gov.companieshouse.pscverificationapi.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import uk.gov.companieshouse.patch.model.PatchResult;
@@ -29,6 +31,14 @@ public interface PscVerificationService extends PatchService<PscVerification> {
      * @return the stored entity if found
      */
     Optional<PscVerification> get(String filingId);
+
+    /**
+     * Retrieve a stored PscVerification entity by Notification ID.
+     *
+     * @param notificationId   the Notification ID
+     * @return the stored entity if found
+     */
+    Optional<List<PscVerification>> getByNotificationId(final String notificationId);
 
     /**
      * Update a PSCVerification entity by Filing ID.

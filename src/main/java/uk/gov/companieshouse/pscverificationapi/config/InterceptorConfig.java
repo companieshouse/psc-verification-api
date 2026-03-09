@@ -53,6 +53,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     private void addTransactionInterceptor(final InterceptorRegistry registry) {
         registry.addInterceptor(transactionInterceptor())
+            .excludePathPatterns("/persons-with-significant-control-verification/{notificationId}")
             .order(1);
     }
 
