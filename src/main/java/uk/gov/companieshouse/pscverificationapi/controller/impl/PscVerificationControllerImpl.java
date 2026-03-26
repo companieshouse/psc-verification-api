@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.gov.companieshouse.api.model.common.ResourceLinks;
@@ -59,7 +58,6 @@ import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
  * Implementation of the {@link PscVerificationController} interface.
  */
 @RestController
-@RequestMapping("/transactions/{transactionId}/persons-with-significant-control-verification")
 public class PscVerificationControllerImpl implements PscVerificationController {
     public static final String VALIDATION_STATUS = "validation_status";
     private static final String PATCH_RESULT_MSG = "PATCH result";
@@ -94,7 +92,8 @@ public class PscVerificationControllerImpl implements PscVerificationController 
      */
     @Override
     @Transactional
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/transactions/{transactionId}/persons-with-significant-control-verification",
+        produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PscVerificationApi> createPscVerification(
         @PathVariable("transactionId") final String transId,
         @RequestAttribute(required = false, name = "transaction") final Transaction transaction,
@@ -158,8 +157,8 @@ public class PscVerificationControllerImpl implements PscVerificationController 
 
     @Override
     @Transactional
-    @PatchMapping(value = "/{filingResourceId}", produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = "application/merge-patch+json")
+    @PatchMapping(value = "/transactions/{transactionId}/persons-with-significant-control-verification/{filingResourceId}",
+        produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PscVerificationApi> updatePscVerification(
             @PathVariable("transactionId") final String transId,
             @PathVariable("filingResourceId") final String filingResource,
@@ -267,7 +266,7 @@ public class PscVerificationControllerImpl implements PscVerificationController 
     }
 
     @Override
-    @GetMapping(value = "/{filingResourceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/transactions/{transactionId}/persons-with-significant-control-verification/{filingResourceId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PscVerificationApi> getPscVerification(
             @PathVariable("transactionId") final String transId,
             @PathVariable("filingResourceId") final String filingResourceId,
@@ -280,6 +279,20 @@ public class PscVerificationControllerImpl implements PscVerificationController 
         return pscVerification.map(filingMapper::toApi).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound()
                         .build());
+    }
+
+    @Override
+    @GetMapping(value = "/persons-with-significant-control-verification/{notificationId}",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public Optional<PscVerification> getPscVerificationByNotificationId(
+        @PathVariable("notificationId") final String notificationId,
+        final HttpServletRequest request) {
+
+        Optional<List<PscVerification>> resultsOpt = pscVerificationService.getByNotificationId(notificationId);
+        if (resultsOpt.isEmpty() || resultsOpt.get().isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(resultsOpt.get().getLast());
     }
 
     /**

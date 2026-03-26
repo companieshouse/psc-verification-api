@@ -51,5 +51,9 @@ class PscVerificationControllerTest {
                 () -> testController.getPscVerification(TRANSACTION_ID, "filing-resource-id", request));
     }
 
-
+    @Test
+    void getPscVerificationByNotificationId() {
+        assertThrows(NotImplementedException.class,
+            () -> testController.getPscVerificationByNotificationId("notification-id", request));
+    }
 }

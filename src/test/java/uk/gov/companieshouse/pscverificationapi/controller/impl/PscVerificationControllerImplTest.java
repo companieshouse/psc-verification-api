@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -19,6 +20,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -109,6 +111,7 @@ class PscVerificationControllerImplTest {
     private PscVerificationData filing;
     private PscVerification entity;
     private PscVerification entityWithLinks;
+    private List<PscVerification> entityWithLinksList;
     private Map<String, Object> mergePatch;
 
     public static Stream<Arguments> provideCreateParams() {
@@ -147,6 +150,7 @@ class PscVerificationControllerImplTest {
                 .data(filing).links(links)
                 .build();
         entityWithLinks = PscVerification.newBuilder(entity).links(links).build();
+        entityWithLinksList = List.of(entityWithLinks);
         final var mergeVerificationDetails = new HashMap<>(Map.of());
         mergePatch = new HashMap<>();
         mergePatch.put("verification_details", mergeVerificationDetails);
@@ -274,6 +278,20 @@ class PscVerificationControllerImplTest {
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(equalTo(pscVerificationApi)));
     }
+
+    @Test
+    void getPscVerificationByNotificationIdWhenFound() {
+
+        when(pscVerificationService.getByNotificationId(PSC_ID)).thenReturn(Optional.of(entityWithLinksList));
+        when(pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(true);
+
+        final var response =
+            testController.getPscVerificationByNotificationId(PSC_ID, request);
+
+        assertThat(response.isPresent(), is(true));
+        assertThat(response.get().getData().pscNotificationId(), is(PSC_ID));
+    }
+
 
     @Test
     void updatePscVerification() {
@@ -604,6 +622,24 @@ class PscVerificationControllerImplTest {
                 testController.getPscVerification(TRANS_ID, FILING_ID, request);
 
         assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+    }
+
+    @Test
+    void getPscVerificationByNotificationIdWhenResultsOptIsEmpty() {
+        when(pscVerificationService.getByNotificationId("notification-id")).thenReturn(Optional.empty());
+
+        final var response = testController.getPscVerificationByNotificationId("notification-id", request);
+
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    void getPscVerificationByNotificationIdWhenListIsEmpty() {
+        when(pscVerificationService.getByNotificationId("notification-id")).thenReturn(Optional.of(Collections.emptyList()));
+
+        final var response = testController.getPscVerificationByNotificationId("notification-id", request);
+
+        assertTrue(response.isEmpty());
     }
 
     private ResourceLinks expectEntitySavedWithLinks() {

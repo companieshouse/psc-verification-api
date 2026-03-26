@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import uk.gov.companieshouse.pscverificationapi.exception.MergePatchException;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.provider.PscVerificationFilingProvider;
 import uk.gov.companieshouse.pscverificationapi.repository.PscVerificationRepository;
+import uk.gov.companieshouse.pscverificationapi.repository.PscVerificationRepositoryCustom;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationPatchValidator;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 
@@ -27,6 +29,7 @@ import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 @Service
 public class PscVerificationServiceImpl implements PscVerificationService {
     private final PscVerificationRepository repository;
+    private final PscVerificationRepositoryCustom customRepository;
     private final PatchServiceProperties patchServiceProperties;
     private final PscVerificationFilingProvider pscVerificationFilingProvider;
     private final PscVerificationFilingMergeProcessor mergeProcessor;
@@ -35,12 +38,14 @@ public class PscVerificationServiceImpl implements PscVerificationService {
 
     @Autowired
     public PscVerificationServiceImpl(PscVerificationRepository repository,
+                                      PscVerificationRepositoryCustom customRepository,
                                       PatchServiceProperties patchServiceProperties,
                                       PscVerificationFilingProvider pscVerificationFilingProvider,
                                       PscVerificationFilingMergeProcessor mergeProcessor,
                                       PscVerificationFilingPostMergeProcessor postMergeProcessor,
                                       PscVerificationPatchValidator pscVerificationPatchValidator) {
         this.repository = repository;
+        this.customRepository = customRepository;
         this.patchServiceProperties = patchServiceProperties;
         this.pscVerificationFilingProvider = pscVerificationFilingProvider;
         this.mergeProcessor = mergeProcessor;
@@ -56,6 +61,11 @@ public class PscVerificationServiceImpl implements PscVerificationService {
     @Override
     public Optional<PscVerification> get(final String filingId) {
         return repository.findById(filingId);
+    }
+
+    @Override
+    public Optional<List<PscVerification>> getByNotificationId(final String notificationId) {
+        return Optional.ofNullable(customRepository.findByNotificationId(notificationId));
     }
 
     @Override

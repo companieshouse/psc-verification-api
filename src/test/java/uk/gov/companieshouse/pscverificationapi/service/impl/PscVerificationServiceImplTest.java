@@ -26,6 +26,7 @@ import uk.gov.companieshouse.pscverificationapi.exception.MergePatchException;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
 import uk.gov.companieshouse.pscverificationapi.provider.PscVerificationFilingProvider;
 import uk.gov.companieshouse.pscverificationapi.repository.PscVerificationRepository;
+import uk.gov.companieshouse.pscverificationapi.repository.PscVerificationRepositoryCustom;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationPatchValidator;
 import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 
@@ -37,6 +38,8 @@ class PscVerificationServiceImplTest {
     private PscVerificationService testService;
     @Mock
     private PscVerificationRepository repository;
+    @Mock
+    private PscVerificationRepositoryCustom customRepository;
     @Mock
     private PatchServiceProperties patchServiceProperties;
     @Mock
@@ -54,7 +57,7 @@ class PscVerificationServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        testService = new PscVerificationServiceImpl(repository, patchServiceProperties, provider,
+        testService = new PscVerificationServiceImpl(repository, customRepository, patchServiceProperties, provider,
             mergeProcessor, postMergeProcessor, patchValidator);
         filing = PscVerification.newBuilder().build();
     }
@@ -71,6 +74,13 @@ class PscVerificationServiceImplTest {
         testService.get(FILING_ID);
 
         verify(repository).findById(FILING_ID);
+    }
+
+    @Test
+    void getByNotificationId() {
+        testService.getByNotificationId(FILING_ID);
+
+        verify(customRepository).findByNotificationId(FILING_ID);
     }
 
     @Test
