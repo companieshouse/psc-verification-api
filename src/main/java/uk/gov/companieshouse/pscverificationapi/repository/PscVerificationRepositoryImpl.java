@@ -22,9 +22,6 @@ public class PscVerificationRepositoryImpl implements PscVerificationRepositoryC
     public List<PscVerification> findByNotificationId(String notificationId) {
 
         return mongoTemplate.find(
-            query(Criteria.where("data.psc_notification_id").is(notificationId)
-            ),
-            PscVerification.class
-        );
+            query(Criteria.where("data.psc_notification_id").is(notificationId)), PscVerification.class);
     }
 }
