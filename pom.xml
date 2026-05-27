@@ -55,6 +55,19 @@
     </properties>
     <dependencyManagement>
         <dependencies>
+               <!-- OTEL -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring-boot-dependencies.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-instrumentation-bom</artifactId>
+                <version>2.24.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -62,6 +75,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            
             <!-- PINNED: CVE-2025-48924 workaround in structured-logging@3.0.46 transitive dependency commons-lang@3-3.17.0 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -73,7 +87,7 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
                 <version>2.25.4</version>
-            </dependency>
+            </dependency>           
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-to-slf4j</artifactId>
@@ -93,6 +107,10 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-spring-boot-starter</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -222,7 +240,6 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>
