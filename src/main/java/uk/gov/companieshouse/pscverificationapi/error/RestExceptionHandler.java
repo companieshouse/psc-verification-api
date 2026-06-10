@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.pscverificationapi.error;
 
+import tools.jackson.core.JacksonException.Reference;
 import tools.jackson.databind.exc.InvalidFormatException;
 import tools.jackson.databind.exc.MismatchedInputException;
 import tools.jackson.databind.exc.UnrecognizedPropertyException;
@@ -36,7 +37,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.TokenStreamLocation;
-import tools.jackson.databind.DatabindException;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.exception.ConflictingFilingException;
@@ -332,11 +332,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             if (cause instanceof MismatchedInputException mie) {
                 message = getMismatchErrorMessage(mie);
 
-
-                final var fieldNameOpt = ((MismatchedInputException) cause).getPath()
+                final var fieldNameOpt = mie.getPath()
                     .stream()
                     .findFirst()
-                    .map(DatabindException.Reference::getPropertyName);
+                    .map(Reference::getPropertyName);
                 jsonPath += fieldNameOpt.map(f -> "." + f)
                     .orElse("");
 
