@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.pscverificationapi.enumerations.PscType;
 import uk.gov.companieshouse.pscverificationapi.service.VerificationValidationService;
@@ -25,7 +24,6 @@ public class VerificationValidationServiceImpl implements VerificationValidation
 
     private final Map<PscType, ? extends ValidationChainEnable> filingValidByPscType;
 
-    @Autowired
     VerificationValidationServiceImpl(final List<? extends ValidationChainEnable> verificationValidators) {
         this.filingValidByPscType = verificationValidators.stream()
             .collect(Collectors.toMap(ValidationChainEnable::pscType, Function.identity()));

@@ -1,5 +1,6 @@
 package uk.gov.companieshouse.pscverificationapi.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonMerge;
@@ -45,6 +46,7 @@ public final class PscVerification implements Touchable {
         // required by Spring Data
     }
 
+    @JsonCreator
     private PscVerification(final Builder builder) {
         setId(builder.id);
         setCreatedAt(builder.createdAt);

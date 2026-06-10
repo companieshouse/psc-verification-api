@@ -1,12 +1,12 @@
 package uk.gov.companieshouse.pscverificationapi.enumerations;
 
 import java.util.Objects;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertySourceFactory;
-import org.springframework.lang.NonNull;
 
 /**
  * PropertySourceFactory for loading YAML files as property sources.

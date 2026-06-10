@@ -14,12 +14,9 @@ import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonLocation;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.MismatchedInputException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +34,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.context.request.ServletWebRequest;
+import tools.jackson.core.TokenStreamLocation;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.databind.DatabindException;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.exception.ConflictingFilingException;
@@ -79,14 +79,14 @@ class RestExceptionHandlerTest {
     @Mock
     private UnrecognizedPropertyException unrecognizedPropertyException;
     @Mock
-    private JsonParseException jsonParseException;
+    private StreamReadException jsonParseException;
     @Mock
     private Logger logger;
 
     private MockHttpServletRequest servletRequest;
 
     @Mock
-    private JsonMappingException.Reference mappingReference;
+    private DatabindException.Reference mappingReference;
 
     private FieldError fieldError;
     private FieldError fieldErrorWithRejectedValue;
@@ -170,10 +170,10 @@ class RestExceptionHandlerTest {
             VERIFICATION_FRAGMENT.replaceAll("company_number", "company_numberX").getBytes());
         when(request.getRequest()).thenReturn(servletRequest);
         when(unrecognizedPropertyException.getLocation()).thenReturn(
-            new JsonLocation(null, 100, 3, 7));
+            new TokenStreamLocation(null, 100, 3, 7));
         when(unrecognizedPropertyException.getPath()).thenReturn(List.of(mappingReference));
         when(unrecognizedPropertyException.getPropertyName()).thenReturn("company_numberX");
-        when(mappingReference.getFieldName()).thenReturn("company_numberX");
+        when(mappingReference.getPropertyName()).thenReturn("company_numberX");
         final var unrecognizedMsg = "JSON parse error: Property is not recognised: {property-name}";
         final var exceptionMessage = new HttpMessageNotReadableException(unrecognizedMsg, unrecognizedPropertyException,
             message);
@@ -345,10 +345,11 @@ class RestExceptionHandlerTest {
 
     private static HttpMessageNotReadableException getHttpMessageNotReadableException(String blankJsonQuoted) {
         final var message = new MockHttpInputMessage(blankJsonQuoted.getBytes());
-        return new HttpMessageNotReadableException("Unexpected end-of-input: "
-            + "expected close marker for Object (start marker at [Source: (org"
-            + ".springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 1])\n"
-            + " at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); "
-            + "line: 1, column: 2]", message);
+        return new HttpMessageNotReadableException("""
+            Unexpected end-of-input: \
+            expected close marker for Object (start marker at [Source: (org\
+            .springframework.util.StreamUtils$NonClosingInputStream); line: 1, column: 1])
+             at [Source: (org.springframework.util.StreamUtils$NonClosingInputStream); \
+            line: 1, column: 2]""", message);
     }
 }

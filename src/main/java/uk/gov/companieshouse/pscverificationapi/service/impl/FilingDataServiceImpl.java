@@ -2,7 +2,7 @@ package uk.gov.companieshouse.pscverificationapi.service.impl;
 
 import static uk.gov.companieshouse.pscverificationapi.model.FilingKind.PSC_VERIFICATION_INDIVIDUAL;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.PropertyNamingStrategies;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.api.model.filinggenerator.FilingApi;
 import uk.gov.companieshouse.api.model.transaction.Transaction;

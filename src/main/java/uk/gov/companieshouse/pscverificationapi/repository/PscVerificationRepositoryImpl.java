@@ -4,7 +4,6 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import uk.gov.companieshouse.pscverificationapi.model.entity.PscVerification;
@@ -13,7 +12,6 @@ public class PscVerificationRepositoryImpl implements PscVerificationRepositoryC
 
     private final MongoTemplate mongoTemplate;
 
-    @Autowired
     public PscVerificationRepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }

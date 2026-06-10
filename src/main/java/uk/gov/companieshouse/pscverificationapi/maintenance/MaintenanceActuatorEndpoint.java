@@ -6,11 +6,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.api.model.common.MaintenanceCheck;
 import uk.gov.companieshouse.api.model.common.ServiceStatus;
@@ -23,6 +23,7 @@ import uk.gov.companieshouse.logging.Logger;
  * </p>
  */
 @Component
+@Configuration
 @Endpoint(id = "maintenance")
 public class MaintenanceActuatorEndpoint {
 
@@ -41,7 +42,6 @@ public class MaintenanceActuatorEndpoint {
     @Value("${out-of-service.period.message}")
     private String outOfServiceMessage;
 
-    @Autowired
     public MaintenanceActuatorEndpoint(final Clock clock, final Logger logger) {
         this.clock = clock;
         this.logger = logger;
