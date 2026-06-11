@@ -23,7 +23,6 @@ import uk.gov.companieshouse.logging.Logger;
  * </p>
  */
 @Component
-@Configuration
 @Endpoint(id = "maintenance")
 public class MaintenanceActuatorEndpoint {
 

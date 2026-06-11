@@ -23,6 +23,7 @@ public final class JsonHelper {
     private static void initialiseMapper(PropertyNamingStrategy namingStrategy) {
         if (mapper == null) {
             mapper = JsonMapper.builder()
+                .findAndAddModules()
                 .propertyNamingStrategy(namingStrategy)
                 .defaultDateFormat(new SimpleDateFormat("yyyy-MM-dd"))
                 .build();

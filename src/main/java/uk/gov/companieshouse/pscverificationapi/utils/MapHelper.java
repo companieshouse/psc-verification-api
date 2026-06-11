@@ -28,6 +28,7 @@ public final class MapHelper {
     public static Map<String, Object> convertObject(final Object obj, final PropertyNamingStrategy namingStrategy) {
         if (mapper == null) {
             mapper = JsonMapper.builder()
+                .findAndAddModules()
                 .propertyNamingStrategy(namingStrategy)
                 .defaultDateFormat(new SimpleDateFormat("yyyy-MM-dd"))
                 .build();
