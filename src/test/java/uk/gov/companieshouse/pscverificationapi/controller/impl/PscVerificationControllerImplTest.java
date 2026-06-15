@@ -35,10 +35,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -67,8 +67,8 @@ import uk.gov.companieshouse.pscverificationapi.service.PscVerificationService;
 import uk.gov.companieshouse.pscverificationapi.service.TransactionService;
 import uk.gov.companieshouse.sdk.manager.ApiSdkManager;
 
-@ExtendWith(SpringExtension.class) // JUnit 5
-@ContextConfiguration(classes = {PscVerificationMapperImpl.class})
+@ExtendWith(MockitoExtension.class) // JUnit 5
+@SpringJUnitConfig(classes = {PscVerificationMapperImpl.class})
 class PscVerificationControllerImplTest {
     public static final String TRANS_ID = "117524-754816-491724";
     private static final String PSC_ID = "1kdaTltWeaP1EB70SSD9SLmiK5Y";
@@ -143,13 +143,16 @@ class PscVerificationControllerImplTest {
             .data(filing)
             .internalData(internalData)
             .build();
-        final var links = expectEntitySavedWithLinks();
+        final var links = buildLinks();
         pscVerificationApi = PscVerificationApi.newBuilder()
                 .createdAt(FIRST_INSTANT)
                 .updatedAt(FIRST_INSTANT)
-                .data(filing).links(links)
+                .data(filing)
+                .links(links)
                 .build();
-        entityWithLinks = PscVerification.newBuilder(entity).links(links).build();
+        entityWithLinks = PscVerification.newBuilder(entity)
+                .links(links)
+                .build();
         entityWithLinksList = List.of(entityWithLinks);
         final var mergeVerificationDetails = new HashMap<>(Map.of());
         mergePatch = new HashMap<>();
@@ -163,7 +166,7 @@ class PscVerificationControllerImplTest {
         final boolean nullTransaction) {
         expectTransactionIsPresent(nullPassthrough, nullTransaction);
         final var links = expectEntitySavedWithLinks();
-        when(pscLookupService.getIndividualFullRecord(nullTransaction ? null : transaction, filing, PscType.INDIVIDUAL))
+        when(pscLookupService.getIndividualFullRecord(transaction, filing, PscType.INDIVIDUAL))
                 .thenReturn(individualFullRecord);
 
         final var response = testController.createPscVerification(TRANS_ID,
@@ -283,7 +286,6 @@ class PscVerificationControllerImplTest {
     void getPscVerificationByNotificationIdWhenFound() {
 
         when(pscVerificationService.getByNotificationId(PSC_ID)).thenReturn(Optional.of(entityWithLinksList));
-        when(pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(true);
 
         final var response =
             testController.getPscVerificationByNotificationId(PSC_ID, request);
@@ -350,10 +352,6 @@ class PscVerificationControllerImplTest {
 
     @Test
     void updatePscVerificationWithPscNotificationIdThrowsPscLookupExceptionWhenNoInternalId() {
-        final var success = new PatchResult();
-        final var updatedEntity = PscVerification.newBuilder(entityWithLinks)
-                .updatedAt(SECOND_INSTANT)
-                .build();
         mergePatch.put("psc_notification_id", PSC_ID_TO_PATCH);
         PscVerificationData dataToLookup = PscVerificationData.newBuilder(filing).pscNotificationId(PSC_ID_TO_PATCH).build();
         individualFullRecord.setInternalId(null);
@@ -361,10 +359,7 @@ class PscVerificationControllerImplTest {
         when(transactionService.getTransaction(TRANS_ID, null)).thenReturn(transaction);
         when(pscLookupService.getIndividualFullRecord(transaction, dataToLookup, PscType.INDIVIDUAL))
                 .thenReturn(individualFullRecord);
-        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks))
-                .thenReturn(Optional.of(updatedEntity));
-        when(pscVerificationService.requestMatchesResourceSelf(request, entityWithLinks)).thenReturn(true);
-        when(pscVerificationService.patch(eq(FILING_ID), anyMap())).thenReturn(success);
+        when(pscVerificationService.get(FILING_ID)).thenReturn(Optional.of(entityWithLinks));
 
         assertThrows(PscLookupServiceException.class,
                 () ->testController.updatePscVerification(TRANS_ID, FILING_ID,
@@ -642,6 +637,15 @@ class PscVerificationControllerImplTest {
         assertTrue(response.isEmpty());
     }
 
+    private ResourceLinks buildLinks() {
+        final var self = URI.create(REQUEST_URI + "/" + FILING_ID);
+        return ResourceLinks.newBuilder()
+            .self(self)
+            .validationStatus(
+                UriComponentsBuilder.fromUri(self).pathSegment("validation_status").build().toUri())
+            .build();
+    }
+
     private ResourceLinks expectEntitySavedWithLinks() {
         when(request.getRequestURI()).thenReturn(REQUEST_URI.toString());
         final var clock1 = Clock.fixed(FIRST_INSTANT, ZoneId.of("UTC"));
@@ -672,7 +676,7 @@ class PscVerificationControllerImplTest {
         when(request.getHeader(ApiSdkManager.getEricPassthroughTokenHeader())).thenReturn(
             nullPassthrough ? null : PASSTHROUGH_HEADER);
         if (nullTransaction) {
-            when(transactionService.getTransaction(TRANS_ID, PASSTHROUGH_HEADER)).thenReturn(
+            when(transactionService.getTransaction(TRANS_ID, nullPassthrough ? null : PASSTHROUGH_HEADER)).thenReturn(
                 transaction);
         }
     }

@@ -1,9 +1,8 @@
 package uk.gov.companieshouse.pscverificationapi.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.patch.service.MergeProcessor;
@@ -19,7 +18,6 @@ public class PscVerificationFilingMergeProcessor implements MergeProcessor<PscVe
     private final ObjectMapper patchObjectMapper;
     private final PscVerificationMapper dataMapper;
 
-    @Autowired
     public PscVerificationFilingMergeProcessor(
         @Qualifier("patchObjectMapper") final ObjectMapper patchObjectMapper,
         PscVerificationMapper dataMapper) {

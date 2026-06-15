@@ -1,11 +1,9 @@
 package uk.gov.companieshouse.pscverificationapi.error;
 
-import com.fasterxml.jackson.core.JsonLocation;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.core.JacksonException.Reference;
+import tools.jackson.databind.exc.InvalidFormatException;
+import tools.jackson.databind.exc.MismatchedInputException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +15,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -26,8 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -38,6 +35,8 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.TokenStreamLocation;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.pscverificationapi.exception.ConflictingFilingException;
@@ -76,7 +75,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected Map<String, String> validation;
     private final Logger chLogger;
 
-    @Autowired
     public RestExceptionHandler(final Map<String, String> validation, final Logger logger) {
         this.validation = validation;
         this.chLogger = logger;
@@ -257,8 +255,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
      * @param error the ApiError to update
      * @param location the JSON location from a parsing exception
      */
-    private static void addLocationInfo(final ApiError error, final JsonLocation location) {
-        error.addErrorValue("offset", location.offsetDescription());
+    private static void addLocationInfo(final ApiError error, final TokenStreamLocation location) {
+        error.addErrorValue("offset",
+            String.format("line: %d, column: %d", location.getLineNr(), location.getColumnNr()));
         error.addErrorValue("line", String.valueOf(location.getLineNr()));
         error.addErrorValue("column", String.valueOf(location.getColumnNr()));
     }
@@ -325,7 +324,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         final ApiError error;
         final String message;
 
-        if (cause instanceof JsonProcessingException jpe) {
+        if (cause instanceof JacksonException jpe) {
             final var location = jpe.getLocation();
             var jsonPath = "$";
             Object rejectedValue = null;
@@ -333,11 +332,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             if (cause instanceof MismatchedInputException mie) {
                 message = getMismatchErrorMessage(mie);
 
-
-                final var fieldNameOpt = ((MismatchedInputException) cause).getPath()
+                final var fieldNameOpt = mie.getPath()
                     .stream()
                     .findFirst()
-                    .map(JsonMappingException.Reference::getFieldName);
+                    .map(Reference::getPropertyName);
                 jsonPath += fieldNameOpt.map(f -> "." + f)
                     .orElse("");
 

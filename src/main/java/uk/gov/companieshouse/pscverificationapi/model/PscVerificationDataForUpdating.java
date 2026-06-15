@@ -11,10 +11,10 @@ import java.util.Objects;
  * </p>
  */
 public final class PscVerificationDataForUpdating {
-    private final String companyNumber;
-    private final String pscNotificationId;
+    private String companyNumber;
+    private String pscNotificationId;
     @JsonMerge
-    private final VerificationDetailsForUpdating verificationDetails;
+    private VerificationDetailsForUpdating verificationDetails;
 
     public PscVerificationDataForUpdating(@JsonProperty final String companyNumber,
         @JsonProperty final String pscNotificationId,
@@ -28,12 +28,24 @@ public final class PscVerificationDataForUpdating {
         return companyNumber;
     }
 
+    public void setCompanyNumber(final String companyNumber) {
+        this.companyNumber = companyNumber;
+    }
+
     public String getPscNotificationId() {
         return pscNotificationId;
     }
 
+    public void setPscNotificationId(final String pscNotificationId) {
+        this.pscNotificationId = pscNotificationId;
+    }
+
     public VerificationDetailsForUpdating getVerificationDetails() {
         return verificationDetails;
+    }
+
+    public void setVerificationDetails(final VerificationDetailsForUpdating verificationDetails) {
+        this.verificationDetails = verificationDetails;
     }
 
     @Override

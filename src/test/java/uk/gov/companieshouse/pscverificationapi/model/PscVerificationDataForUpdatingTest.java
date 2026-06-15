@@ -45,7 +45,8 @@ class PscVerificationDataForUpdatingTest extends BaseControllerIT {
 
     @Test
     void equality() {
-        EqualsVerifier.forClass(PscVerificationDataForUpdating.class).usingGetClass().verify();
+        EqualsVerifier.forClass(PscVerificationDataForUpdating.class).usingGetClass()
+            .suppress(nl.jqno.equalsverifier.Warning.NONFINAL_FIELDS).verify();
     }
 
     @Test

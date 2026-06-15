@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.pscverificationapi.provider.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.companieshouse.logging.Logger;
 import uk.gov.companieshouse.patch.model.EntityRetrievalResult;
@@ -17,7 +16,6 @@ public class PscVerificationFilingProviderImpl implements PscVerificationFilingP
     private final Logger logger;
     private final PscVerificationRepository pscVerificationRepository;
 
-    @Autowired
     public PscVerificationFilingProviderImpl(final PscVerificationRepository pscVerificationRepository, final Logger logger) {
         this.pscVerificationRepository = pscVerificationRepository;
         this.logger = logger;

@@ -1,6 +1,5 @@
 package uk.gov.companieshouse.pscverificationapi.validator;
-
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.model.pscverification.PscVerificationData;
 import uk.gov.companieshouse.api.model.transaction.Transaction;

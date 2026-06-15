@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -41,7 +40,6 @@ public class MaintenanceActuatorEndpoint {
     @Value("${out-of-service.period.message}")
     private String outOfServiceMessage;
 
-    @Autowired
     public MaintenanceActuatorEndpoint(final Clock clock, final Logger logger) {
         this.clock = clock;
         this.logger = logger;

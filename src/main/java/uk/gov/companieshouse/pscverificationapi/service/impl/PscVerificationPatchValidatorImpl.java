@@ -4,7 +4,6 @@ import static java.util.function.Predicate.not;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.AbstractBindingResult;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -26,7 +25,6 @@ public class PscVerificationPatchValidatorImpl implements PscVerificationPatchVa
     private final SmartValidator validator;
     private final PscVerificationMapper mapper;
 
-    @Autowired
     public PscVerificationPatchValidatorImpl(final SmartValidator validator, final PscVerificationMapper mapper) {
         this.validator = validator;
         this.mapper = mapper;

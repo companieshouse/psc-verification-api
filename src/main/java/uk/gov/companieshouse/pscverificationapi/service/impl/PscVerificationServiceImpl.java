@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.companieshouse.patch.model.PatchResult;
 import uk.gov.companieshouse.pscverificationapi.config.PatchServiceProperties;
@@ -36,7 +35,6 @@ public class PscVerificationServiceImpl implements PscVerificationService {
     private final PscVerificationFilingPostMergeProcessor postMergeProcessor;
     private final PscVerificationPatchValidator pscVerificationPatchValidator;
 
-    @Autowired
     public PscVerificationServiceImpl(PscVerificationRepository repository,
                                       PscVerificationRepositoryCustom customRepository,
                                       PatchServiceProperties patchServiceProperties,

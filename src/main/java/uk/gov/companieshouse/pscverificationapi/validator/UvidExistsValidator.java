@@ -3,7 +3,7 @@ package uk.gov.companieshouse.pscverificationapi.validator;
 import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.FORENAMES_MISMATCH;
 import static uk.gov.companieshouse.api.identityverification.model.UvidMatchResponse.AccuracyStatementEnum.SURNAME_MISMATCH;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.PropertyNamingStrategies;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
 import uk.gov.companieshouse.api.error.ApiErrorResponseException;

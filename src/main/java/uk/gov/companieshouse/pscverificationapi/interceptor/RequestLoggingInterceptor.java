@@ -2,7 +2,6 @@ package uk.gov.companieshouse.pscverificationapi.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import uk.gov.companieshouse.logging.Logger;
@@ -20,7 +19,6 @@ public class RequestLoggingInterceptor implements HandlerInterceptor, RequestLog
 
     private final Logger logger;
 
-    @Autowired
     public RequestLoggingInterceptor() {
         logger = LoggerFactory.getLogger(PscVerificationApiApplication.APP_NAMESPACE);
     }

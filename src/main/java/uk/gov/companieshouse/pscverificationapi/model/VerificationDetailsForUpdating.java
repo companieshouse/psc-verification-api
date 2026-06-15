@@ -14,9 +14,9 @@ import uk.gov.companieshouse.api.model.pscverification.VerificationStatementCons
  * </p>
  */
 public final class VerificationDetailsForUpdating {
-    private final String uvid;
-    private final NameMismatchReasonConstants nameMismatchReason;
-    private final Set<VerificationStatementConstants> verificationStatements;
+    private String uvid;
+    private NameMismatchReasonConstants nameMismatchReason;
+    private Set<VerificationStatementConstants> verificationStatements;
 
     @JsonCreator
     public VerificationDetailsForUpdating(@JsonProperty("uvid") final String uvid,
@@ -32,12 +32,24 @@ public final class VerificationDetailsForUpdating {
         return uvid;
     }
 
+    public void setUvid(final String uvid) {
+        this.uvid = uvid;
+    }
+
     public NameMismatchReasonConstants getNameMismatchReason() {
         return nameMismatchReason;
     }
 
+    public void setNameMismatchReason(final NameMismatchReasonConstants nameMismatchReason) {
+        this.nameMismatchReason = nameMismatchReason;
+    }
+
     public Set<VerificationStatementConstants> getVerificationStatements() {
         return verificationStatements;
+    }
+
+    public void setVerificationStatements(final Set<VerificationStatementConstants> verificationStatements) {
+        this.verificationStatements = verificationStatements;
     }
 
     @Override

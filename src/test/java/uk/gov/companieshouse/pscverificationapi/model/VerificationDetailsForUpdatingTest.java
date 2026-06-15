@@ -42,7 +42,8 @@ class VerificationDetailsForUpdatingTest {
 
     @Test
     void equality() {
-        EqualsVerifier.forClass(VerificationDetailsForUpdating.class).usingGetClass().verify();
+        EqualsVerifier.forClass(VerificationDetailsForUpdating.class).usingGetClass()
+            .suppress(nl.jqno.equalsverifier.Warning.NONFINAL_FIELDS).verify();
     }
 
     @Test

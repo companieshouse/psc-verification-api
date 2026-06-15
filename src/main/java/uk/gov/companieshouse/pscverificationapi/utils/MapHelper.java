@@ -1,11 +1,11 @@
 package uk.gov.companieshouse.pscverificationapi.utils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import tools.jackson.databind.PropertyNamingStrategy;
 
 /**
  * Helper class for converting objects to property maps.
@@ -27,8 +27,11 @@ public final class MapHelper {
      */
     public static Map<String, Object> convertObject(final Object obj, final PropertyNamingStrategy namingStrategy) {
         if (mapper == null) {
-            mapper = new ObjectMapper().registerModule(new JavaTimeModule()).setPropertyNamingStrategy(namingStrategy)
-                    .setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+            mapper = JsonMapper.builder()
+                .findAndAddModules()
+                .propertyNamingStrategy(namingStrategy)
+                .defaultDateFormat(new SimpleDateFormat("yyyy-MM-dd"))
+                .build();
         }
 
         return mapper.convertValue(obj, new TypeReference<>() {
