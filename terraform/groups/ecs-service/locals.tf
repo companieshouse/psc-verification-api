@@ -12,7 +12,7 @@ locals {
   lb_listener_paths         = ["/persons-with-significant-control-verification*", "/transactions/*/persons-with-significant-control-verification*", "/private/transactions/*/persons-with-significant-control-verification*"]
   healthcheck_path          = "/persons-with-significant-control-verification/healthcheck"
   healthcheck_matcher       = "200" # no explicit healthcheck in this service yet, change this when added!
-  vpc_name                  = data.aws_ssm_parameter.secret[format("/%s/%s", local.name_prefix, "vpc-name")].value
+  vpc_name                  = local.stack_secrets["vpc_name"]
   s3_config_bucket          = data.vault_generic_secret.shared_s3.data["config_bucket_name"]
   app_environment_filename  = "psc-verification-api.env"
   use_set_environment_files = var.use_set_environment_files
@@ -22,13 +22,6 @@ locals {
   application_subnet_pattern = local.stack_secrets["application_subnet_pattern"]
 
   service_secrets = jsondecode(data.vault_generic_secret.service_secrets.data_json)
-
-  # create a map of secret name => secret arn to pass into ecs service module
-  # using the trimprefix function to remove the prefixed path from the secret name
-  secrets_arn_map = {
-    for sec in data.aws_ssm_parameter.secret :
-    trimprefix(sec.name, "/${local.name_prefix}/") => sec.arn
-  }
 
   global_secrets_arn_map = {
     for sec in data.aws_ssm_parameter.global_secret :
