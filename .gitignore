@@ -44,6 +44,3 @@ bin/
 ._*
 Footer
 /.history/
-
-# terraform metadata and modules
-.terraform*
