@@ -60,6 +60,16 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- CVE-2026-47883 to -47893, CVE-2026-59280 to -59283, CVE-2026-59313: spring-boot-dependencies@4.1.0
+                 pins Spring Framework 7.0.8, fixed in 7.0.9; must precede the spring-boot-dependencies
+                 import below so this newer version takes precedence -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>7.0.9</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
