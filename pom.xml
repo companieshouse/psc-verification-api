@@ -6,7 +6,7 @@
     <parent>
         <groupId>uk.gov.companieshouse</groupId>
         <artifactId>companies-house-parent</artifactId>
-        <version>2.1.12</version>
+        <version>2.1.20</version>
         <relativePath/>
     </parent>
     <artifactId>psc-verification-api</artifactId>
@@ -28,9 +28,9 @@
         <equalsverifier.version>3.15.1</equalsverifier.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <!--- CH -->
-        <ch-bom.version>0.1.21</ch-bom.version>
-        <api-sdk-java.version>6.6.8</api-sdk-java.version>
-        <private-api-sdk-java.version>4.0.476</private-api-sdk-java.version>
+        <ch-bom.version>0.1.27</ch-bom.version>
+        <api-sdk-java.version>7.2.7</api-sdk-java.version>
+        <private-api-sdk-java.version>7.2.31</private-api-sdk-java.version>
         <!--sonar configuration-->
         <sonar-maven-plugin.version>5.2.0.4988</sonar-maven-plugin.version>
         <sonar.java.binaries>${project.basedir}/target,${project.basedir}/target/*</sonar.java.binaries>
