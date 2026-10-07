@@ -52,8 +52,8 @@ public class TransactionServiceImpl implements TransactionService {
         catch (final ApiErrorResponseException e) {
             logger.errorContext(transactionId, UNEXPECTED_STATUS_CODE, e, logMap);
             throw new TransactionServiceException(
-                    MessageFormat.format("Error Updating Transaction details for {0}: {1} {2}",
-                            transactionId, e.getStatusCode(), e.getStatusMessage()), e);
+                    MessageFormat.format("Error Retrieving Transaction details for {0}, Http: {1}",
+                            transactionId, String.valueOf(e.getStatusCode())), e);
         }
         catch (final URIValidationException | IOException e) {
             throw new TransactionServiceException("Error Retrieving Transaction " + transactionId,
@@ -83,8 +83,8 @@ public class TransactionServiceImpl implements TransactionService {
         catch (final ApiErrorResponseException e) {
             logger.errorContext(transaction.getId(), UNEXPECTED_STATUS_CODE, e, logMap);
             throw new TransactionServiceException(
-                    MessageFormat.format("Error Updating Transaction details for {0}: {1} {2}",
-                            transaction.getId(), e.getStatusCode(), e.getStatusMessage()), e);
+                    MessageFormat.format("Error Updating Transaction details for {0}, Http: {1}",
+                            transaction.getId(), String.valueOf(e.getStatusCode())), e);
 
         }
         catch (final URIValidationException | IOException e) {

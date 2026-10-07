@@ -88,7 +88,6 @@ class TransactionServiceImplTest {
         String header = "ERIC";
         ApiErrorResponseException apiException = mock(ApiErrorResponseException.class);
         when(apiException.getStatusCode()).thenReturn(500);
-        when(apiException.getStatusMessage()).thenReturn("Internal Error");
 
         when(apiClientService.getApiClient(header)).thenReturn(apiClient);
         when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
@@ -152,7 +151,6 @@ class TransactionServiceImplTest {
         transaction.setId("456");
         ApiErrorResponseException apiException = mock(ApiErrorResponseException.class);
         when(apiException.getStatusCode()).thenReturn(500);
-        when(apiException.getStatusMessage()).thenReturn("Internal Error");
 
         when(apiClientService.getInternalApiClient(header)).thenReturn(internalApiClient);
         when(internalApiClient.privateTransaction()).thenReturn(privateTransactionResourceHandler);

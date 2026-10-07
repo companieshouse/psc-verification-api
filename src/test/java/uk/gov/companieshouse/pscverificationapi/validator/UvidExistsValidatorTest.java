@@ -129,7 +129,7 @@ class UvidExistsValidatorTest {
                 new VerificationValidationContext(PSC_VERIFICATION_DATA, errors, transaction, pscType, passthroughHeader);
 
         exception = Assertions.assertThrows(IdvLookupServiceException.class, () -> testValidator.validate(verificationValidationContext));
-        assertThat(exception.getMessage(), is("Error matching UVID XY222222223: null test error"));
+        assertThat(exception.getMessage(), is("Error matching UVID XY222222223, Http: 400"));
     }
 
     @Test
