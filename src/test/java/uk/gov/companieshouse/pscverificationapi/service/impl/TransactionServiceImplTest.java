@@ -88,15 +88,17 @@ class TransactionServiceImplTest {
         String header = "ERIC";
         ApiErrorResponseException apiException = mock(ApiErrorResponseException.class);
         when(apiException.getStatusCode()).thenReturn(500);
-        when(apiException.getStatusMessage()).thenReturn("Internal Error");
 
         when(apiClientService.getApiClient(header)).thenReturn(apiClient);
         when(apiClient.transactions()).thenReturn(transactionsResourceHandler);
         when(transactionsResourceHandler.get("/transactions/" + transactionId)).thenReturn(transactionGet);
         when(transactionGet.execute()).thenThrow(apiException);
 
-        assertThrows(TransactionServiceException.class, () ->
+        final var thrown = assertThrows(TransactionServiceException.class, () ->
                 transactionService.getTransaction(transactionId, header));
+
+        assertThat(thrown.getMessage(),
+                is("Error Retrieving Transaction details for 123, HTTP: 500"));
         verify(logger).errorContext(eq(transactionId), contains("Unexpected Status Code"), eq(apiException), anyMap());
     }
 
@@ -152,15 +154,17 @@ class TransactionServiceImplTest {
         transaction.setId("456");
         ApiErrorResponseException apiException = mock(ApiErrorResponseException.class);
         when(apiException.getStatusCode()).thenReturn(500);
-        when(apiException.getStatusMessage()).thenReturn("Internal Error");
 
         when(apiClientService.getInternalApiClient(header)).thenReturn(internalApiClient);
         when(internalApiClient.privateTransaction()).thenReturn(privateTransactionResourceHandler);
         when(privateTransactionResourceHandler.patch("/private/transactions/" + transaction.getId(), transaction)).thenReturn(privateTransactionPatch);
         when(privateTransactionPatch.execute()).thenThrow(apiException);
 
-        assertThrows(TransactionServiceException.class, () ->
+        final var thrown = assertThrows(TransactionServiceException.class, () ->
                 transactionService.updateTransaction(transaction, header));
+
+        assertThat(thrown.getMessage(),
+                is("Error Updating Transaction details for 456, HTTP: 500"));
         verify(logger).errorContext(eq(transaction.getId()), contains("Unexpected Status Code"), eq(apiException), anyMap());
     }
 
