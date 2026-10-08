@@ -70,7 +70,7 @@ public class UvidExistsValidator extends BaseVerificationValidator implements
         try {
             uvidMatchResponse = idvLookupService.matchUvid(uvidMatch);
         } catch (ApiErrorResponseException e) {
-            throw new IdvLookupServiceException(MessageFormat.format("Error matching UVID {0}, Http: {1}",
+            throw new IdvLookupServiceException(MessageFormat.format("Error matching UVID {0}, HTTP: {1}",
                 dto.verificationDetails().uvid(), String.valueOf(e.getStatusCode())), e);
         }
 

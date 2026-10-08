@@ -121,7 +121,7 @@ class PscLookupServiceImplTest extends TestBaseService {
         final var thrown = assertThrows(PscLookupServiceException.class,
             () -> testService.getIndividualFullRecord(transaction, PSC_VERIFICATION_DATA, INDIVIDUAL));
 
-        assertThat(thrown.getMessage(), is("Error Retrieving PSC details for " + PSC_ID + ", Http: 403"));
+        assertThat(thrown.getMessage(), is("Error Retrieving PSC details for " + PSC_ID + ", HTTP: 403"));
     }
 
     @Test
@@ -176,7 +176,7 @@ class PscLookupServiceImplTest extends TestBaseService {
                 INDIVIDUAL));
 
         assertThat(thrown.getMessage(),
-            is("PSC Details not found for " + PSC_ID + ", Http: 404"));
+            is("PSC Details not found for " + PSC_ID + ", HTTP: 404"));
 
     }
 

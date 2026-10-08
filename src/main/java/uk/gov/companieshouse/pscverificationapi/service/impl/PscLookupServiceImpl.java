@@ -63,11 +63,11 @@ public class PscLookupServiceImpl implements PscLookupService {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND.value()) {
                 logger.errorContext(transaction.getId(), UNEXPECTED_STATUS_CODE, e, logMap);
                 throw new FilingResourceNotFoundException(
-                        MessageFormat.format("PSC Details not found for {0}, Http: {1}", pscNotificationId,
+                        MessageFormat.format("PSC Details not found for {0}, HTTP: {1}", pscNotificationId,
                                 String.valueOf(e.getStatusCode())), e);
             }
             throw new PscLookupServiceException(
-                    MessageFormat.format("Error Retrieving PSC details for {0}, Http: {1}", pscNotificationId,
+                    MessageFormat.format("Error Retrieving PSC details for {0}, HTTP: {1}", pscNotificationId,
                             String.valueOf(e.getStatusCode())), e);
 
         } catch (URIValidationException e) {

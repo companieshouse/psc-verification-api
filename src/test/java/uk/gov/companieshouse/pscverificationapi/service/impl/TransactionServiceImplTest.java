@@ -98,7 +98,7 @@ class TransactionServiceImplTest {
                 transactionService.getTransaction(transactionId, header));
 
         assertThat(thrown.getMessage(),
-                is("Error Retrieving Transaction details for 123, Http: 500"));
+                is("Error Retrieving Transaction details for 123, HTTP: 500"));
         verify(logger).errorContext(eq(transactionId), contains("Unexpected Status Code"), eq(apiException), anyMap());
     }
 
@@ -164,7 +164,7 @@ class TransactionServiceImplTest {
                 transactionService.updateTransaction(transaction, header));
 
         assertThat(thrown.getMessage(),
-                is("Error Updating Transaction details for 456, Http: 500"));
+                is("Error Updating Transaction details for 456, HTTP: 500"));
         verify(logger).errorContext(eq(transaction.getId()), contains("Unexpected Status Code"), eq(apiException), anyMap());
     }
 
